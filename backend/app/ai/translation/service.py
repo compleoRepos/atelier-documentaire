@@ -480,7 +480,9 @@ def _validate_private_url(
         except ValueError as exc:
             raise ValueError("private gateway DNS returned invalid address") from exc
         if ip.is_link_local or ip.is_unspecified or ip.is_multicast:
-            raise ValueError("private gateway cannot address metadata/link-local or unspecified hosts")
+            raise ValueError(
+                "private gateway cannot address metadata/link-local or unspecified hosts"
+            )
         # is_private excludes globally routable addresses while allowing RFC1918,
         # and loopback used by isolated test/private networks. Metadata is denied.
         if not (ip.is_private or ip.is_loopback):
@@ -699,7 +701,15 @@ def _fit_prompt_to_budget(
     # Keep the current source and the first client-priority glossary hits. The
     # least important tail of each category is removed first; previous chunk
     # decisions remain available whenever the final budget permits them.
-    drop_order = ("memory", "entities", "document", "document_memory", "terms", "decisions", "previous")
+    drop_order = (
+        "memory",
+        "entities",
+        "document",
+        "document_memory",
+        "terms",
+        "decisions",
+        "previous",
+    )
     while builder.count_messages(messages) > target_tokens:
         removed = False
         for key in drop_order:
@@ -723,24 +733,76 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
     mode = options.get("engine", "offline")
     if mode not in {"offline", "private", "interim"}:
         raise ValueError("engine must be offline, private or interim")
+    owner_record: dict | None = None
+    owner_source_sha: str | None = None
+    interim_scope_label = "synthetic_only"
     if mode == "interim":
-        from .interim_guard import authorize_interim_fixture, synthetic_payload_sha256
+        from .interim_guard import (
+            OWNER_SCOPE,
+            authorize_interim_fixture,
+            authorize_interim_owner_document,
+            synthetic_payload_sha256,
+        )
 
-        auth_error = authorize_interim_fixture(ir,options)
+        if options.get("interim_data_scope") == OWNER_SCOPE:
+            auth_error, owner_record, owner_source_sha = authorize_interim_owner_document(ir, options)
+            interim_scope_label = "owner_authorized_real_document"
+        else:
+            auth_error = authorize_interim_fixture(ir, options)
         if auth_error:
-            denied_blocks = [block for page in ir.get("pages",[]) for block in page.get("blocks",[])] or ir.get("blocks",[])
-            denied_ids = [str(block["id"]) for block in denied_blocks if block.get("id") is not None]
-            denied_telemetry = {"provider":"interim","served_version":None,"usage":{},"requests_sent":0,"execution_status":"NOT_EXECUTED","inputs":{"model":options.get("interim_model","gpt-5-mini")},"data_boundary":"outside_private_cloud","data_scope":"synthetic_only","reference_validated":False}
+            denied_blocks = [
+                block for page in ir.get("pages", []) for block in page.get("blocks", [])
+            ] or ir.get("blocks", [])
+            denied_ids = [
+                str(block["id"]) for block in denied_blocks if block.get("id") is not None
+            ]
+            denied_telemetry = {
+                "provider": "interim",
+                "served_version": None,
+                "usage": {},
+                "requests_sent": 0,
+                "execution_status": "NOT_EXECUTED",
+                "inputs": {"model": options.get("interim_model", "gpt-5-mini")},
+                "data_boundary": "outside_private_cloud",
+                "data_scope": interim_scope_label,
+                "reference_validated": False,
+            }
             ir["_translation_telemetry"] = denied_telemetry
             return {
-                "translations": {str(block["id"]):str(block.get("text","")) for block in denied_blocks if block.get("id") is not None},
-                "issues":[{"code":auth_error,"severity":"critical","message":"Interim limité aux fixtures synthétiques autorisées ; aucun appel réseau."}],
-                "untranslated_blocks":denied_ids,
-                "quality":{"status":"REVIEW_REQUIRED","translation_score":None,"reference_status":"not_available"},
-                "versions":{"model":options.get("interim_model","gpt-5-mini"),"provider":"interim","context_budgets":config},
-                "translation_telemetry":{"provider":"interim","served_version":None,"usage":{},"requests_sent":0,"execution_status":"NOT_EXECUTED",
-                              "inputs":{"model":options.get("interim_model","gpt-5-mini")},"data_boundary":"outside_private_cloud",
-                              "data_scope":"synthetic_only","reference_validated":False},
+                "translations": {
+                    str(block["id"]): str(block.get("text", ""))
+                    for block in denied_blocks
+                    if block.get("id") is not None
+                },
+                "issues": [
+                    {
+                        "code": auth_error,
+                        "severity": "critical",
+                        "message": "Interim limité aux fixtures synthétiques ou aux documents explicitement autorisés par leur propriétaire ; aucun appel réseau.",
+                    }
+                ],
+                "untranslated_blocks": denied_ids,
+                "quality": {
+                    "status": "REVIEW_REQUIRED",
+                    "translation_score": None,
+                    "reference_status": "not_available",
+                },
+                "versions": {
+                    "model": options.get("interim_model", "gpt-5-mini"),
+                    "provider": "interim",
+                    "context_budgets": config,
+                },
+                "translation_telemetry": {
+                    "provider": "interim",
+                    "served_version": None,
+                    "usage": {},
+                    "requests_sent": 0,
+                    "execution_status": "NOT_EXECUTED",
+                    "inputs": {"model": options.get("interim_model", "gpt-5-mini")},
+                    "data_boundary": "outside_private_cloud",
+                    "data_scope": interim_scope_label,
+                    "reference_validated": False,
+                },
             }
 
     tokenizer = options.get("tokenizer")
@@ -770,9 +832,18 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
 
         from .interim import InterimTranslationEngine
 
-        fixture_hash = synthetic_payload_sha256(ir,options)
+        if owner_record is not None:
+            engine_scope = OWNER_SCOPE
+            fixture_hash = owner_source_sha
+            allowed_hashes = list(owner_record["document_sha256"])
+        else:
+            engine_scope = "synthetic_fixture"
+            fixture_hash = synthetic_payload_sha256(ir, options)
+            allowed_hashes = [fixture_hash]
         cap_proof = options.get("interim_capability_proof")
-        if isinstance(cap_proof,str) and not isinstance(options.get("transport"),httpx.MockTransport):
+        if isinstance(cap_proof, str) and not isinstance(
+            options.get("transport"), httpx.MockTransport
+        ):
             try:
                 cap_proof = json.loads(cap_proof)
             except ValueError:
@@ -780,14 +851,21 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
         engine = options.get("translation_engine") or InterimTranslationEngine(
             base_url=options.get("interim_api_base") or os.getenv("OPENAI_API_BASE"),
             api_key=options.get("interim_api_key") or os.getenv("OPENAI_API_KEY"),
-            model=options.get("interim_model","gpt-5-mini"),tokenizer=tokenizer,
-            max_context=config["max_context"],target_input=config["target_input"],
-            max_tokens=config["max_output"],safety_margin=config["safety_margin"],
-            data_scope="synthetic_fixture",synthetic_fixture_authorized=True,
-            fixture_sha256=fixture_hash,allowed_fixture_sha256=[fixture_hash],
-            total_generation_cap_verified=options.get("interim_total_generation_cap_verified",True),
+            model=options.get("interim_model", "gpt-5-mini"),
+            tokenizer=tokenizer,
+            max_context=config["max_context"],
+            target_input=config["target_input"],
+            max_tokens=config["max_output"],
+            safety_margin=config["safety_margin"],
+            data_scope=engine_scope,
+            synthetic_fixture_authorized=owner_record is None,
+            owner_authorization_id=(owner_record or {}).get("authorization_id"),
+            fixture_sha256=fixture_hash,
+            allowed_fixture_sha256=allowed_hashes,
+            total_generation_cap_verified=options.get("interim_total_generation_cap_verified", True),
             capability_proof=cap_proof,
             transport=options.get("transport"),
+            timeout=float(options.get("timeout", 60.0)),
         )
     else:
         engine = options.get("translation_engine") or OfflineMemoryEngine(
@@ -814,17 +892,26 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
     issues: list[dict[str, Any]] = []
     untranslated: list[str] = []
     telemetry: dict[str, Any] = {
-        "provider": {"offline":"offline-memory","private":"private-qwen-gateway","interim":"interim"}[mode],
+        "provider": {
+            "offline": "offline-memory",
+            "private": "private-qwen-gateway",
+            "interim": "interim",
+        }[mode],
         "served_version": None,
         "tokenizer_hash": getattr(engine, "tokenizer_hash", None),
         "prompt_version": "offline-v2"
         if mode == "offline"
         else getattr(engine, "prompt_version", "private-translation-v2"),
         "inputs": {
-            "model": options.get("private_ai_model") if mode == "private" else options.get("interim_model","gpt-5-mini") if mode == "interim" else "offline-memory",
+            "model": options.get("private_ai_model")
+            if mode == "private"
+            else options.get("interim_model", "gpt-5-mini")
+            if mode == "interim"
+            else "offline-memory",
             "glossary_version": options.get("glossary_version", "none"),
             "memory_version": options.get("memory_version", "none"),
-            "tokenizer": getattr(engine,"tokenizer_name",None) or options.get("tokenizer_name", options.get("tokenizer_path", "none")),
+            "tokenizer": getattr(engine, "tokenizer_name", None)
+            or options.get("tokenizer_name", options.get("tokenizer_path", "none")),
         },
         "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
         "latency_ms": 0.0,
@@ -832,7 +919,18 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
     }
     started_total = time.perf_counter()
     if mode == "interim":
-        telemetry.update(data_boundary="outside_private_cloud",data_scope="synthetic_only",reference_validated=False)
+        telemetry.update(
+            data_boundary="outside_private_cloud",
+            data_scope=interim_scope_label,
+            reference_validated=False,
+        )
+        if owner_record is not None:
+            telemetry["owner_authorization"] = {
+                "authorization_id": owner_record["authorization_id"],
+                "authorized_by": owner_record["authorized_by"],
+                "decided_at": owner_record["decided_at"],
+                "expires_at": owner_record["expires_at"],
+            }
 
     if mode == "offline":
         offline = (
@@ -855,7 +953,9 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
         telemetry["chunks"].append({"count": len(blocks), "mode": "offline", "latency_ms": 0.0})
     else:
         builder = ContextPackBuilder(
-            tokenizer=tokenizer or getattr(engine,"tokenizer_adapter",None) or getattr(engine, "tokenizer", None),
+            tokenizer=tokenizer
+            or getattr(engine, "tokenizer_adapter", None)
+            or getattr(engine, "tokenizer", None),
             max_tokens=config["target_input"],
         )
         chunks = builder.build_chunks(ir)
@@ -864,6 +964,179 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
         previous_decisions = list(
             options.get("previous_decisions", options.get("previous", [])) or []
         )
+        _SPLIT_CODES = {"INTERIM_CONTEXT_OVERFLOW", "INTERIM_INVALID_MODEL_OUTPUT"}
+        _MAX_SPLIT_DEPTH = 5
+        max_blocks = int(options.get("interim_max_blocks_per_request", 40)) if mode == "interim" else 0
+
+        async def _translate_active(
+            chunk: dict[str, Any], active_blocks: list[dict[str, Any]], depth: int = 0
+        ) -> None:
+            if max_blocks and len(active_blocks) > max_blocks:
+                half = len(active_blocks) // 2
+                await _translate_active(chunk, active_blocks[:half], depth)
+                await _translate_active(chunk, active_blocks[half:], depth)
+                return
+            chunk_ids = [str(block.get("id")) for block in active_blocks]
+            protected_blocks: list[dict[str, Any]] = []
+            mappings: dict[str, dict[str, str]] = {}
+            failed_protection = False
+            for block in active_blocks:
+                block_id = str(block["id"])
+                try:
+                    protected_text, mapping, _ = _protected_text(
+                        str(block.get("text", "")), protected_entities, block_id
+                    )
+                except ValueError as exc:
+                    issues.append(
+                        {
+                            "code": "PROTECTED_ENTITY_COLLISION",
+                            "severity": "critical",
+                            "message": str(exc),
+                            "block_id": block_id,
+                        }
+                    )
+                    translations[block_id] = str(block.get("text", ""))
+                    untranslated.append(block_id)
+                    failed_protection = True
+                    continue
+                mappings[block_id] = mapping
+                protected_blocks.append(
+                    {
+                        "id": block_id,
+                        "text": protected_text,
+                        "language": block.get("language", document_language),
+                    }
+                )
+            if failed_protection:
+                return
+            active_chunk = {**chunk, "blocks": active_blocks}
+            chunk_options = {**options, "previous_decisions": previous_decisions}
+            from app.ai.context.terminology import VERSION as terminology_version
+            from app.ai.context.terminology import context_terms
+
+            chunk_options["terms"] = context_terms(ir.get("domain"), options.get("glossary"))
+            telemetry["inputs"]["terminology_version"] = terminology_version
+            pack = builder.pack(ir, active_chunk, chunk_options)
+            messages = [
+                {"role": "system", "content": _instructions(options)},
+                {"role": "user", "content": _user_payload(pack, protected_blocks, target_language)},
+            ]
+            messages = _fit_prompt_to_budget(builder, messages, config["target_input"])
+            started = time.perf_counter()
+            result = _engine_result(
+                await engine.translate_chunk(messages, chunk_ids, max_output=config["max_output"])
+            )
+            chunk_latency = round((time.perf_counter() - started) * 1000, 3)
+            telemetry["chunks"].append(
+                {"ids": list(chunk_ids), "latency_ms": chunk_latency, **result.metadata}
+            )
+            if result.metadata.get("served_model"):
+                telemetry["served_version"] = result.metadata["served_model"]
+            if result.metadata.get("served_version"):
+                telemetry["served_version"] = result.metadata["served_version"]
+            if result.metadata.get("tokenizer_hash"):
+                telemetry["tokenizer_hash"] = result.metadata["tokenizer_hash"]
+            if result.metadata.get("prompt_version"):
+                telemetry["prompt_version"] = result.metadata["prompt_version"]
+            usage = result.metadata.get("usage") or {}
+            for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                if isinstance(usage.get(key), int):
+                    telemetry["usage"][key] += usage[key]
+            if result.issues:
+                rejected = {str(issue.get("code")) for issue in result.issues} & _SPLIT_CODES
+                if (
+                    mode == "interim"
+                    and rejected
+                    and len(active_blocks) > 1
+                    and depth < _MAX_SPLIT_DEPTH
+                ):
+                    # Refused before the network (prompt bound) or output rejected
+                    # (IDs/cardinality): retry on two smaller requests, never accept
+                    # the rejected output. Bounded depth; final failures stay critical.
+                    issues.append(
+                        {
+                            "code": "INTERIM_CHUNK_SPLIT_RETRY",
+                            "severity": "warning",
+                            "message": "Requête refusée puis redécoupée en deux requêtes plus petites.",
+                            "rejected_codes": sorted(rejected),
+                            "blocks": len(active_blocks),
+                            "depth": depth + 1,
+                        }
+                    )
+                    half = len(active_blocks) // 2
+                    await _translate_active(chunk, active_blocks[:half], depth + 1)
+                    await _translate_active(chunk, active_blocks[half:], depth + 1)
+                    return
+                issues.extend(
+                    {
+                        **issue,
+                        "block_id": issue.get("block_id")
+                        or (chunk_ids[0] if len(chunk_ids) == 1 else None),
+                    }
+                    for issue in result.issues
+                )
+                for block_id in chunk_ids:
+                    translations[block_id] = str(block_by_id[block_id].get("text", ""))
+                    untranslated.append(block_id)
+                return
+            decisions = result.metadata.get("decisions") or result.metadata.get(
+                "translation_decisions"
+            )
+            if isinstance(decisions, Mapping):
+                decisions = [decisions]
+            if isinstance(decisions, Sequence) and not isinstance(decisions, (str, bytes)):
+                previous_decisions.extend(
+                    dict(item) for item in decisions if isinstance(item, Mapping)
+                )
+            missing_ids = [
+                block_id for block_id in chunk_ids if block_id not in result.translations
+            ]
+            extra_ids = [block_id for block_id in result.translations if block_id not in chunk_ids]
+            if (
+                (missing_ids or extra_ids)
+                and mode == "interim"
+                and len(active_blocks) > 1
+                and depth < _MAX_SPLIT_DEPTH
+            ):
+                issues.append(
+                    {
+                        "code": "INTERIM_CHUNK_SPLIT_RETRY",
+                        "severity": "warning",
+                        "message": "Sortie incomplète puis requête redécoupée.",
+                        "rejected_codes": ["INVALID_MODEL_OUTPUT"],
+                        "blocks": len(active_blocks),
+                        "depth": depth + 1,
+                    }
+                )
+                half = len(active_blocks) // 2
+                await _translate_active(chunk, active_blocks[:half], depth + 1)
+                await _translate_active(chunk, active_blocks[half:], depth + 1)
+                return
+            if missing_ids or extra_ids:
+                issues.append(
+                    {
+                        "code": "INVALID_MODEL_OUTPUT",
+                        "severity": "critical",
+                        "message": "La sortie ne couvre pas exactement les identifiants demandés.",
+                        "block_id": missing_ids[0] if missing_ids else None,
+                    }
+                )
+                for block_id in chunk_ids:
+                    translations[block_id] = str(block_by_id[block_id].get("text", ""))
+                    untranslated.append(block_id)
+                return
+            for block_id in chunk_ids:
+                text, issue = _restore_and_validate(
+                    str(block_by_id[block_id].get("text", "")),
+                    result.translations[block_id],
+                    mappings.get(block_id, {}),
+                    block_id,
+                )
+                translations[block_id] = text
+                if issue:
+                    issues.append(issue)
+                    untranslated.append(block_id)
+
         for chunk in chunks:
             unmapped = [
                 block
@@ -920,128 +1193,21 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                     {block_id: block_by_id[block_id].get("text", "") for block_id in chunk_ids}
                 )
                 continue
-            protected_blocks: list[dict[str, Any]] = []
-            mappings: dict[str, dict[str, str]] = {}
-            failed_protection = False
-            for block in active_blocks:
-                block_id = str(block["id"])
-                try:
-                    protected_text, mapping, _ = _protected_text(
-                        str(block.get("text", "")), protected_entities, block_id
-                    )
-                except ValueError as exc:
-                    issues.append(
-                        {
-                            "code": "PROTECTED_ENTITY_COLLISION",
-                            "severity": "critical",
-                            "message": str(exc),
-                            "block_id": block_id,
-                        }
-                    )
-                    translations[block_id] = str(block.get("text", ""))
-                    untranslated.append(block_id)
-                    failed_protection = True
-                    continue
-                mappings[block_id] = mapping
-                protected_blocks.append(
-                    {
-                        "id": block_id,
-                        "text": protected_text,
-                        "language": block.get("language", document_language),
-                    }
-                )
-            if failed_protection:
-                continue
-            active_chunk = {**chunk, "blocks": active_blocks}
-            chunk_options = {**options, "previous_decisions": previous_decisions}
-            from app.ai.context.terminology import VERSION as terminology_version
-            from app.ai.context.terminology import context_terms
-
-            chunk_options["terms"] = context_terms(ir.get("domain"), options.get("glossary"))
-            telemetry["inputs"]["terminology_version"] = terminology_version
-            pack = builder.pack(ir, active_chunk, chunk_options)
-            messages = [
-                {"role": "system", "content": _instructions(options)},
-                {"role": "user", "content": _user_payload(pack, protected_blocks, target_language)},
-            ]
-            messages = _fit_prompt_to_budget(builder, messages, config["target_input"])
-            started = time.perf_counter()
-            result = _engine_result(
-                await engine.translate_chunk(messages, chunk_ids, max_output=config["max_output"])
-            )
-            chunk_latency = round((time.perf_counter() - started) * 1000, 3)
-            telemetry["chunks"].append(
-                {"ids": list(chunk_ids), "latency_ms": chunk_latency, **result.metadata}
-            )
-            if result.metadata.get("served_model"):
-                telemetry["served_version"] = result.metadata["served_model"]
-            if result.metadata.get("served_version"):
-                telemetry["served_version"] = result.metadata["served_version"]
-            if result.metadata.get("tokenizer_hash"):
-                telemetry["tokenizer_hash"] = result.metadata["tokenizer_hash"]
-            if result.metadata.get("prompt_version"):
-                telemetry["prompt_version"] = result.metadata["prompt_version"]
-            usage = result.metadata.get("usage") or {}
-            for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
-                if isinstance(usage.get(key), int):
-                    telemetry["usage"][key] += usage[key]
-            if result.issues:
-                issues.extend(
-                    {
-                        **issue,
-                        "block_id": issue.get("block_id")
-                        or (chunk_ids[0] if len(chunk_ids) == 1 else None),
-                    }
-                    for issue in result.issues
-                )
-                for block_id in chunk_ids:
-                    translations[block_id] = str(block_by_id[block_id].get("text", ""))
-                    untranslated.append(block_id)
-                continue
-            decisions = result.metadata.get("decisions") or result.metadata.get(
-                "translation_decisions"
-            )
-            if isinstance(decisions, Mapping):
-                decisions = [decisions]
-            if isinstance(decisions, Sequence) and not isinstance(decisions, (str, bytes)):
-                previous_decisions.extend(
-                    dict(item) for item in decisions if isinstance(item, Mapping)
-                )
-            missing_ids = [
-                block_id for block_id in chunk_ids if block_id not in result.translations
-            ]
-            extra_ids = [block_id for block_id in result.translations if block_id not in chunk_ids]
-            if missing_ids or extra_ids:
-                issues.append(
-                    {
-                        "code": "INVALID_MODEL_OUTPUT",
-                        "severity": "critical",
-                        "message": "La sortie ne couvre pas exactement les identifiants demandés.",
-                        "block_id": missing_ids[0] if missing_ids else None,
-                    }
-                )
-                for block_id in chunk_ids:
-                    translations[block_id] = str(block_by_id[block_id].get("text", ""))
-                    untranslated.append(block_id)
-                continue
-            for block_id in chunk_ids:
-                text, issue = _restore_and_validate(
-                    str(block_by_id[block_id].get("text", "")),
-                    result.translations[block_id],
-                    mappings.get(block_id, {}),
-                    block_id,
-                )
-                translations[block_id] = text
-                if issue:
-                    issues.append(issue)
-                    untranslated.append(block_id)
+            await _translate_active(chunk, active_blocks)
 
     versions = {
         "prompt": "v1",
-        "model": (options.get("private_ai_model") if mode == "private" else options.get("interim_model","gpt-5-mini") if mode == "interim" else "offline-memory"),
+        "model": (
+            options.get("private_ai_model")
+            if mode == "private"
+            else options.get("interim_model", "gpt-5-mini")
+            if mode == "interim"
+            else "offline-memory"
+        ),
         "glossary": options.get("glossary_version", options.get("glossary", "none")),
         "memory": options.get("memory_version", "none"),
-        "tokenizer": getattr(engine,"tokenizer_name",None) or options.get("tokenizer_name", options.get("tokenizer_path", "none")),
+        "tokenizer": getattr(engine, "tokenizer_name", None)
+        or options.get("tokenizer_name", options.get("tokenizer_path", "none")),
         "tokenizer_hash": telemetry.get("tokenizer_hash"),
         "context_budgets": config,
         "prompt_version": telemetry.get("prompt_version"),
@@ -1060,7 +1226,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
     # The pipeline may persist this non-text metadata with the IR; no tenant
     # memory or source document is stored globally by this service.
     if mode == "interim":
-        telemetry["requests_sent"] = getattr(engine,"requests_sent",0)
+        telemetry["requests_sent"] = getattr(engine, "requests_sent", 0)
         telemetry["execution_status"] = "EXECUTED" if telemetry["requests_sent"] else "NOT_EXECUTED"
     ir["_translation_telemetry"] = telemetry
     return {

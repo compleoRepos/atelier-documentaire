@@ -27,7 +27,7 @@ MODEL = "gpt-5-mini"
 CATALOG_OWNER = "openai"
 ENGINE_PROVIDER = "interim"
 CONTRACT_URL = "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create"
-_BLOCKED_PROVIDERS: set[tuple[str,str]] = set()
+_BLOCKED_PROVIDERS: set[tuple[str, str]] = set()
 
 
 # The schema is deliberately closed.  Do not loosen additionalProperties: the
@@ -216,10 +216,13 @@ class _InterimEngineImplementation:
         total_generation_cap_verified: bool = True,
         capability_proof: Any = None,
         server_capability_proof: Any = None,
+        owner_authorization_id: str | None = None,
     ) -> None:
         configured_base = proxy_base_url if proxy_base_url is not None else base_url
         if configured_base is None:
-            configured_base = os.environ.get("INTERIM_PROXY_BASE_URL") or os.environ.get("INTERIM_API_BASE")
+            configured_base = os.environ.get("INTERIM_PROXY_BASE_URL") or os.environ.get(
+                "INTERIM_API_BASE"
+            )
         if not configured_base:
             raise ValueError("INTERIM proxy base URL must be explicitly configured")
         self.base_url = self._validate_base_url(str(configured_base))
@@ -272,10 +275,17 @@ class _InterimEngineImplementation:
         self.fixture_sha256 = fixture_sha256
         self.allowed_fixture_sha256 = self._hash_set(allowed_fixture_sha256)
         self.denied_document_sha256 = self._hash_set(denied_document_sha256)
+        self.owner_authorization_id = owner_authorization_id
         self.total_generation_cap_verified = bool(total_generation_cap_verified)
-        self.capability_proof = capability_proof if capability_proof is not None else server_capability_proof
+        self.capability_proof = (
+            capability_proof if capability_proof is not None else server_capability_proof
+        )
         self.model = model
-        self.tokenizer_name = getattr(tokenizer,"name","injected-test-tokenizer") if tokenizer is not None else "o200k_base"
+        self.tokenizer_name = (
+            getattr(tokenizer, "name", "injected-test-tokenizer")
+            if tokenizer is not None
+            else "o200k_base"
+        )
         self.token_counter_type = "GPT/injected counter + UTF8/framing conservative upper bound"
         self.tokenizer = tokenizer if tokenizer is not None else _load_gpt_tokenizer(model)
         self.tokenizer_adapter = _TokenizerAdapter(self)
@@ -320,7 +330,9 @@ class _InterimEngineImplementation:
         )
         return rendered + ("<assistant>" if add_generation_prompt else "")
 
-    def _preflight(self, messages: Sequence[Mapping[str, Any]], output_tokens: int) -> dict[str, int]:
+    def _preflight(
+        self, messages: Sequence[Mapping[str, Any]], output_tokens: int
+    ) -> dict[str, int]:
         if not isinstance(messages, Sequence) or isinstance(messages, (str, bytes)):
             raise ValueError("messages must be a sequence")
         message_list = [dict(item) for item in messages]
@@ -338,7 +350,9 @@ class _InterimEngineImplementation:
         serialized = _json_bytes(payload_for_bound)
         encoded_parts = (
             _encoded_length(self.tokenizer, _json_bytes(message_list).decode("utf-8"))
-            + _encoded_length(self.tokenizer, _json_bytes(TRANSLATION_RESPONSE_SCHEMA).decode("utf-8"))
+            + _encoded_length(
+                self.tokenizer, _json_bytes(TRANSLATION_RESPONSE_SCHEMA).decode("utf-8")
+            )
             + _encoded_length(self.tokenizer, _json_bytes(control).decode("utf-8"))
         )
         # Fixed JSON/chat framing is conservatively added, while the UTF-8 byte
@@ -360,6 +374,24 @@ class _InterimEngineImplementation:
         return self._preflight(messages, self.max_tokens)["prompt_upper_bound"]
 
     def _gate_issue(self) -> dict[str, Any] | None:
+        if self.data_scope == "owner_authorized_document":
+            # Real document explicitly authorised by its owner (server-side
+            # record checked by interim_guard). The engine re-checks the binding.
+            if not self.owner_authorization_id:
+                return _issue(
+                    "INTERIM_OWNER_AUTHORIZATION_REQUIRED",
+                    "Owner authorisation id required for a real document; no request sent.",
+                )
+            if not self.fixture_sha256 or self.fixture_sha256 not in self.allowed_fixture_sha256:
+                return _issue(
+                    "INTERIM_OWNER_DOCUMENT_NOT_AUTHORIZED",
+                    "Document SHA-256 is not listed in the owner authorisation; no request sent.",
+                )
+            if self.fixture_sha256 in self.denied_document_sha256:
+                return _issue(
+                    "INTERIM_DATA_HASH_DENIED", "Document hash is denylisted; no request sent."
+                )
+            return None
         if self.data_scope != "synthetic_fixture" or not self.synthetic_fixture_authorized:
             return _issue(
                 "INTERIM_SYNTHETIC_FIXTURE_NOT_AUTHORIZED",
@@ -371,8 +403,14 @@ class _InterimEngineImplementation:
                 "The supplied fixture hash is denylisted and no request was sent.",
             )
         if not self.fixture_sha256:
-            return _issue("INTERIM_FIXTURE_HASH_REQUIRED","Server allowlisted fixture hash required; no request sent.")
-        if not self.allowed_fixture_sha256 or self.fixture_sha256 not in self.allowed_fixture_sha256:
+            return _issue(
+                "INTERIM_FIXTURE_HASH_REQUIRED",
+                "Server allowlisted fixture hash required; no request sent.",
+            )
+        if (
+            not self.allowed_fixture_sha256
+            or self.fixture_sha256 not in self.allowed_fixture_sha256
+        ):
             return _issue(
                 "INTERIM_FIXTURE_HASH_NOT_ALLOWLISTED",
                 "The supplied fixture hash is not on the server fixture allowlist and no request was sent.",
@@ -385,8 +423,14 @@ class _InterimEngineImplementation:
         return None
 
     def _cap_issue(self) -> dict[str, Any] | None:
-        if (self.base_url,self.model) in _BLOCKED_PROVIDERS or not self.total_generation_cap_verified:
-            return _issue("INTERIM_TOTAL_GENERATION_CAP_NOT_VERIFIED","Provider circuit blocked after a budget contract violation; no request sent.")
+        if (
+            self.base_url,
+            self.model,
+        ) in _BLOCKED_PROVIDERS or not self.total_generation_cap_verified:
+            return _issue(
+                "INTERIM_TOTAL_GENERATION_CAP_NOT_VERIFIED",
+                "Provider circuit blocked after a budget contract violation; no request sent.",
+            )
         return None
 
     def _metadata(self, body: Mapping[str, Any], preflight: Mapping[str, int]) -> dict[str, Any]:
@@ -428,8 +472,28 @@ class _InterimEngineImplementation:
         prompt = int(usage["prompt_tokens"])
         completion = int(usage["completion_tokens"])
         total = int(usage["total_tokens"])
+        semantics = "openai_prompt_includes_cache"
+        reported_prompt = prompt
         if total != prompt + completion:
-            return None, "usage.total_tokens is inconsistent with prompt and completion tokens"
+            # Some proxies report cached input outside prompt_tokens
+            # (prompt_tokens_details.cached_tokens / cache_read_input_tokens).
+            # Accept only an exact accounting; the effective input is then
+            # prompt + cached and every bound below applies to it.
+            prompt_details = usage.get("prompt_tokens_details")
+            cached_values = []
+            if isinstance(prompt_details, Mapping):
+                for key in ("cached_tokens", "cache_read_input_tokens"):
+                    if key in prompt_details:
+                        if not _valid_nonnegative_int(prompt_details[key]):
+                            return None, f"usage.prompt_tokens_details.{key} is malformed"
+                        cached_values.append(int(prompt_details[key]))
+            if len(set(cached_values)) > 1:
+                return None, "usage cached token counters disagree"
+            cached = cached_values[0] if cached_values else 0
+            if cached <= 0 or total != prompt + cached + completion:
+                return None, "usage.total_tokens is inconsistent with prompt and completion tokens"
+            prompt = prompt + cached
+            semantics = "cache_reported_outside_prompt"
         if prompt > prompt_upper_bound:
             return None, "usage.prompt_tokens exceeds the conservative preflight bound"
         if completion > max_tokens:
@@ -452,6 +516,11 @@ class _InterimEngineImplementation:
                 if reasoning_tokens > completion:
                     return None, "reasoning_tokens exceeds completion_tokens"
         normalized = dict(usage)
+        # Downstream accounting always sees the effective input token count.
+        normalized["prompt_tokens"] = prompt
+        normalized["usage_semantics"] = semantics
+        if semantics != "openai_prompt_includes_cache":
+            normalized["provider_reported_prompt_tokens"] = reported_prompt
         return normalized, None
 
     async def translate_chunk(
@@ -529,27 +598,52 @@ class _InterimEngineImplementation:
                     )
                 response.raise_for_status()
         except httpx.TimeoutException:
-            return _service_result(issues=[_issue("INTERIM_TIMEOUT", "Interim proxy request timed out.")])
+            return _service_result(
+                issues=[_issue("INTERIM_TIMEOUT", "Interim proxy request timed out.")]
+            )
         except (httpx.HTTPError, OSError, RuntimeError):
-            return _service_result(issues=[_issue("INTERIM_GATEWAY_FAILED", "Interim proxy request failed.")])
+            return _service_result(
+                issues=[_issue("INTERIM_GATEWAY_FAILED", "Interim proxy request failed.")]
+            )
 
         try:
             body = response.json()
             if not isinstance(body, Mapping):
                 raise ValueError("response body must be an object")
         except (ValueError, json.JSONDecodeError, TypeError):
-            return _service_result(issues=[_issue("INTERIM_INVALID_MODEL_OUTPUT", "Response body is not valid JSON.")])
+            return _service_result(
+                issues=[_issue("INTERIM_INVALID_MODEL_OUTPUT", "Response body is not valid JSON.")]
+            )
         metadata = self._metadata(body, preflight)
-        checked_usage, checked_error = self._validate_usage(body.get("usage"),prompt_upper_bound=preflight["prompt_upper_bound"],max_tokens=max_output,reserved_total=preflight["reserved_total"])
+        checked_usage, checked_error = self._validate_usage(
+            body.get("usage"),
+            prompt_upper_bound=preflight["prompt_upper_bound"],
+            max_tokens=max_output,
+            reserved_total=preflight["reserved_total"],
+        )
         if checked_error:
-            violation = any(word in checked_error for word in ("exceeds","inconsistent"))
+            violation = any(word in checked_error for word in ("exceeds", "inconsistent"))
             if violation:
-                _BLOCKED_PROVIDERS.add((self.base_url,self.model))
-            return _service_result(issues=[_issue("INTERIM_BUDGET_CONTRACT_VIOLATION" if violation else "INTERIM_USAGE_INVALID",checked_error)],metadata=metadata)
-        metadata["prompt_counter_delta"] = preflight["encoded_upper_bound"] - checked_usage["prompt_tokens"]
-        metadata["prompt_upper_bound_delta"] = preflight["prompt_upper_bound"] - checked_usage["prompt_tokens"]
-        checked_details=checked_usage.get("completion_tokens_details",checked_usage.get("completion_details",{}))
-        metadata["reasoning_tokens"]=checked_details.get("reasoning_tokens")
+                _BLOCKED_PROVIDERS.add((self.base_url, self.model))
+            return _service_result(
+                issues=[
+                    _issue(
+                        "INTERIM_BUDGET_CONTRACT_VIOLATION" if violation else "INTERIM_USAGE_INVALID",
+                        checked_error,
+                    )
+                ],
+                metadata=metadata,
+            )
+        metadata["prompt_counter_delta"] = (
+            preflight["encoded_upper_bound"] - checked_usage["prompt_tokens"]
+        )
+        metadata["prompt_upper_bound_delta"] = (
+            preflight["prompt_upper_bound"] - checked_usage["prompt_tokens"]
+        )
+        checked_details = checked_usage.get(
+            "completion_tokens_details", checked_usage.get("completion_details", {})
+        )
+        metadata["reasoning_tokens"] = checked_details.get("reasoning_tokens")
 
         if body.get("model") != MODEL:
             return _service_result(
@@ -562,7 +656,12 @@ class _InterimEngineImplementation:
             finish_reason = choice.get("finish_reason") if isinstance(choice, Mapping) else None
         except (KeyError, IndexError, TypeError):
             return _service_result(
-                issues=[_issue("INTERIM_INVALID_MODEL_OUTPUT", "Response choices/message/finish_reason is malformed.")],
+                issues=[
+                    _issue(
+                        "INTERIM_INVALID_MODEL_OUTPUT",
+                        "Response choices/message/finish_reason is malformed.",
+                    )
+                ],
                 metadata=metadata,
             )
         if not isinstance(message, Mapping):
@@ -572,7 +671,11 @@ class _InterimEngineImplementation:
             )
         if not isinstance(finish_reason, str) or not finish_reason:
             return _service_result(
-                issues=[_issue("INTERIM_FINISH_REASON_MISSING", "The response has no valid finish_reason.")],
+                issues=[
+                    _issue(
+                        "INTERIM_FINISH_REASON_MISSING", "The response has no valid finish_reason."
+                    )
+                ],
                 metadata=metadata,
             )
         refusal = message.get("refusal")
@@ -590,7 +693,12 @@ class _InterimEngineImplementation:
             )
         if finish_reason != "stop":
             return _service_result(
-                issues=[_issue("INTERIM_UNKNOWN_FINISH_REASON", "The response has an unsupported finish_reason.")],
+                issues=[
+                    _issue(
+                        "INTERIM_UNKNOWN_FINISH_REASON",
+                        "The response has an unsupported finish_reason.",
+                    )
+                ],
                 finish_reason=finish_reason,
                 metadata=metadata,
             )
@@ -608,7 +716,11 @@ class _InterimEngineImplementation:
                 metadata=metadata,
             )
         metadata["usage"] = usage
-        details = usage.get("completion_tokens_details", usage.get("completion_details")) if usage else None
+        details = (
+            usage.get("completion_tokens_details", usage.get("completion_details"))
+            if usage
+            else None
+        )
         if isinstance(details, Mapping) and "reasoning_tokens" in details:
             metadata["reasoning_tokens"] = details["reasoning_tokens"]
         try:

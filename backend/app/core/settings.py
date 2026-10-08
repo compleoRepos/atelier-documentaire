@@ -47,7 +47,10 @@ class Settings(BaseSettings):
     interim_model: Literal["gpt-5-mini"] = "gpt-5-mini"
     interim_api_base: str | None = Field(default=None, repr=False, exclude=True)
     interim_api_key: str | None = Field(default=None, repr=False, exclude=True)
-    interim_data_scope: Literal["synthetic_fixture"] = "synthetic_fixture"
+    interim_data_scope: Literal["synthetic_fixture", "owner_authorized_document"] = "synthetic_fixture"
+    # Server-side owner authorisation (outside Git): listed source SHA-256,
+    # author, decision time and expiry. Required for owner_authorized_document.
+    interim_owner_authorization_file: Path | None = None
     interim_synthetic_payload_sha256_allowlist: str = ""
     interim_total_generation_cap_verified: bool = True
     interim_capability_proof: str | None = None
@@ -85,7 +88,9 @@ class Settings(BaseSettings):
     metrics_enabled: bool = True
     metrics_token: str | None = None
 
-    @field_validator("paddle_model_dir", "quality_embedding_model_dir", mode="before")
+    @field_validator(
+        "paddle_model_dir", "quality_embedding_model_dir", "interim_owner_authorization_file", mode="before"
+    )
     @classmethod
     def empty_optional_path(cls, value):
         return None if value is None or (isinstance(value, str) and not value.strip()) else value
@@ -125,6 +130,8 @@ class Settings(BaseSettings):
             raise ValueError("Budget entrée/sortie/marge supérieur au contexte maximal")
         if self.environment.lower() == "private" and self.engine == "interim":
             raise ValueError("Environnement privé : provider Interim temporaire interdit")
+        if self.interim_data_scope == "owner_authorized_document" and not self.interim_owner_authorization_file:
+            raise ValueError("Périmètre Interim propriétaire : fichier d'autorisation serveur requis")
         if self.job_hard_timeout_seconds <= self.job_soft_timeout_seconds:
             raise ValueError("Le timeout dur doit dépasser le timeout souple")
         if self.environment.lower() in {"prod", "production"}:

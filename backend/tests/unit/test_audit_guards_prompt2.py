@@ -117,7 +117,13 @@ def test_vector_graphic_inside_table_cell_blocks_replacement_and_preserves_pixel
     block = ir["pages"][0]["blocks"][0]
     render = reconstruct_document(ir, {block["id"]: "Target"}, str(tmp_path / "candidate.pdf"))
     assert render["changed_blocks"] == 0
-    assert any(i["code"] == "PROTECTED_TRANSLATION_NOT_APPLIED" for i in render["issues"])
+    # The cell is retried block by block; the block still overlaps the filled
+    # cell graphic, so it is refused by the per-block graphic guard.
+    assert any(
+        i["code"] in {"PROTECTED_TRANSLATION_NOT_APPLIED", "PROTECTED_NATIVE_GRAPHIC"}
+        and i["severity"] in {"error", "critical"}
+        for i in render["issues"]
+    )
     assert all(r["preserved"] is True for r in render["protected_region_results"])
 
 

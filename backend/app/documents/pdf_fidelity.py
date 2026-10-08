@@ -125,10 +125,9 @@ def _blocks_from_page(page: Any, page_number: int) -> list[dict[str, Any]]:
 
 
 def _drawing_records(page: Any) -> list[dict[str, Any]]:
-    try:
-        drawings = page.get_drawings()
-    except Exception:
-        drawings = []
+    from .cover_layer import source_drawings
+
+    drawings = source_drawings(page)
     records: list[dict[str, Any]] = []
     for drawing in drawings:
         items = drawing.get("items", [])
@@ -530,6 +529,126 @@ def _graphic_conflict(page: Any, rect: list[float]) -> bool:
     return False
 
 
+# --- Scanned pages -----------------------------------------------------------
+# On a scan the source text is raster ink. The source box is covered with the
+# measured paper colour (the image stream itself is never re-encoded, so pixels
+# outside the box stay bit-identical) and the translation is written on top.
+
+
+def _strict_overlap(a: list[float], b: list[float], eps: float = 0.01) -> bool:
+    return a[0] < b[2] - eps and b[0] < a[2] - eps and a[1] < b[3] - eps and b[1] < a[3] - eps
+
+
+def _paper_color(page: Any, box: list[float]) -> list[float]:
+    """Median colour of the lightest pixels just around ``box`` on the original."""
+    try:
+        clip = (fitz.Rect(*box) + (-2, -2, 2, 2)) & page.rect
+        pix = page.get_pixmap(clip=clip, alpha=False, colorspace=fitz.csRGB)
+    except Exception:
+        return [1.0, 1.0, 1.0]
+    width, height, stride, samples = pix.width, pix.height, pix.stride, pix.samples
+    if width < 2 or height < 2:
+        return [1.0, 1.0, 1.0]
+    border = []
+    for x in range(width):
+        for y in (0, height - 1):
+            i = y * stride + x * 3
+            border.append(tuple(samples[i : i + 3]))
+    for y in range(height):
+        for x in (0, width - 1):
+            i = y * stride + x * 3
+            border.append(tuple(samples[i : i + 3]))
+    border.sort(key=sum)
+    light = border[len(border) // 2 :]
+    return [sorted(c[k] for c in light)[len(light) // 2] / 255.0 for k in range(3)]
+
+
+def _line_count(text: str) -> int:
+    return max(1, len([line for line in str(text).splitlines() if line.strip()]))
+
+
+def _scan_line_size(block: dict[str, Any]) -> float | None:
+    box = _rect(block.get("bbox"))
+    if not box:
+        return None
+    return (box[3] - box[1]) / _line_count(block.get("text", "")) * 0.95
+
+
+def _scan_body_size(blocks: list[dict[str, Any]]) -> float | None:
+    """Dominant body size of a scanned page. OCR line boxes are swollen by
+    nearby ink (handwriting, underlines), so only confident text lines vote."""
+
+    def sizes(min_confidence: float) -> list[float]:
+        return sorted(
+            size
+            for block in blocks
+            if len(str(block.get("text", "")).strip()) >= 8
+            and float(block.get("confidence") or 0) >= min_confidence
+            and (size := _scan_line_size(block)) is not None
+        )
+
+    values = sizes(0.85) or sizes(0.0)
+    return values[len(values) // 2] if values else None
+
+
+def _scan_font_size(block: dict[str, Any], body: float | None) -> float:
+    own = _scan_line_size(block) or 10.0
+    # Same body text keeps one size; only genuinely smaller print keeps its own.
+    size = body if body and own >= 0.75 * body else own
+    return max(6.0, min(14.0, size))
+
+
+def _shrink_away(box: list[float], others: list[list[float]]) -> list[float] | None:
+    """Shrink ``box`` on the side of each overlapping neighbour (OCR line boxes
+    swollen by nearby handwriting). Refused if less than 40 % would remain."""
+    x0, y0, x1, y1 = box
+    width, height = x1 - x0, y1 - y0
+    for other in others:
+        if not _strict_overlap([x0, y0, x1, y1], other):
+            continue
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        ox, oy = (other[0] + other[2]) / 2, (other[1] + other[3]) / 2
+        if ox > cx and other[0] > x0 + 0.4 * width:
+            x1 = min(x1, other[0] - 0.5)
+        elif ox < cx and other[2] < x1 - 0.4 * width:
+            x0 = max(x0, other[2] + 0.5)
+        elif oy > cy:
+            y1 = min(y1, other[1] - 0.5)
+        else:
+            y0 = max(y0, other[3] + 0.5)
+    shrunk = [x0, y0, x1, y1]
+    if x1 - x0 < 0.4 * width or y1 - y0 < 0.4 * height:
+        return None
+    if any(_strict_overlap(shrunk, other) for other in others):
+        return None
+    return shrunk
+
+
+def _grow_vertical(
+    box: list[float], need: float, obstacles: list[list[float]], page_rect: Any
+) -> list[float]:
+    x0, y0, x1, y1 = box
+    while y1 - y0 < need:
+        if y1 + 1 <= page_rect.y1 - 2 and not any(
+            _strict_overlap([x0, y1, x1, y1 + 1], o) for o in obstacles
+        ):
+            y1 += 1
+        elif y0 - 1 >= page_rect.y0 + 2 and not any(
+            _strict_overlap([x0, y0 - 1, x1, y0], o) for o in obstacles
+        ):
+            y0 -= 1
+        else:
+            break
+    return [x0, y0, x1, y1]
+
+
+def _grow_right(box: list[float], limit: float, obstacles: list[list[float]]) -> list[float]:
+    x0, y0, x1, y1 = box
+    while x1 + 2 <= limit and not any(_strict_overlap([x1, y0, x1 + 2, y1], o) for o in obstacles):
+        x1 += 2
+    return [x0, y0, x1, y1]
+
+
 def _page_ir_blocks(ir: dict[str, Any]) -> dict[int, list[dict[str, Any]]]:
     result: dict[int, list[dict[str, Any]]] = {}
     for page in ir.get("pages", []):
@@ -613,6 +732,12 @@ def render_pdf(
                 for block_id in table.get("ambiguous_block_ids", [])
             }
             consumed: set[str] = set()
+            # Blocks of a cell that cannot be replaced atomically (protected
+            # region or native graphic inside the cell, e.g. a page frame
+            # detected as a one-cell table around a logo/stamp) are retried one
+            # by one; each block keeps its own protection/overlap/graphic checks.
+            fallback_ids: set[str] = set()
+            page_is_scan = bool(ir.get("pages", [])[page_number - 1].get("scanned"))
             for table in source_tables:
                 for cell in table.get("cells", []):
                     ids = [str(block_id) for block_id in cell.get("block_ids", [])]
@@ -630,6 +755,24 @@ def render_pdf(
                         consumed.update(ids)
                         continue
                     if any(block_id in ambiguous for block_id in ids):
+                        if page_is_scan:
+                            # Raster table detection is heuristic, while each OCR
+                            # block has its own measured bbox: the cell link is not
+                            # needed to place it. Blocks keep every individual check.
+                            trace["status"] = "fallback_blocks_ambiguous_scan_cell"
+                            issues.append(
+                                _warn(
+                                    "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                    "Lien de cellule ambigu sur un scan; blocs OCR traités individuellement dans leur bbox.",
+                                    "warning",
+                                    page=page_number,
+                                    cell_id=cell.get("id"),
+                                    block_ids=ids,
+                                )
+                            )
+                            table_trace.append(trace)
+                            fallback_ids.update(ids)
+                            continue
                         trace["status"] = "review_ambiguous_cell_link"
                         issues.append(
                             _warn(
@@ -646,37 +789,52 @@ def render_pdf(
                         continue
                     box = _rect(cell.get("bbox"))
                     if not box:
-                        continue
-                    if _protected_box(page_number, box, protected_regions) or any(
-                        _protected(block, protected_regions) for block in blocks
-                    ):
-                        trace["status"] = "protected"
+                        # Never drop a translated cell silently.
+                        trace["status"] = "fallback_blocks_no_cell_bbox"
                         issues.append(
                             _warn(
-                                "PROTECTED_TRANSLATION_NOT_APPLIED",
-                                "La cellule intersecte une zone protégée; remplacement atomique bloqué.",
-                                "error",
+                                "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                "Cellule sans bbox mesurée; blocs traités individuellement.",
+                                "warning",
                                 page=page_number,
                                 cell_id=cell.get("id"),
                                 block_ids=ids,
                             )
                         )
                         table_trace.append(trace)
-                        consumed.update(ids)
+                        fallback_ids.update(ids)
                         continue
-                    if _graphic_conflict(page, box):
-                        trace["status"] = "protected_graphic"
+                    if _protected_box(page_number, box, protected_regions) or any(
+                        _protected(block, protected_regions) for block in blocks
+                    ):
+                        trace["status"] = "fallback_blocks_protected"
                         issues.append(
                             _warn(
-                                "PROTECTED_NATIVE_GRAPHIC",
-                                "Widget, formulaire ou graphique recouvert par la cellule; remplacement refusé.",
-                                "error",
+                                "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                "La cellule intersecte une zone protégée; remplacement atomique refusé, blocs traités individuellement.",
+                                "warning",
                                 page=page_number,
                                 cell_id=cell.get("id"),
+                                block_ids=ids,
                             )
                         )
                         table_trace.append(trace)
-                        consumed.update(ids)
+                        fallback_ids.update(ids)
+                        continue
+                    if _graphic_conflict(page, box):
+                        trace["status"] = "fallback_blocks_graphic"
+                        issues.append(
+                            _warn(
+                                "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                "Widget, formulaire ou graphique dans la cellule; remplacement atomique refusé, blocs traités individuellement.",
+                                "warning",
+                                page=page_number,
+                                cell_id=cell.get("id"),
+                                block_ids=ids,
+                            )
+                        )
+                        table_trace.append(trace)
+                        fallback_ids.update(ids)
                         continue
                     if _RTL.search(target_text):
                         trace["status"] = "rtl_review"
@@ -719,7 +877,40 @@ def render_pdf(
                         box[2] - float(padding[2]),
                         box[3] - float(padding[3]),
                     ]
+                    page_area = float(page.rect.width * page.rect.height) or 1.0
+                    if page_is_scan and (box[2] - box[0]) * (box[3] - box[1]) >= 0.5 * page_area:
+                        # A raster "cell" covering half the page is the scan frame,
+                        # not a table cell: one text flow would destroy the layout.
+                        trace["status"] = "fallback_blocks_scan_frame_cell"
+                        issues.append(
+                            _warn(
+                                "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                "Cellule raster couvrant la page (cadre de scan); blocs OCR traités individuellement.",
+                                "warning",
+                                page=page_number,
+                                cell_id=cell.get("id"),
+                                block_ids=ids,
+                            )
+                        )
+                        table_trace.append(trace)
+                        fallback_ids.update(ids)
+                        continue
                     if inner[2] <= inner[0] or inner[3] <= inner[1]:
+                        if page_is_scan:
+                            trace["status"] = "fallback_blocks_empty_scan_cell"
+                            issues.append(
+                                _warn(
+                                    "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                    "Bbox intérieure de cellule vide sur un scan; blocs OCR traités individuellement.",
+                                    "warning",
+                                    page=page_number,
+                                    cell_id=cell.get("id"),
+                                    block_ids=ids,
+                                )
+                            )
+                            table_trace.append(trace)
+                            fallback_ids.update(ids)
+                            continue
                         trace["status"] = "overflow"
                         overflow_count += 1
                         issues.append(
@@ -729,6 +920,7 @@ def render_pdf(
                                 "critical",
                                 page=page_number,
                                 cell_id=cell.get("id"),
+                                block_ids=ids,
                             )
                         )
                         table_trace.append(trace)
@@ -754,6 +946,28 @@ def render_pdf(
                         align,
                     )
                     if not ok:
+                        if page_is_scan:
+                            # Each OCR block has its own measured bbox; rendering
+                            # them individually beats keeping the whole cell source.
+                            trace.update(
+                                {
+                                    "status": "fallback_blocks_scan_cell_overflow",
+                                    "overflow": float(remainder),
+                                }
+                            )
+                            issues.append(
+                                _warn(
+                                    "TABLE_CELL_FALLBACK_TO_BLOCKS",
+                                    "Texte de cellule trop long pour un rendu atomique sur scan; blocs OCR traités individuellement.",
+                                    "warning",
+                                    page=page_number,
+                                    cell_id=cell.get("id"),
+                                    block_ids=ids,
+                                )
+                            )
+                            table_trace.append(trace)
+                            fallback_ids.update(ids)
+                            continue
                         trace.update(
                             {
                                 "status": "overflow",
@@ -770,6 +984,7 @@ def render_pdf(
                                 page=page_number,
                                 cell_id=cell.get("id"),
                                 overflow=float(remainder),
+                                block_ids=ids,
                             )
                         )
                         table_trace.append(trace)
@@ -803,9 +1018,25 @@ def render_pdf(
                     table_trace.append(trace)
                     consumed.update(ids)
             # Non-table blocks retain legacy simple behavior.
+            scanned_flag = bool(ir.get("pages", [])[page_number - 1].get("scanned"))
+            body_size = _scan_body_size(ir_blocks) if scanned_flag else None
+            body_right = (
+                max(
+                    [
+                        _rect(b.get("bbox"))[2]
+                        for b in ir_blocks
+                        if _rect(b.get("bbox")) and len(str(b.get("text", "")).strip()) >= 8
+                    ]
+                    or [page.rect.width - 36]
+                )
+                if scanned_flag
+                else None
+            )
             for block in ir_blocks:
                 block_id = str(block.get("id"))
-                if block_id in consumed or block_id in table_block_ids:
+                if block_id in consumed or (
+                    block_id in table_block_ids and block_id not in fallback_ids
+                ):
                     continue
                 original = str(block.get("text", ""))
                 target = translations.get(block_id, original)
@@ -850,6 +1081,29 @@ def render_pdf(
                     if str(other.get("id")) != block_id
                     and _intersects(box, _rect(other.get("bbox")))
                 ]
+                if overlaps and scanned_flag:
+                    shrunk = _shrink_away(
+                        box,
+                        [
+                            _rect(o.get("bbox"))
+                            for o in ir_blocks
+                            if str(o.get("id")) in {str(x) for x in overlaps}
+                        ],
+                    )
+                    if shrunk:
+                        issues.append(
+                            _warn(
+                                "SCAN_REDACTION_SHRUNK",
+                                "Boîte OCR réduite pour ne pas toucher un bloc voisin (annotation, bruit).",
+                                "warning",
+                                block_id=block_id,
+                                original_bbox=box,
+                                bbox=shrunk,
+                                overlapping_block_ids=overlaps,
+                            )
+                        )
+                        box = shrunk
+                        overlaps = []
                 if overlaps:
                     issues.append(
                         _warn(
@@ -871,12 +1125,41 @@ def render_pdf(
                         )
                     )
                     continue
-                size = float(
-                    block.get("font_size") or max(6.0, min(14.0, (box[3] - box[1]) * 0.72))
-                )
-                ok, remainder, used_size = _fit_on_scratch(
-                    source_bytes, page_number, fitz.Rect(*box), target, size, {}, 0
-                )
+                inner = box
+                cover = None
+                if scanned_flag:
+                    size = _scan_font_size(block, body_size)
+                    obstacles = [
+                        r
+                        for o in ir_blocks
+                        if str(o.get("id")) != block_id and (r := _rect(o.get("bbox")))
+                    ] + [
+                        r
+                        for region in protected_regions
+                        if int(region.get("page", 0)) == page_number
+                        and (r := _rect(region.get("bbox")))
+                    ]
+                    lines = _line_count(original)
+                    inner = _grow_vertical(box, size * 1.25 * lines, obstacles, page.rect)
+                    ok, remainder, used_size = _fit_on_scratch(
+                        source_bytes, page_number, fitz.Rect(*inner), target, size, {}, 0
+                    )
+                    if not ok or used_size < size * 0.85:
+                        wider = _grow_right(inner, body_right, obstacles)
+                        retry = _fit_on_scratch(
+                            source_bytes, page_number, fitz.Rect(*wider), target, size, {}, 0
+                        )
+                        if retry[0] and (not ok or retry[2] > used_size):
+                            inner = wider
+                            ok, remainder, used_size = retry
+                    cover = _paper_color(page, box)
+                else:
+                    size = float(
+                        block.get("font_size") or max(6.0, min(14.0, (box[3] - box[1]) * 0.72))
+                    )
+                    ok, remainder, used_size = _fit_on_scratch(
+                        source_bytes, page_number, fitz.Rect(*box), target, size, {}, 0
+                    )
                 if not ok:
                     overflow_count += 1
                     issues.append(
@@ -893,7 +1176,7 @@ def render_pdf(
                     {
                         "page": page_number,
                         "rect": box,
-                        "inner": box,
+                        "inner": inner,
                         "text": target,
                         "size": used_size,
                         "style": {},
@@ -901,6 +1184,7 @@ def render_pdf(
                         "block_ids": [block_id],
                         "table": False,
                         "source_rects": [box],
+                        "cover": cover,
                     }
                 )
         # Transaction per cell/block: if final fit diverges, restore original
@@ -919,9 +1203,21 @@ def render_pdf(
                 False,
             )
             try:
-                page.apply_redactions(images=2 if scanned_page else 0, graphics=0, text=0)
+                # Images are never modified (0 = keep): re-encoding scan strips
+                # alters pixels outside the box. Only a hidden text layer is removed.
+                page.apply_redactions(images=0, graphics=0, text=0)
             except TypeError:
-                page.apply_redactions(images=2 if scanned_page else 0, graphics=0)
+                page.apply_redactions(images=0, graphics=0)
+            if scanned_page:
+                cover = item.get("cover")
+                from .cover_layer import cover_ocg
+
+                layer = cover_ocg(doc)
+                for source_rect in item["source_rects"]:
+                    fill = cover or _paper_color(page, source_rect)
+                    page.draw_rect(
+                        fitz.Rect(*source_rect), color=None, fill=fill, overlay=True, oc=layer
+                    )
             kwargs = _font_kwargs(item["size"], item["style"], item["align"])
             kwargs = {key: value for key, value in kwargs.items() if value is not None}
             result = page.insert_textbox(fitz.Rect(*item["inner"]), item["text"], **kwargs)

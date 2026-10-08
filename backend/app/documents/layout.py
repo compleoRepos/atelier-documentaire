@@ -141,10 +141,9 @@ def _drawing_segments(page: Any) -> tuple[list[dict[str, float]], list[list[floa
     horizontal: list[dict[str, float]] = []
     vertical: list[dict[str, float]] = []
     rectangles: list[list[float]] = []
-    try:
-        drawings = page.get_drawings()
-    except Exception:
-        drawings = []
+    from .cover_layer import source_drawings
+
+    drawings = source_drawings(page)
     for drawing in drawings:
         for item in drawing.get("items", []):
             if not item:

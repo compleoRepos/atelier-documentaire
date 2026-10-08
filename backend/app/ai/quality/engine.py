@@ -21,12 +21,21 @@ from app.ai.quality.metrics import reference_is_valid, reference_metrics
 from app.ai.vision.scorer import score_visual
 
 _TOKEN = re.compile(r"\w+", re.UNICODE)
-_UNIT = re.compile(
-    r"(?i)(?<!\w)(?:kg|kgs|kilogram(?:me|mes)?|g|gram(?:me|mes)?|mg|milligram(?:me|mes)?|"
+_UNIT_WORDS = (
+    r"kg|kgs|kilogram(?:me|mes)?|g|gram(?:me|mes)?|mg|milligram(?:me|mes)?|"
     r"lb|lbs|livre(?:s)?|m|met(?:re|res|er|ers)?|cm|centim(?:e|è)tre(?:s)?|"
     r"mm|millim(?:e|è)tre(?:s)?|km|kilom(?:e|è)tre(?:s)?|l|litre(?:s)?|ml|millilitre(?:s)?|"
     r"m²|m2|%|pourcent(?:s)?|euros?|€|dollars?(?:\s+am(?:e|é)ricains?)?|\$|"
-    r"dirhams?|dh|dhs|usd|eur|gbp|mad|aed)(?!\w)"
+    r"dirhams?|dh|dhs|usd|eur|gbp|mad|aed"
+)
+_CURRENCY_PREFIX = r"€|\$|euros?|eur|usd|gbp|mad|aed|dh|dhs|dirhams?"
+# A unit is only meaningful when attached to a quantity: right after a digit
+# ("12.345.00euro", "5 kg", "12 %") or, for currencies, right before one
+# ("€ 123.456.789", "EUR 100"). Bare letters such as the French elision
+# "l'"/"m'" or the article "l" are therefore not counted as litres/metres.
+_UNIT = re.compile(
+    rf"(?i)(?:(?<=\d)|(?<=\d[ \u00a0\u202f]))(?:{_UNIT_WORDS})(?![\w'’])"
+    rf"|(?<!\w)(?:{_CURRENCY_PREFIX})(?=[ \u00a0\u202f]?\d)"
 )
 _UNIT_ALIASES = {
     "kg": "kg",

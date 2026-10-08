@@ -14,16 +14,43 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
 
+# Month names (fr, en, nl, it, es, de, pt, ar) -> month number, so that a date
+# localised by the translation keeps the same invariant key.
+_MONTHS: dict[str, int] = {}
+for _number, _names in enumerate(
+    (
+        "janvier january januari gennaio enero januar jänner janeiro يناير",
+        "février fevrier february februari febbraio febrero februar fevereiro فبراير",
+        "mars march maart marzo märz maerz março marco مارس",
+        "avril april aprile abril أبريل ابريل",
+        "mai may mei maggio mayo maio مايو",
+        "juin june juni giugno junio junho يونيو",
+        "juillet july juli luglio julio julho يوليو",
+        "août aout august augustus agosto أغسطس اغسطس",
+        "septembre september settembre septiembre setiembre setembro سبتمبر",
+        "octobre october oktober ottobre octubre outubro أكتوبر اكتوبر",
+        "novembre november noviembre novembro نوفمبر",
+        "décembre decembre december dicembre diciembre dezember dezembro ديسمبر",
+    ),
+    start=1,
+):
+    for _name in _names.split():
+        _MONTHS[_name] = _number
+
 _PATTERNS: dict[str, re.Pattern[str]] = {
     "email": re.compile(r"(?i)(?<![\w.+-])[\w.+-]+@[\w-]+(?:\.[\w-]+)+(?![\w.-])"),
-    "iban": re.compile(r"(?i)(?<![A-Z0-9])[A-Z]{2}\s?\d{2}(?:\s?[A-Z0-9]){11,30}(?![A-Z0-9])"),
+    # Upper-case country code, printed as one run or groups of four (ISO 13616
+    # paper format); filtered below on BBAN length and digit count so prose such
+    # as "te 25 jours sans compter" can never match.
+    "iban": re.compile(
+        r"(?<![A-Za-z0-9])[A-Z]{2}\d{2}(?:[A-Z0-9]{11,30}|(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,3})?)(?![A-Za-z0-9])"
+    ),
     "phone": re.compile(r"(?<!\w)(?:\+\d[\d .()/\-]{6,}\d|\d[\d .()\-]{7,}\d)(?!\w)"),
     "date": re.compile(
-        r"(?<!\w)(?:\d{1,4}[./-]){2}\d{1,4}(?!\w)|"
-        r"(?<!\w)(?:\d{1,2}\s+)?(?:janvier|février|fevrier|mars|avril|mai|juin|"
-        r"juillet|août|aout|septembre|octobre|novembre|décembre|decembre|"
-        r"january|february|march|april|may|june|july|august|september|"
-        r"october|november|december)\s+\d{4}(?!\w)",
+        r"(?i)(?<!\w)(?:\d{1,4}[./-]){2}\d{1,4}(?!\w)|"
+        r"(?<!\w)(?:\d{1,2}(?:er|\.)?\s+(?:de\s+|di\s+)?)?(?:"
+        + "|".join(sorted(map(re.escape, _MONTHS), key=len, reverse=True))
+        + r")\s+(?:de\s+|del\s+)?\d{4}(?!\w)",
     ),
     "amount": re.compile(
         r"(?i)(?<!\w)(?:[$€£]|USD|EUR|GBP|MAD|DHS|DH|AED|"
@@ -79,9 +106,12 @@ _NON_NAME_WORDS = {
     "number",
     "numéro",
 }
+# Case-sensitive legal-form suffix preceded by capitalised name tokens only, so
+# French prose such as "suivant sa conclusion" never becomes a company.
 _COMPANY_SUFFIX = re.compile(
-    r"(?i)\b(?:[\wÀ-ÿ'’-]+\s+){0,8}[\wÀ-ÿ'’-]+\s+"
-    r"(?:S\.?A\.?|SAS|SARL|Ltd\.?|LLC|Inc\.?|Corp\.?|GmbH|PLC|S\.A\.R\.L\.?)\b"
+    r"(?<![\wÀ-ÿ])(?:[A-Z0-9À-Ý][\wÀ-ÿ&'’.-]*\s+){1,6}"
+    r"(?:S\.A\.|SA|SAS|SARL|S\.A\.R\.L\.?|Ltd\.?|LTD\.?|LLC|Inc\.?|INC\.?|Corp\.?|"
+    r"GmbH|GMBH|PLC|plc|B\.V\.|BV|N\.V\.|NV|S\.p\.A\.|SpA|S\.r\.l\.|Srl|S\.L\.)(?![\wÀ-ÿ])"
 )
 _NAME_LABEL = re.compile(
     r"(?i)\b(?:name|full\s+name|nom|prénom|prenom|beneficiary|titulaire|applicant)\s*[:\-]\s*"
@@ -210,6 +240,8 @@ def extract_entities(
         if kind == "number" and not include_numbers:
             continue
         for match in pattern.finditer(value):
+            if kind == "iban" and not _plausible_iban(match.group(0)):
+                continue
             _add_occurrence(found, kind, match.group(0), match.start(), match.end(), "regex", 0.98)
     for match in _COMPANY_SUFFIX.finditer(value):
         _add_occurrence(found, "company", match.group(0), match.start(), match.end(), "regex", 0.9)
@@ -228,6 +260,8 @@ def extract_entities(
     ):
         words = [match.group(1), match.group(2)]
         if any(word.casefold() in _NON_NAME_WORDS for word in words):
+            continue
+        if any(ch.isdigit() for ch in match.group(0)):
             continue
         _add_occurrence(found, "name", match.group(0), match.start(), match.end(), "regex", 0.72)
 
@@ -251,6 +285,12 @@ def extract_entities(
             for old in selected
         ):
             continue
+        # A phone-like digit run inside an IBAN or e-mail is the same invariant.
+        if item.type == "phone" and any(
+            old.start <= item.start and item.end <= old.end and old.type in {"iban", "email"}
+            for old in selected
+        ):
+            continue
         selected.append(item)
     return [item.as_dict() for item in selected]
 
@@ -267,9 +307,34 @@ def _coerce_annotations(annotations: Any, kind: str | None = None) -> list[Any]:
     )
 
 
+def _plausible_iban(value: str) -> bool:
+    compact = value.replace(" ", "")
+    return 15 <= len(compact) <= 34 and sum(ch.isdigit() for ch in compact) >= 10
+
+
+def _date_key(value: str) -> str:
+    """Language-independent day|month|year key (leading zeros removed)."""
+    text = _normalise(value)
+    month = next(
+        (
+            number
+            for name, number in sorted(_MONTHS.items(), key=lambda kv: -len(kv[0]))
+            if name in text
+        ),
+        None,
+    )
+    numbers = [str(int(n)) for n in re.findall(r"\d+", text)]
+    if month is None:
+        return "|".join(numbers)
+    day = numbers[0] if len(numbers) >= 2 else ""
+    return f"{day}|{month}|{numbers[-1] if numbers else ''}"
+
+
 def _entity_key(kind: str, value: str) -> str:
     """Canonical invariant key, allowing language-level unit/currency aliases."""
     normalized = _normalise(value)
+    if kind == "date":
+        return _date_key(value)
     if kind != "amount":
         return normalized
     number = re.search(r"[+-]?\d[\d .,\u00a0]*", normalized)
@@ -322,6 +387,9 @@ def compare_entities(
         expected = by_type_source[kind]
         actual = by_type_target[kind]
         used: set[int] = set()
+        unmatched: list[tuple[int, dict[str, Any]]] = []
+        # Pass 1: exact invariant matches anywhere (multiset semantics), so one
+        # omission cannot shift and corrupt every following pairing.
         for occurrence, entity in enumerate(expected):
             wanted = _entity_key(kind, entity["value"])
             matches = [
@@ -332,12 +400,15 @@ def compare_entities(
             if matches:
                 used.add(matches[0])
                 matched += 1
-                continue
-            # A same-type occurrence at the same ordinal is a modification,
-            # otherwise it is an omission. Both remain critical invariants.
-            if occurrence < len(actual) and occurrence not in used:
-                candidate = actual[occurrence]
-                used.add(occurrence)
+            else:
+                unmatched.append((occurrence, entity))
+        # Pass 2: leftovers paired in order are modifications, the rest are
+        # omissions. Both remain critical invariants.
+        leftovers = [index for index in range(len(actual)) if index not in used]
+        for rank, (occurrence, entity) in enumerate(unmatched):
+            if rank < len(leftovers):
+                candidate = actual[leftovers[rank]]
+                used.add(leftovers[rank])
                 code = "CRITICAL_ENTITY_MODIFIED"
                 detail = {"expected": entity["value"], "actual": candidate["value"]}
             else:

@@ -118,10 +118,55 @@ def detect_pdf_visuals(source, pages, tables):
             scanned = next(
                 (p.get("scanned", False) for p in pages if p.get("number") == number), False
             )
-            for index, image in enumerate(page.get_image_info(hashes=True, xrefs=True)):
+            infos = list(page.get_image_info(hashes=True, xrefs=True))
+            # Scanners often store one page as many full-width (or full-height)
+            # strips. Together they are the page background, not logos or
+            # signatures; protecting them would forbid any text on the scan.
+            strip_indexes: set[int] = set()
+            if scanned:
+                strips = [
+                    (i, info)
+                    for i, info in enumerate(infos)
+                    if (info["bbox"][2] - info["bbox"][0]) >= page.rect.width * 0.9
+                    or (info["bbox"][3] - info["bbox"][1]) >= page.rect.height * 0.9
+                ]
+                strip_area = sum(
+                    max(0, b[2] - b[0]) * max(0, b[3] - b[1])
+                    for b in (info["bbox"] for _, info in strips)
+                )
+                if len(strips) > 1 and strip_area >= area * 0.8:
+                    strip_indexes = {i for i, _ in strips}
+                # Scan mosaics are also stored as same-width strips stacked
+                # vertically (or same-height tiles side by side) inside page
+                # margins; together they cover most of the page.
+                mosaics: dict[tuple[str, int, int], list[int]] = {}
+                for i, info in enumerate(infos):
+                    x0, y0, x1, y1 = info["bbox"]
+                    mosaics.setdefault(("v", round(x0), round(x1)), []).append(i)
+                    mosaics.setdefault(("h", round(y0), round(y1)), []).append(i)
+                for members in mosaics.values():
+                    covered = sum(
+                        max(0, infos[i]["bbox"][2] - infos[i]["bbox"][0])
+                        * max(0, infos[i]["bbox"][3] - infos[i]["bbox"][1])
+                        for i in members
+                    )
+                    if len(members) > 1 and covered >= area * 0.4:
+                        strip_indexes |= set(members)
+                if strip_indexes:
+                    warnings.append(
+                        {
+                            "code": "RASTER_GRAPHIC_ANNOTATION_REQUIRED",
+                            "severity": "warning",
+                            "page": number,
+                            "background_strips": len(strip_indexes),
+                        }
+                    )
+            for index, image in enumerate(infos):
+                if index in strip_indexes:
+                    continue
                 bbox = list(image["bbox"])
                 image_area = max(0, bbox[2] - bbox[0]) * max(0, bbox[3] - bbox[1])
-                if scanned and image_area >= area * 0.8:
+                if scanned and image_area >= area * 0.4:
                     warnings.append(
                         {
                             "code": "RASTER_GRAPHIC_ANNOTATION_REQUIRED",
@@ -150,7 +195,9 @@ def detect_pdf_visuals(source, pages, tables):
                         "provenance": "pdf_widget_original",
                     }
                 )
-            for index, drawing in enumerate(page.get_drawings()):
+            from .cover_layer import source_drawings
+
+            for index, drawing in enumerate(source_drawings(page)):
                 bbox = list(drawing["rect"])
                 if bbox[2] - bbox[0] <= 1 or bbox[3] - bbox[1] <= 1:
                     continue

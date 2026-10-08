@@ -443,6 +443,12 @@ def run_translate(
                     interim_synthetic_payload_sha256_allowlist=settings.interim_synthetic_payload_sha256_allowlist,
                     interim_total_generation_cap_verified=settings.interim_total_generation_cap_verified,
                     interim_capability_proof=settings.interim_capability_proof,
+                    interim_owner_authorization_file=(
+                        str(settings.interim_owner_authorization_file)
+                        if settings.interim_owner_authorization_file
+                        else None
+                    ),
+                    source_sha256=source_sha,
                 )
             golden = (
                 db.query(GoldenReference)

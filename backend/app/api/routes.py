@@ -308,7 +308,15 @@ def create_router(factory, storage, settings):
             "stages": _stage_projection(doc),
             "provider_requested":settings.engine,
             "model_requested":settings.interim_model if settings.engine == "interim" else settings.private_ai_model if settings.engine == "private" else "offline-memory",
-            "interim_notice":("Mode temporaire Interim : hors Private Cloud, fixtures synthétiques autorisées uniquement ; corpus réel interdit et références non validées." if settings.engine == "interim" else None),
+            "interim_notice":(
+                (
+                    "Mode temporaire Interim : hors Private Cloud. Documents réels transmis uniquement s'ils figurent dans l'autorisation explicite de leur propriétaire ; références non validées."
+                    if settings.interim_data_scope == "owner_authorized_document"
+                    else "Mode temporaire Interim : hors Private Cloud, fixtures synthétiques autorisées uniquement ; corpus réel interdit et références non validées."
+                )
+                if settings.engine == "interim"
+                else None
+            ),
         }
 
     def run_or_queue(fn, doc, user, background: BackgroundTasks):

@@ -128,15 +128,16 @@ def _table_cells(table: ET.Element) -> list[dict[str, Any]]:
             if merge is not None:
                 v_merge = merge.attrib.get(_W_VAL, "continue")
             runs = []
-            for run in cell.iter(_W_R):
-                runs.append({"text": _element_text(run), "style": _run_style(run)})
+            for paragraph in cell.findall(_W_P):
+                for run in paragraph.iter(_W_R):
+                    runs.append({"text": _element_text(run), "style": _run_style(run)})
             cells.append(
                 {
                     "row": row_index,
                     "column": column,
                     "grid_span": grid_span,
                     "v_merge": v_merge,
-                    "text": _element_text(cell),
+                    "text": "\n".join(_element_text(p) for p in cell.findall(_W_P)),
                     "reading_order": order,
                     "runs": runs,
                 }
@@ -331,6 +332,10 @@ def compare_docx_structure(
                 "message": "Run-to-word semantic style assignment is not proven by package structure.",
             }
         )
+    from .ooxml_integrity import compare_ooxml_integrity
+
+    integrity = compare_ooxml_integrity(source, candidate)
+    issues.extend(integrity["issues"])
     translated_cells = 0
     seen_target_cells = 0
     if translations and source_ir:
@@ -360,7 +365,7 @@ def compare_docx_structure(
             translated_cells += 1
             expected = _normalise_text(" ".join(expected_parts))
             actual = _normalise_text(target_table_cells.get(key, {}).get("text"))
-            if actual and (actual == expected or expected in actual or actual in expected):
+            if actual == expected:
                 seen_target_cells += 1
             else:
                 issues.append(
@@ -374,6 +379,7 @@ def compare_docx_structure(
                 )
     cell_target_score = seen_target_cells / translated_cells if translated_cells else None
     metrics: dict[str, Any] = {
+        "package_formatting": integrity,
         "tables": {"score": float(table_equal), "preserved": table_equal, "measured": True},
         "merges": {"score": float(merges_equal), "preserved": merges_equal, "measured": True},
         "header_rows": {"score": float(header_equal), "preserved": header_equal, "measured": True},
@@ -608,26 +614,43 @@ def _source_blocks(
     return [block for page in source_pages for block in page.get("blocks", [])]
 
 
-def _match_candidate(
-    source_block: dict[str, Any], target_text: str, pages: list[dict[str, Any]], used: set[str]
-) -> dict[str, Any] | None:
-    wanted = _normalise_text(target_text)
+def _match_candidate(source_block, target_text, pages, used):
+    wanted = _normalise_text(target_text) or _normalise_text(source_block.get("text"))
     if not wanted:
-        wanted = _normalise_text(source_block.get("text"))
+        return None
     candidates = [
-        block for page in pages for block in page.get("blocks", []) if block.get("id") not in used
+        b
+        for p in pages
+        for b in p.get("blocks", [])
+        if b.get("id") not in used and b.get("page") == source_block.get("page")
     ]
-    exact = [block for block in candidates if _normalise_text(block.get("text")) == wanted]
-    if exact:
-        same_page = [block for block in exact if block.get("page") == source_block.get("page")]
-        return (same_page or exact)[0]
-    partial = [
-        block for block in candidates if wanted and wanted in _normalise_text(block.get("text"))
-    ]
-    if partial:
-        same_page = [block for block in partial if block.get("page") == source_block.get("page")]
-        return (same_page or partial)[0]
-    return None
+    matched = []
+    for block in candidates:
+        text = _normalise_text(block.get("text"))
+        for span in re.finditer(r"(?<!\w)" + re.escape(wanted) + r"(?!\w)", text):
+            start, end = span.span()
+            overlaps = any(
+                isinstance(t, tuple) and t[0] == str(block["id"]) and t[1] < end and start < t[2]
+                for t in used
+            )
+            if not overlaps:
+                matched.append(
+                    {
+                        **block,
+                        "matched_text_range": [start, end],
+                        "exact_text_match": text == wanted,
+                    }
+                )
+    if not matched:
+        return None
+    exact = [b for b in matched if b["exact_text_match"]]
+    return min(
+        exact or matched,
+        key=lambda b: (
+            abs(b["bbox"][0] - source_block.get("bbox", [0, 0])[0])
+            + abs(b["bbox"][1] - source_block.get("bbox", [0, 0])[1])
+        ),
+    )
 
 
 def _geometry(
@@ -667,26 +690,44 @@ def _geometry(
     ]
     # Sans remplacement, on compare les vrais blocs PDF des deux artefacts.
     # Un scan n'a pas de texte PDF natif : sa preuve est pixel, pas une disparition.
-    compared = translated or [block for page in source_pages for block in page.get("blocks", [])]
-    used: set[str] = set()
+    translated_ids = {str(b.get("id")) for b in translated}
+    scanned_pages = {p["number"] for p in source_pages if p.get("scanned")}
+    compared = [
+        block
+        for block in source_blocks
+        if block.get("page") not in scanned_pages or str(block.get("id")) in translated_ids
+    ]
+    if not compared:
+        compared = [block for page in source_pages for block in page.get("blocks", [])]
+    used: set = set()
     matches = []
     for block in compared:
         block_id = str(block.get("id", ""))
         target_text = str(translations.get(block_id, block.get("text", "")))
         match = _match_candidate(block, target_text, candidate_pages, used)
         if match is not None:
-            used.add(str(match["id"]))
+            used.add((str(match["id"]), *match["matched_text_range"]))
         matches.append((block, match, target_text))
     translated_count = len(translated)
-    candidate_seen = sum(match is not None for _block, match, _text in matches)
-    missing = (
-        translated_count - candidate_seen
-        if translated_count
-        else sum(match is None for _block, match, _text in matches)
+    all_candidate_seen = sum(match is not None for _block, match, _text in matches)
+    translated_seen = sum(
+        match is not None
+        for block, match, _text in matches
+        if str(block.get("id")) in translated_ids
     )
-    if translated_count and missing:
+    candidate_seen = translated_seen if translated_count else all_candidate_seen
+    missing = sum(match is None for _block, match, _text in matches)
+    if missing:
         issues.append(
-            {"code": "RENDER_TRANSLATED_TEXT_MISSING", "severity": "critical", "count": missing}
+            {"code": "RENDER_SOURCE_TEXT_MISSING", "severity": "critical", "count": missing}
+        )
+    if translated_count and translated_seen < translated_count:
+        issues.append(
+            {
+                "code": "RENDER_TRANSLATED_TEXT_MISSING",
+                "severity": "critical",
+                "count": translated_count - translated_seen,
+            }
         )
     ious = []
     displacements = []
@@ -770,7 +811,9 @@ def _geometry(
         "translated_block_count": translated_count,
         "candidate_blocks_seen": candidate_seen,
         "missing_block_count": missing,
-        "candidate_text_missing": missing,
+        "candidate_text_missing": translated_count - translated_seen
+        if translated_count
+        else missing,
         "clipped_block_count": clipping,
         "clipping_count": clipping,
         "measured": bool(available),
@@ -837,6 +880,21 @@ def _pixel_protected(
             original.height
             / max(1.0, float(region.get("page_height", region.get("height", original.height)))),
         )
+        width = float(region.get("page_width", original.width))
+        height = float(region.get("page_height", original.height))
+        if not (0 <= bbox[0] < bbox[2] <= width and 0 <= bbox[1] < bbox[3] <= height):
+            results.append(
+                {
+                    "id": region.get("id", f"region-{index}"),
+                    "preserved": None,
+                    "measured": False,
+                    "authenticity_verified": False,
+                }
+            )
+            issues.append(
+                {"code": "PROTECTED_REGION_OUTSIDE_PAGE", "severity": "critical", "page": page}
+            )
+            continue
         clip = tuple(
             int(round(value * (scale_x if index % 2 == 0 else scale_y)))
             for index, value in enumerate(bbox)
@@ -871,6 +929,7 @@ def _raster_similarity(
     masks: list[dict[str, Any]],
     page_width: float,
     page_height: float,
+    page_dimensions: list[dict[str, Any]] | None = None,
 ) -> tuple[float | None, dict[str, Any], list[dict[str, Any]]]:
     from PIL import Image, ImageChops, ImageDraw, ImageStat
 
@@ -898,6 +957,9 @@ def _raster_similarity(
             continue
         mask = Image.new("L", original.size, 0)
         draw = ImageDraw.Draw(mask)
+        dimensions = (page_dimensions or [{}] * len(source_previews))[page_number - 1]
+        current_width = float(dimensions.get("width", page_width))
+        current_height = float(dimensions.get("height", page_height))
         for item in masks:
             if int(item.get("page", 1)) != page_number:
                 continue
@@ -908,9 +970,9 @@ def _raster_similarity(
                         round(
                             value
                             * (
-                                original.width / max(page_width, 1.0)
+                                original.width / max(current_width, 1.0)
                                 if i % 2 == 0
-                                else original.height / max(page_height, 1.0)
+                                else original.height / max(current_height, 1.0)
                             )
                         )
                         for i, value in enumerate(box)
@@ -978,6 +1040,7 @@ def measure_render_fidelity(
             "issues": [
                 {"code": "RENDER_PROOF_UNAVAILABLE", "severity": "error", "message": str(exc)}
             ],
+            "execution_status": "NOT_AVAILABLE_IN_ENVIRONMENT",
             "provenance": {
                 "method": "actual_render_unavailable",
                 "source": str(source_path),
@@ -998,20 +1061,18 @@ def measure_render_fidelity(
         issues.extend(structure.get("issues", []))
         structure_metrics = structure.get("structure_metrics")
     else:
-        # PDF graphics/raster table candidates are deliberately not promoted to
-        # validated table structure.  Their pixels/geometry are still measured.
-        structure_metrics = {
-            "tables": {
-                "score": None,
-                "preserved": None,
-                "measured": False,
-                "reason": "pdf_table_structure_unvalidated",
-            }
-        }
-        structure = {
-            "available": False,
-            "reason": "native_or_raster_pdf_structure_requires_human_validation",
-        }
+        from .pdf_fidelity import compare_pdf_tables
+
+        if original.get("pdf") and target.get("pdf"):
+            pdf_structure = compare_pdf_tables(
+                original["pdf"], target["pdf"], source_ir=source_ir, translations=translations
+            )
+            structure_metrics = pdf_structure["structure_metrics"]
+            issues.extend(pdf_structure.get("issues", []))
+        else:
+            pdf_structure = {"available": False, "reason": "NOT_AVAILABLE_IN_ENVIRONMENT"}
+            structure_metrics = {"tables": {"score": None, "preserved": None, "measured": False}}
+        structure = {"available": False, "reason": "not_docx"}
     masks = []
     if source_ir:
         for block in _source_blocks(source_ir, original["pages"]):
@@ -1053,13 +1114,24 @@ def measure_render_fidelity(
     page_width = float(original["pages"][0]["width"]) if original["pages"] else 1.0
     page_height = float(original["pages"][0]["height"]) if original["pages"] else 1.0
     raster_score, raster_coverage, raster_issues = _raster_similarity(
-        original["previews"], target["previews"], masks, page_width, page_height
+        original["previews"], target["previews"], masks, page_width, page_height, original["pages"]
     )
     if mask_issues:
         raster_score = None
     issues.extend(raster_issues)
     protected_results, protected_issues = _pixel_protected(
-        original["previews"], target["previews"], protected_regions or []
+        original["previews"],
+        target["previews"],
+        [
+            {
+                **r,
+                "page_width": original["pages"][int(r.get("page", 1)) - 1]["width"],
+                "page_height": original["pages"][int(r.get("page", 1)) - 1]["height"],
+            }
+            if 1 <= int(r.get("page", 1)) <= len(original["pages"])
+            else r
+            for r in (protected_regions or [])
+        ],
     )
     issues.extend(protected_issues)
     measured_components = [
@@ -1075,6 +1147,7 @@ def measure_render_fidelity(
         "source_page_count": len(original["pages"]),
         "translated_page_count": len(target["pages"]),
         "candidate_page_count": len(target["pages"]),
+        "pages_preserved": len(original["pages"]) == len(target["pages"]),
         "source_pages": original["pages"],
         "original_pages": original["pages"],
         "candidate_pages": target["pages"],
@@ -1088,6 +1161,7 @@ def measure_render_fidelity(
         "layout_score": layout_score,
         "structure_metrics": structure_metrics,
         "docx_structure": structure,
+        "pdf_structure": pdf_structure if source_path.suffix.casefold() != ".docx" else None,
         "text_masks": masks,
         "protected_regions": list(protected_regions or []),
         "protected_region_results": protected_results,

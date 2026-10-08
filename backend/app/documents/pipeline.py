@@ -249,7 +249,7 @@ def _native_blocks(page, number):
         for line in raw.get("lines", []):
             text = "".join(span.get("text", "") for span in line.get("spans", []))
             bbox = line.get("bbox", raw.get("bbox"))
-            if not text.strip() or not _significant(text):
+            if not text.strip():
                 continue
             spans = [
                 span
@@ -314,7 +314,65 @@ def _tables(page, number, blocks=None, image=None):
                 for nested in value:
                     source_coordinates(nested)
         source_coordinates(result)
-    return result.get("tables", []), result
+    tables = result.get("tables", [])
+    # Merge P1/P2: enrichment runs on SOURCE (PDF point) coordinates only.
+    from .pdf_fidelity import enrich_tables
+    enrich_tables(page, tables, blocks or [])
+    return tables, result
+
+
+
+def _clip_candidate_regions(regions, pages, warnings):
+    """Clamp AUTOMATIC preprocessing candidates to page bounds (float rounding).
+
+    User annotations are not passed here: they still fail closed in
+    normalize_regions. Degenerate candidates are dropped with a warning.
+    """
+    sizes = {int(p["number"]): (float(p["width"]), float(p["height"])) for p in pages}
+    kept = []
+    for region in regions or []:
+        page = int(region.get("page", 1))
+        box = region.get("bbox") or []
+        if page not in sizes or len(box) != 4:
+            warnings.append(_warn("PROTECTED_CANDIDATE_INVALID", "Candidat visuel automatique sans page/bbox valide ignoré; revue requise.", "warning", page=page))
+            continue
+        width, height = sizes[page]
+        clipped = [min(max(float(box[0]), 0.0), width), min(max(float(box[1]), 0.0), height),
+                   min(max(float(box[2]), 0.0), width), min(max(float(box[3]), 0.0), height)]
+        if clipped[2] - clipped[0] < 0.5 or clipped[3] - clipped[1] < 0.5:
+            warnings.append(_warn("PROTECTED_CANDIDATE_DEGENERATE", "Candidat visuel automatique dégénéré ignoré; revue requise.", "warning", page=page))
+            continue
+        kept.append({**region, "bbox": clipped,
+                     "provenance": region.get("provenance") or "automatic_candidate:preprocessing"})
+    return kept
+
+
+def _iou(a, b):
+    ix = max(0.0, min(a[2], b[2]) - max(a[0], b[0]))
+    iy = max(0.0, min(a[3], b[3]) - max(a[1], b[1]))
+    inter = ix * iy
+    union = (a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - inter
+    return inter / union if union > 0 else 0.0
+
+
+def _exclude_table_art(regions, page_tables, warnings, page_number, threshold=0.6):
+    """Drop automatic raster candidates that coincide with a detected table frame.
+
+    Only geometry equal to a table (IoU >= threshold) is excluded; a stamp that
+    partially overlaps a table keeps its protection. Every exclusion is traced.
+    """
+    boxes = [t.get("bbox") for t in page_tables or [] if t.get("bbox") and len(t["bbox"]) == 4]
+    kept = []
+    for region in regions or []:
+        box = region.get("bbox") or []
+        match = next((b for b in boxes if len(box) == 4 and _iou(box, b) >= threshold), None)
+        if match is not None:
+            warnings.append(_warn("PROTECTED_CANDIDATE_TABLE_ART",
+                                  "Candidat visuel automatique identique au cadre d'un tableau détecté: non protégé, tableau traité par le renderer de cellules.",
+                                  "info", page=page_number, bbox=[round(float(v), 2) for v in box]))
+            continue
+        kept.append(region)
+    return kept
 
 
 def _apply_protection(pages, protected):
@@ -352,106 +410,15 @@ def _docx_paragraph_block(text, block_id, order, source_ref, kind="paragraph"):
 
 
 def _docx_ir(path: Path, work: Path, options):
-    from docx import Document
-    from docx.oxml.ns import qn
-    from docx.table import Table
-    from docx.text.paragraph import Paragraph
+    from .docx_analysis import collect_docx_content
 
-    doc = Document(str(path))
     rendered_pages, _previews, conversion_warnings = _docx_rendered_pages(path, work, options)
-    page = (
-        rendered_pages[0]
-        if rendered_pages
-        else {
-            "number": 1,
-            "width": 612.0,
-            "height": 792.0,
-            "scanned": False,
-            "coordinates_kind": "logical-fallback",
-            "blocks": [],
-        }
-    )
-    blocks = []
-    tables_ir = []
-    order = 0
-    paragraph_index = {str(p._p.xml): i for i, p in enumerate(doc.paragraphs)}
-    table_index = {str(t._tbl.xml): i for i, t in enumerate(doc.tables)}
-
-    def add_para(paragraph, source_ref, block_id):
-        nonlocal order
-        text = _docx_text(paragraph._p)
-        if not text.strip():
-            return
-        block = _docx_paragraph_block(text, block_id, order, source_ref)
-        blocks.append(block)
-        order += 1
-
-    # Walk the body XML, not doc.paragraphs followed by doc.tables, so the IR
-    # reading order is the document's actual logical order.
-    for child in doc.element.body.iterchildren():
-        if child.tag == qn("w:p"):
-            paragraph = Paragraph(child, doc)
-            add_para(
-                paragraph,
-                {"paragraph_index": paragraph_index.get(str(child.xml), 0)},
-                f"p001-par-{paragraph_index.get(str(child.xml), 0):04d}",
-            )
-        elif child.tag == qn("w:tbl"):
-            table = Table(child, doc)
-            ti = table_index.get(str(child.xml), len(tables_ir))
-            table_record = {
-                "id": f"table-p001-{ti:03d}",
-                "page": 1,
-                "rows": len(table.rows),
-                "columns": max((len(row.cells) for row in table.rows), default=0),
-                "cells": [],
-                "coordinates_kind": "logical",
-            }
-            seen_cells = set()
-            for ri, row in enumerate(table.rows):
-                for ci, cell in enumerate(row.cells):
-                    tc_id = cell._tc
-                    if tc_id in seen_cells:
-                        continue
-                    seen_cells.add(tc_id)
-                    cell_id = f"p001-cell-{ti:03d}-{ri:03d}-{ci:03d}"
-                    cell_record = {
-                        "id": cell_id,
-                        "row": ri,
-                        "column": ci,
-                        "text": _docx_text(cell._tc),
-                        "source_ref": {"table_index": ti, "row_index": ri, "cell_index": ci},
-                        "paragraph_ids": [],
-                    }
-                    for pi, paragraph in enumerate(cell.paragraphs):
-                        text = _docx_text(paragraph._p)
-                        ref = {
-                            "table_index": ti,
-                            "row_index": ri,
-                            "cell_index": ci,
-                            "cell_paragraph_index": pi,
-                        }
-                        if text.strip():
-                            bid = f"{cell_id}-par-{pi:03d}"
-                            add_para(paragraph, ref, bid)
-                            cell_record["paragraph_ids"].append(bid)
-                    table_record["cells"].append(cell_record)
-            tables_ir.append(table_record)
-
-    # Header/footer text is structurally addressable but a DOCX candidate cannot
-    # claim complete support until each section part is explicitly translated.
-    header_footer_refs = []
-    for si, section in enumerate(doc.sections):
-        for part_type, collection in (("header", section.header), ("footer", section.footer)):
-            for pi, paragraph in enumerate(collection.paragraphs):
-                text = _docx_text(paragraph._p)
-                if text.strip():
-                    header_footer_refs.append((part_type, si, pi, text))
-                    add_para(
-                        paragraph,
-                        {"header_footer": part_type, "section_index": si, "paragraph_index": pi},
-                        f"p001-{part_type}-{si:03d}-{pi:03d}",
-                    )
+    page = rendered_pages[0] if rendered_pages else {
+        "number": 1, "width": 612.0, "height": 792.0, "scanned": False,
+        "coordinates_kind": "logical-fallback", "blocks": [],
+    }
+    blocks, tables_ir, hierarchy = collect_docx_content(path, _docx_paragraph_block)
+    header_footer_refs = [b for b in blocks if b['source_ref']['xml_part'] != 'word/document.xml']
 
     source_copy = work / "source" / path.name
     source_copy.parent.mkdir(parents=True, exist_ok=True)
@@ -518,11 +485,12 @@ def _docx_ir(path: Path, work: Path, options):
         "domain": cls["domain"],
         "pages": pages,
         "tables": tables_ir,
+        **hierarchy,
         "warnings": warnings,
         "versions": {
             "source_xml_sha256": xml_hash,
             "source_copy": str(source_copy),
-            "docx_mapping": "w:t_only",
+            "docx_mapping": "package-w:t-proportional-v3",
             "pagination": "libreoffice-pdf" if rendered_pages else None,
         },
         "classifier": cls,
@@ -583,6 +551,8 @@ def analyze_document(source_path: str, work_dir: str, options: dict | None = Non
     (work / "previews").mkdir(exist_ok=True)
     if path.suffix.lower() == ".docx":
         ir = _docx_ir(path, work, options)
+        from .protected_visuals import protect_ir
+        protect_ir(ir, options.get("protected_visual_regions") or options.get("protected_regions"))
         ir["versions"]["source_sha256"] = source_sha
         ir["source_metadata"] = {"name":path.name,"size":path.stat().st_size,"format":"docx","version":1}
         if hashlib.sha256(path.read_bytes()).hexdigest() != source_sha:
@@ -640,6 +610,10 @@ def analyze_document(source_path: str, work_dir: str, options: dict | None = Non
                     pass
                 # Layout stays on ORIGINAL raster and source-coordinate OCR boxes.
                 page_tables, layout = _tables(page_obj,number,page_blocks,image if scanned else None)
+                if not scanned:
+                    # Native PDF: vector table art is handled by the P2 renderer;
+                    # a raster candidate equal to a detected table is not a stamp.
+                    regions = _exclude_table_art(regions, page_tables, warnings, number)
                 pages.append({"number":number,"width":float(page_obj.rect.width),"height":float(page_obj.rect.height),
                               "scanned":scanned,"blocks":page_blocks,"layout":layout,
                               "preprocessing":preprocessing,"processing_image_path": preprocessing.get("processing_image_path") if preprocessing else None,"protected_visual_regions":regions})
@@ -677,16 +651,19 @@ def analyze_document(source_path: str, work_dir: str, options: dict | None = Non
     warnings.extend(cls["warnings"])
     if len(languages)>1:
         warnings.append(_warn("MIXED_LANGUAGES","Distribution heuristique des langues à vérifier."))
-    if hashlib.sha256(path.read_bytes()).hexdigest() != source_sha:
-        raise RuntimeError("ORIGINAL_INTEGRITY_MISMATCH")
     ir = {"schema_version":"1.0","source_path":str(path),"format":fmt,"language":lang,"languages":languages,
           "language_confidence":confidence,"document_type":cls["document_type"],
           "document_type_confidence":cls["confidence"],"domain":cls["domain"],"pages":pages,"tables":tables,
-          "protected_visual_regions":protected,"warnings":warnings,
+          "protected_visual_regions":_clip_candidate_regions(protected, pages, warnings),"warnings":warnings,
           "versions":{"analysis":"local-ocr-native-v3","source_sha256":source_sha,"preprocessing":VERSION},
           "source_metadata":{"name":path.name,"format":fmt,"size":path.stat().st_size,"pages":len(pages),"metadata":metadata,"version":1},
           "timings":{"ocr_seconds":sum((p.get("preprocessing") or {}).get("duration_seconds",0) for p in pages)},
           "classifier":cls}
+    # P2 merges P1 automatic candidates, PDF source visuals and user annotations.
+    from .protected_visuals import protect_ir
+    protect_ir(ir, options.get("protected_visual_regions") or options.get("protected_regions"))
+    if hashlib.sha256(path.read_bytes()).hexdigest() != source_sha or ir["versions"]["source_sha256"] != source_sha:
+        raise RuntimeError("ORIGINAL_INTEGRITY_MISMATCH")
     _save_json(work / "analysis.json",ir)
     return ir
 
@@ -741,13 +718,9 @@ def _docx_text_nodes(element):
 
 
 def _replace_docx_text(element, target):
-    nodes = _docx_text_nodes(element)
-    if not nodes:
-        return False
-    nodes[0].text = target
-    for node in nodes[1:]:
-        node.text = ""
-    return len(nodes)
+    from .docx_fidelity import redistribute_text
+    result = redistribute_text(element, target)
+    return result["node_count"] if result["applied"] else False
 
 
 def _docx_paragraph_for_ref(doc, ref):
@@ -799,56 +772,23 @@ def _with_render_proof(ir, translations, output, result, protected_regions):
 
 
 def _reconstruct_docx(ir, translations, source, out, protected_regions, issues):
-    from docx import Document
+    from .docx_fidelity import edit_docx_package
+    from .render_metrics import parse_docx_structure
 
-    doc = Document(str(source))
-    changed = 0
-    # Resolve blocks using XML, preserving every run, relationship, drawing,
-    # hyperlink, field and empty paragraph. Only w:t nodes are changed.
+    replacements = []
     for block in _all_blocks(ir):
         target = translations.get(block["id"], block.get("text", ""))
-        original = block.get("text", "")
-        if target == original:
+        if target == block.get("text", ""):
             continue
-        ref = block.get("source_ref", {})
         if _protected_for(block, protected_regions):
-            issues.append(
-                _warn(
-                    "PROTECTED_TRANSLATION_NOT_APPLIED",
-                    "La traduction candidate intersecte une zone protégée et n'est pas appliquée.",
-                    "error",
-                    block_id=block["id"],
-                )
-            )
+            issues.append(_warn("PROTECTED_TRANSLATION_NOT_APPLIED",
+                                "Zone originale protégée: traduction non appliquée.", "error", block_id=block["id"]))
             continue
-        try:
-            paragraph = _docx_paragraph_for_ref(doc, ref)
-            element = paragraph._p
-            if not _replace_docx_text(element, target):
-                issues.append(
-                    _warn(
-                        "DOCX_TEXT_NODE_MISSING",
-                        "Aucun nœud w:t remplaçable trouvé; structure conservée.",
-                        "error",
-                        block_id=block["id"],
-                    )
-                )
-                continue
-            if len(_docx_text_nodes(element)) > 1:
-                issues.append(
-                    _warn(
-                        "DOCX_MIXED_RUN_STYLES",
-                        "Texte distribué sur plusieurs runs: les runs sont conservés; le texte candidat est placé dans le premier run.",
-                        "warning",
-                        block_id=block["id"],
-                    )
-                )
-            changed += 1
-        except Exception as exc:
-            issues.append(
-                _warn("DOCX_RECONSTRUCTION_ERROR", str(exc), "error", block_id=block["id"])
-            )
-    doc.save(str(out))
+        replacements.append({"id": block["id"], "source_ref": block.get("source_ref", {}), "target": target})
+    package = edit_docx_package(source, out, replacements)
+    issues.extend(package["issues"])
+    changed = package["changed_blocks"]
+    candidate_structure = parse_docx_structure(out)
     candidate_work = out.parent / f"{out.stem}-render"
     candidate_pages, candidate_previews, render_warnings = _docx_rendered_pages(
         out, candidate_work, {}
@@ -867,14 +807,12 @@ def _reconstruct_docx(ir, translations, source, out, protected_regions, issues):
         if candidate_pages
         else None,
         "candidate_preview_paths": [str(path) for path in candidate_previews],
+        "renderer_version": "docx-package-fidelity-v3",
+        "redistribution_trace": package["redistribution_trace"],
         "table_structure": [
-            {
-                "id": table.get("id"),
-                "rows": table.get("rows"),
-                "columns": table.get("columns"),
-                "cell_count": len(table.get("cells", [])),
-            }
-            for table in ir.get("tables", [])
+            {"id": f"candidate-table-{t['index']}", "rows": t["rows"], "columns": t["columns"],
+             "cell_count": len(t["cells"]), "provenance": "candidate_ooxml"}
+            for t in candidate_structure.get("tables", [])
         ],
     }
 
@@ -885,13 +823,21 @@ def reconstruct_document(
     output_path: str,
     protected_regions: list[dict] | None = None,
 ) -> dict:
+    if not isinstance(translations, dict) or any(not isinstance(k, str) or not isinstance(v, str) for k, v in translations.items()):
+        raise ValueError("Translation candidates must be a mapping of text ids to text, never null")
     out = Path(output_path).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     source = Path(ir["source_path"])
-    protected_regions = protected_regions or []
+    if source.resolve() == out.resolve() or (out.exists() and os.path.samefile(source, out)):
+        raise ValueError("Original/source must not be overwritten by reconstruction")
+    expected_sha = ir.get("versions", {}).get("source_sha256") or ir.get("versions", {}).get("source_xml_sha256")
+    if expected_sha and hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha:
+        raise ValueError("Original immutable SHA256 mismatch")
+    from .protected_visuals import normalize_regions
+    protected_regions = normalize_regions(
+        list(ir.get("protected_visual_regions") or []) + list(protected_regions or []),
+        ir.get("pages", []), expected_sha or hashlib.sha256(source.read_bytes()).hexdigest())
     issues = []
-    changed = 0
-    overflow = 0
     if ir.get("format") == "pdf":
         issues.append(
             _warn(
@@ -902,140 +848,16 @@ def reconstruct_document(
     if ir.get("format") == "docx":
         result = _reconstruct_docx(ir, translations, source, out, protected_regions, issues)
         return _with_render_proof(ir, translations, out, result, protected_regions)
-    import fitz
-
-    if ir.get("format") in ("jpg", "jpeg", "png"):
-        doc = fitz.open()
-        pix = fitz.Pixmap(str(source))
-        page = doc.new_page(width=pix.width, height=pix.height)
-        page.insert_image(page.rect, filename=str(source))
-    elif ir.get("format") in {"tif", "tiff"}:
+    from .pdf_fidelity import render_pdf
+    render_source = source
+    if ir.get("format") in {"tif", "tiff"}:
         from .raster_adapter import raster_pdf_copy
 
-        doc = fitz.open(raster_pdf_copy(source, out.parent / "source-raster-copy.pdf"))
-    else:
-        doc = fitz.open(str(source))
-    fontfile = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    valid_changes = []
-    all_blocks = _all_blocks(ir)
-    for block in all_blocks:
-        original = block.get("text", "")
-        target = translations.get(block["id"], original)
-        if target == original:
-            continue
-        if _protected_for(block, protected_regions):
-            issues.append(
-                _warn(
-                    "PROTECTED_TRANSLATION_NOT_APPLIED",
-                    "La traduction candidate intersecte une zone protégée et n'est pas appliquée.",
-                    "error",
-                    block_id=block["id"],
-                )
-            )
-            continue
-        if re.search(r"[\u0600-\u06ff]", target):
-            issues.append(
-                _warn(
-                    "RTL_SHAPING_UNSUPPORTED",
-                    "Le façonnage RTL complexe nécessite insert_htmlbox/Story; insertion bloquée plutôt que produire des glyphes incorrects.",
-                    "error",
-                    block_id=block["id"],
-                )
-            )
-            continue
-        page_blocks = [
-            other
-            for other in all_blocks
-            if other.get("page") == block.get("page")
-            and other["id"] != block["id"]
-            and _intersects(block.get("bbox", []), other.get("bbox", []))
-        ]
-        if page_blocks:
-            issues.append(
-                _warn(
-                    "NATIVE_REDACTION_OVERLAP",
-                    "La zone de redaction intersecte un autre bloc source non géré; aucun texte adjacent ne sera masqué silencieusement.",
-                    "error",
-                    block_id=block["id"],
-                    overlapping_block_ids=[other["id"] for other in page_blocks],
-                )
-            )
-            continue
-        valid_changes.append((block, target))
-    # Redactions are applied as real PDF redactions. No white drawing is used:
-    # graphics and images are explicitly preserved and only source text in the
-    # changed rectangles is removed.
-    for block, _target in valid_changes:
-        page = doc[block["page"] - 1]
-        page.add_redact_annot(fitz.Rect(*block["bbox"]), fill=(1, 1, 1))
-    scanned_source = any(page_data.get("scanned") for page_data in ir.get("pages", []))
-    for page in doc:
-        try:
-            # Native PDFs keep images and vector graphics. For a raster source,
-            # the OCR text is part of the image and the minimal changed region
-            # must be removed from that image before inserting the candidate.
-            page.apply_redactions(images=2 if scanned_source else 0, graphics=0, text=0)
-        except TypeError:
-            page.apply_redactions(images=2 if scanned_source else 0, graphics=0)
-    for block, target in valid_changes:
-        page = doc[block["page"] - 1]
-        rect = fitz.Rect(*block["bbox"])
-        size = float(block.get("font_size") or max(6, min(14, rect.height * 0.8)))
-        result = -1.0
-        for _ in range(6):
-            kwargs = {
-                "fontsize": size,
-                "fontname": "DejaVuSans",
-                "fontfile": fontfile,
-                "align": 0,
-                "overlay": True,
-            }
-            result = page.insert_textbox(rect, target, **kwargs)
-            if result >= 0:
-                break
-            size *= 0.86
-        if result < 0:
-            overflow += 1
-            issues.append(
-                _warn(
-                    "LAYOUT_OVERFLOW",
-                    "Le texte traduit ne tient pas dans la bbox après réduction bornée; validation bloquée.",
-                    "critical",
-                    block_id=block["id"],
-                    overflow=float(result),
-                )
-            )
-        else:
-            changed += 1
-    doc.save(str(out))
-    doc.close()
-    result = {
-        "output_path": str(out),
-        "issues": issues,
-        "pages_preserved": True,
-        "layout_score": None if overflow else 1.0,
-        "changed_blocks": changed,
-        "overflow_count": overflow,
-        "visual_difference": None,
-        "protected_regions": list(protected_regions),
-        "text_masks": [
-            {
-                "page": block.get("page"),
-                "bbox": list(block.get("bbox", [])),
-                "block_id": block.get("id"),
-            }
-            for block, _target in valid_changes
-        ],
-        "table_structure": [
-            {
-                "id": table.get("id"),
-                "rows": table.get("rows"),
-                "columns": table.get("columns"),
-                "cell_count": len(table.get("cells", [])),
-            }
-            for table in ir.get("tables", [])
-        ],
-    }
+        render_source = raster_pdf_copy(source, out.parent / "source-raster-copy.pdf")
+    result = render_pdf(ir, translations, render_source, out, protected_regions)
+    result["issues"] = issues + result.get("issues", [])
+    result["protected_regions"] = protected_regions
+    result["renderer_version"] = "pdf-cell-fidelity-v3"
     return _with_render_proof(ir, translations, out, result, protected_regions)
 
 
@@ -1230,6 +1052,11 @@ def evaluate_document(
         result["hallucination_errors"] = []
         result["provenance"] = {"quality_engine": "unavailable"}
         result["coverage"] = {"quality_engine": False}
+    # Pipeline-facing reference lifecycle is distinct from provider availability.
+    # Keep the provider's raw status in quality_contract/provenance; absence is
+    # never a reference validation and never a PASS.
+    if not reference:
+        result["reference_status"] = "not_evaluated"
     if result.get("critical_entity_errors") or result.get("issues"):
         result["status"] = "REVIEW_REQUIRED"
     return result
@@ -1360,7 +1187,9 @@ async def translate_document(ir: dict, work_dir: str, options: dict | None = Non
     issues.extend(render["issues"])
     evaluation = evaluate_document(ir, translations, render, options.get("reference"), options)
     issues.extend(evaluation["issues"])
-    versions = {"pipeline": "local-v2", "candidate": str(candidate)}
+    from .fidelity_report import write_visual_artifacts
+    fidelity = write_visual_artifacts(work, render, evaluation)
+    versions = {"pipeline": "local-v2", "candidate": str(candidate), "renderer": render.get("renderer_version")}
     service_versions = result.get("versions") or {}
     if isinstance(service_versions, dict):
         versions.update(service_versions)
@@ -1371,6 +1200,7 @@ async def translate_document(ir: dict, work_dir: str, options: dict | None = Non
         "translations": translations,
         "issues": issues,
         "quality": evaluation,
+        "document_fidelity": fidelity,
         "versions": versions,
         "untranslated_blocks": untranslated,
         "translation_telemetry": result.get("translation_telemetry")

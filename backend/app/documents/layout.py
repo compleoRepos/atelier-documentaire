@@ -22,6 +22,10 @@ PROVENANCE = "candidate_unvalidated"
 _MAX_RASTER_AXIS_GROUPS = 128
 _MAX_RASTER_RECTANGLES = 4096
 _MAX_GRID_CELLS = 4096
+# Upper bound on line-presence evaluations for raster rectangle search on one
+# page. Reaching it is reported (RASTER_RECTANGLE_LIMIT_REQUIRES_REVIEW), never
+# silently treated as full coverage.
+_MAX_RASTER_PRESENCE_CHECKS = 1_500_000
 
 
 def _rect(values: Any) -> list[float] | None:
@@ -113,16 +117,24 @@ class _LineSpatialIndex:
     def __init__(self, lines: list[dict[str, float]]):
         self.lines = sorted(lines, key=lambda line: line["coord"])
         self.coords = [line["coord"] for line in self.lines]
+        self._starts = np.asarray([line["start"] for line in self.lines], dtype=float)
+        self._ends = np.asarray([line["end"] for line in self.lines], dtype=float)
 
     def present(self, coord: float, start: float, end: float, tolerance: float = 3.0) -> bool:
         needed = max(8.0, end - start)
         first = bisect_left(self.coords, coord - tolerance)
         last = bisect_right(self.coords, coord + tolerance)
-        for line in self.lines[first:last]:
-            overlap = max(0.0, min(end, line["end"]) - max(start, line["start"]))
-            if overlap / needed >= 0.55:
-                return True
-        return False
+        if last - first <= 16:
+            for line in self.lines[first:last]:
+                overlap = max(0.0, min(end, line["end"]) - max(start, line["start"]))
+                if overlap / needed >= 0.55:
+                    return True
+            return False
+        # Same predicate, vectorised for dense windows (text-heavy scan rows).
+        overlap = np.minimum(end, self._ends[first:last]) - np.maximum(
+            start, self._starts[first:last]
+        )
+        return bool(np.any(np.maximum(overlap, 0.0) / needed >= 0.55))
 
 
 def _drawing_segments(page: Any) -> tuple[list[dict[str, float]], list[list[float]]]:
@@ -181,8 +193,16 @@ def _drawing_segments(page: Any) -> tuple[list[dict[str, float]], list[list[floa
 def _raster_segments(
     image: Any,
 ) -> tuple[list[dict[str, float]], list[list[float]], tuple[int, int] | None]:
+    segments, rectangles, size, _limited = _raster_segments_with_status(image)
+    return segments, rectangles, size
+
+
+def _raster_segments_with_status(
+    image: Any,
+) -> tuple[list[dict[str, float]], list[list[float]], tuple[int, int] | None, bool]:
+    """Raster lines and closed small boxes, plus whether the search was bounded."""
     if image is None:
-        return [], [], None
+        return [], [], None, False
     try:
         from PIL import Image
 
@@ -196,9 +216,9 @@ def _raster_segments(
             if array.ndim == 3:
                 array = array[..., :3].mean(axis=2)
     except Exception:
-        return [], [], None
+        return [], [], None, False
     if array.ndim != 2 or not array.size:
-        return [], [], None
+        return [], [], None, False
     dark = array < 190
     height, width = dark.shape
     horizontal: list[dict[str, float]] = []
@@ -237,24 +257,46 @@ def _raster_segments(
     )
     horizontal_index = _LineSpatialIndex(horizontal)
     vertical_index = _LineSpatialIndex(vertical)
+    # Equivalent to the exhaustive y0<y1, x0<x1 scan (same predicate, same
+    # output order), without its O(G^4) Python cost: for each horizontal pair
+    # the vertical edges are filtered once, and horizontal checks are cached.
+    # Groups are sorted, so an axis gap above 80 ends the inner loop.
+    checks = 0
+    horizontal_cache: dict[tuple[float, float, float], bool] = {}
+
+    def horizontal_present(y: float, x0: float, x1: float) -> bool:
+        nonlocal checks
+        key = (y, x0, x1)
+        cached = horizontal_cache.get(key)
+        if cached is None:
+            checks += 1
+            cached = horizontal_index.present(y, x0, x1, 3)
+            horizontal_cache[key] = cached
+        return cached
+
     for y0_index, y0 in enumerate(h_groups):
         for y1 in h_groups[y0_index + 1 :]:
-            if not 5 <= y1 - y0 <= 80:
+            if y1 - y0 > 80:
+                break
+            if y1 - y0 < 5:
                 continue
-            for x0_index, x0 in enumerate(v_groups):
-                for x1 in v_groups[x0_index + 1 :]:
-                    if not 5 <= x1 - x0 <= 80:
+            if checks + len(v_groups) > _MAX_RASTER_PRESENCE_CHECKS:
+                return horizontal + vertical, rectangles, (width, height), True
+            checks += len(v_groups)
+            edges = [x for x in v_groups if vertical_index.present(x, y0, y1, 3)]
+            for x0_index, x0 in enumerate(edges):
+                for x1 in edges[x0_index + 1 :]:
+                    if x1 - x0 > 80:
+                        break
+                    if x1 - x0 < 5:
                         continue
-                    if (
-                        horizontal_index.present(y0, x0, x1, 3)
-                        and horizontal_index.present(y1, x0, x1, 3)
-                        and vertical_index.present(x0, y0, y1, 3)
-                        and vertical_index.present(x1, y0, y1, 3)
-                    ):
+                    if horizontal_present(y0, x0, x1) and horizontal_present(y1, x0, x1):
                         rectangles.append([x0, y0, x1, y1])
                         if len(rectangles) >= _MAX_RASTER_RECTANGLES:
-                            return horizontal + vertical, rectangles, (width, height)
-    return horizontal + vertical, rectangles, (width, height)
+                            return horizontal + vertical, rectangles, (width, height), True
+                    if checks > _MAX_RASTER_PRESENCE_CHECKS:
+                        return horizontal + vertical, rectangles, (width, height), True
+    return horizontal + vertical, rectangles, (width, height), False
 
 
 def _raster_grid_lines(
@@ -467,7 +509,9 @@ def detect_layout(
     if page is not None:
         drawing_segments, rectangles = _drawing_segments(page)
         segments.extend(drawing_segments)
-    raster_segments, raster_rectangles, raster_size = _raster_segments(source)
+    raster_segments, raster_rectangles, raster_size, raster_search_limited = (
+        _raster_segments_with_status(source)
+    )
     if raster_segments:
         segments.extend(raster_segments)
     rectangles.extend(raster_rectangles)
@@ -530,6 +574,8 @@ def detect_layout(
             uncertainty.append("RASTER_RECTANGLE_LIMIT_REQUIRES_REVIEW")
         if len(raster_rectangles) >= _MAX_RASTER_RECTANGLES:
             uncertainty.append("RASTER_RECTANGLE_LIMIT_REQUIRES_REVIEW")
+    if raster_search_limited:
+        uncertainty.append("RASTER_RECTANGLE_LIMIT_REQUIRES_REVIEW")
     grid_too_large = (len(x_coords) - 1) * (len(y_coords) - 1) > _MAX_GRID_CELLS
     if grid_too_large:
         uncertainty.append("GRAPHICAL_GRID_LIMIT_REQUIRES_REVIEW")

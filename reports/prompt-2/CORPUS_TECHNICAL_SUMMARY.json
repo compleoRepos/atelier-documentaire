@@ -1,0 +1,87 @@
+{
+  "scope": "technical_local_only",
+  "human_golden": false,
+  "external_llm_calls": 0,
+  "documents": [
+    {
+      "document_id": "DOC-001",
+      "page_count": 2,
+      "artifact_page_count": 2,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-002",
+      "page_count": 1,
+      "artifact_page_count": 1,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-003",
+      "page_count": 1,
+      "artifact_page_count": 1,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-004",
+      "page_count": 2,
+      "artifact_page_count": 2,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-005",
+      "page_count": 2,
+      "artifact_page_count": 2,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-006",
+      "page_count": 16,
+      "artifact_page_count": 16,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-007",
+      "page_count": 5,
+      "artifact_page_count": 5,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    },
+    {
+      "document_id": "DOC-008",
+      "page_count": 2,
+      "artifact_page_count": 2,
+      "status": "REVIEW_REQUIRED",
+      "reference_status": "not_evaluated",
+      "translation_score": null,
+      "semantic_score": null,
+      "source_immutable": true
+    }
+  ]
+}

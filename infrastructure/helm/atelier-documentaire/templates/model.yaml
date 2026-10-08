@@ -1,0 +1,33 @@
+{{- if .Values.model.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.model.serviceName }}
+  labels: { app.kubernetes.io/name: {{ .Values.model.serviceName }}, app.kubernetes.io/component: model }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app.kubernetes.io/name: {{ .Values.model.serviceName }} } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: {{ .Values.model.serviceName }} } }
+    spec:
+      serviceAccountName: {{ include "atelier.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: vllm
+          image: "{{ .Values.model.image }}:{{ .Values.model.tag }}"
+          args: ["--model", {{ .Values.model.modelPath | quote }}, "--max-model-len", {{ .Values.model.maxModelLen | quote }}]
+          env: [{ name: HF_HUB_OFFLINE, value: "1" }, { name: TRANSFORMERS_OFFLINE, value: "1" }]
+          ports: [{ name: http, containerPort: 8000 }]
+          resources: { limits: { nvidia.com/gpu: {{ .Values.model.gpuCount | quote }} } }
+          volumeMounts: [{ name: model, mountPath: /models, readOnly: true }, { name: tmp, mountPath: /tmp }]
+          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } }
+      volumes: [{ name: model, persistentVolumeClaim: { claimName: qwen-models } }, { name: tmp, emptyDir: {} }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: {{ .Values.model.serviceName }} }
+spec:
+  selector: { app.kubernetes.io/name: {{ .Values.model.serviceName }} }
+  ports: [{ name: http, port: 8000, targetPort: http }]
+{{- end }}

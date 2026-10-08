@@ -1,0 +1,90 @@
+image:
+  repository: registry.private.example/atelier-documentaire
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+api:
+  replicas: 2
+  port: 8000
+  resources:
+    requests: { cpu: 250m, memory: 512Mi }
+    limits: { cpu: "2", memory: 2Gi }
+worker:
+  replicas: 1
+  resources:
+    requests: { cpu: 250m, memory: 512Mi }
+    limits: { cpu: "2", memory: 4Gi }
+frontend:
+  replicas: 2
+  port: 8080
+  imageRepository: registry.private.example/atelier-documentaire-frontend
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { cpu: "1", memory: 512Mi }
+
+external:
+  databaseUrlSecret: atelier-documentaire-database
+  redisUrlSecret: atelier-documentaire-redis
+  s3Secret: atelier-documentaire-s3
+  privateAiSecret: atelier-documentaire-private-ai
+  privateAiAllowedHosts: []
+  tokenizerClaim: atelier-documentaire-tokenizer
+  modelClaim: atelier-documentaire-model
+  tokenizerPath: /models/qwen-tokenizer
+  modelPath: /models/qwen
+  # Production is fail-closed: operator must provide a private Qwen endpoint.
+  engine: private
+  executionMode: celery
+  storageBackend: s3
+  expectedDir: /app/runtime/golden
+  avScanEnabled: true
+  avScanRequired: true
+  avScanUrl: http://clamav:3310
+
+scratch:
+  enabled: true
+  existingClaim: ""
+  storageClassName: private-rwx
+  size: 50Gi
+
+model:
+  enabled: false
+  # Activer uniquement après validation de l’image et des poids hors ligne.
+  image: registry.private.example/vllm-private
+  tag: "validated-by-platform"
+  modelPath: /models/qwen
+  maxModelLen: 32768
+  serviceName: qwen-private
+  gpuCount: 1
+
+ingress:
+  enabled: true
+  className: private-nginx
+  host: translator.private.example
+  tlsSecret: atelier-documentaire-tls
+
+networkPolicy:
+  enabled: true
+  # Renseigner les CIDR exacts des services DB, Redis et S3; aucun 0.0.0.0/0.
+  privateServiceCidrs: []
+  privateAiCidrs: []
+  privateServiceSelectors: []
+  privateAiServiceSelectors: []
+  dnsNamespaceSelector:
+    kubernetes.io/metadata.name: kube-system
+  dnsPodSelector:
+    k8s-app: kube-dns
+  frontendIngressNamespaceSelector:
+    kubernetes.io/metadata.name: private-ingress
+
+serviceAccount:
+  create: true
+  name: atelier-documentaire
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault

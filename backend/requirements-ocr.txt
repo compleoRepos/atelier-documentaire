@@ -1,0 +1,4 @@
+# Option privée lourde, à installer uniquement dans une image/worker OCR dédiée.
+# Les modèles PaddleOCR doivent être mirroring localement; aucun téléchargement au démarrage.
+paddleocr==3.2.0
+paddlepaddle==3.2.2

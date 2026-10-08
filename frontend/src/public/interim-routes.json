@@ -1,0 +1,16 @@
+{
+  "routes": [
+    { "path": "/", "redirectTo": "/dashboard", "pathMatch": "full" },
+    { "path": "/login", "title": "Connexion" },
+    { "path": "/dashboard", "title": "Vue d’ensemble" },
+    { "path": "/documents", "title": "Documents" },
+    { "path": "/upload", "title": "Importer" },
+    { "path": "/documents/:id", "title": "Détail du document" },
+    { "path": "/review/:id", "title": "Revue" },
+    { "path": "/glossary", "title": "Glossaire" },
+    { "path": "/translation-memory", "title": "Mémoire de traduction" },
+    { "path": "/admin", "title": "Administration" },
+    { "path": "/testing", "title": "Essais" },
+    { "path": "/audit", "title": "Audit" }
+  ]
+}

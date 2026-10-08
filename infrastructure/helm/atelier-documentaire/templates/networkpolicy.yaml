@@ -1,0 +1,116 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "atelier.fullname" . }}-default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "atelier.fullname" . }}-backend-egress
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - {{ include "atelier.name" . }}-api
+          - {{ include "atelier.name" . }}-worker
+  policyTypes:
+    - Egress
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "atelier.name" . }}-frontend
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml .Values.networkPolicy.dnsNamespaceSelector | indent 14 }}
+          podSelector:
+            matchLabels:
+{{ toYaml .Values.networkPolicy.dnsPodSelector | indent 14 }}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    {{- if or .Values.networkPolicy.privateServiceCidrs .Values.networkPolicy.privateServiceSelectors }}
+    - to:
+        {{- range .Values.networkPolicy.privateServiceCidrs }}
+        - ipBlock:
+            cidr: {{ . | quote }}
+        {{- end }}
+        {{- range .Values.networkPolicy.privateServiceSelectors }}
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml .namespaceLabels | indent 14 }}
+          podSelector:
+            matchLabels:
+{{ toYaml .podLabels | indent 14 }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 9000
+    {{- end }}
+    {{- if or .Values.networkPolicy.privateAiCidrs .Values.networkPolicy.privateAiServiceSelectors }}
+    - to:
+        {{- range .Values.networkPolicy.privateAiCidrs }}
+        - ipBlock:
+            cidr: {{ . | quote }}
+        {{- end }}
+        {{- range .Values.networkPolicy.privateAiServiceSelectors }}
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml .namespaceLabels | indent 14 }}
+          podSelector:
+            matchLabels:
+{{ toYaml .podLabels | indent 14 }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: 8000
+    {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "atelier.fullname" . }}-frontend-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "atelier.name" . }}-frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml .Values.networkPolicy.frontendIngressNamespaceSelector | indent 14 }}
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "atelier.name" . }}-api
+      ports:
+        - protocol: TCP
+          port: 8000
+{{- end }}

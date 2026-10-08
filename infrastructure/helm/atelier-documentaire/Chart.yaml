@@ -1,0 +1,6 @@
+apiVersion: v2
+name: atelier-documentaire
+description: API, worker et frontend de l'Atelier documentaire; PostgreSQL/Redis/S3 sont externes.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

@@ -1,0 +1,2 @@
+extend = "backend/pyproject.toml"
+exclude = [".venv", "frontend", "runtime", "dataset", "test-report"]

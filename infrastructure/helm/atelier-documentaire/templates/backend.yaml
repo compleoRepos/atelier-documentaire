@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "atelier.fullname" . }}-api
+  labels: {{- include "atelier.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector: { matchLabels: { app.kubernetes.io/name: {{ include "atelier.name" . }}-api, app.kubernetes.io/instance: {{ .Release.Name }} } }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: {{ include "atelier.name" . }}-api, app.kubernetes.io/instance: {{ .Release.Name }} }
+    spec:
+      serviceAccountName: {{ include "atelier.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+          ports: [{ name: http, containerPort: 8000 }]
+          envFrom:
+            - secretRef: { name: {{ .Values.external.databaseUrlSecret }} }
+            - secretRef: { name: {{ .Values.external.redisUrlSecret }} }
+            - secretRef: { name: {{ .Values.external.s3Secret }} }
+            - secretRef: { name: {{ .Values.external.privateAiSecret }} }
+          env:
+            - { name: TRANSLATOR_ENGINE, value: {{ .Values.external.engine | quote }} }
+            - { name: TRANSLATOR_EXECUTION_MODE, value: {{ .Values.external.executionMode | quote }} }
+            - { name: TRANSLATOR_STORAGE_BACKEND, value: {{ .Values.external.storageBackend | quote }} }
+            - { name: TRANSLATOR_DATA_DIR, value: "/app/runtime" }
+            - { name: TRANSLATOR_EXPECTED_DIR, value: {{ .Values.external.expectedDir | quote }} }
+            - { name: TRANSLATOR_TOKENIZER_PATH, value: {{ .Values.external.tokenizerPath | quote }} }
+            - { name: TRANSFORMERS_OFFLINE, value: "1" }
+            - { name: HF_HUB_OFFLINE, value: "1" }
+            - { name: TRANSLATOR_AV_SCAN_ENABLED, value: {{ .Values.external.avScanEnabled | quote }} }
+            - { name: TRANSLATOR_AV_SCAN_REQUIRED, value: {{ .Values.external.avScanRequired | quote }} }
+            - { name: TRANSLATOR_AV_SCAN_URL, value: {{ .Values.external.avScanUrl | quote }} }
+          readinessProbe: { httpGet: { path: /health, port: http }, initialDelaySeconds: 10, periodSeconds: 10, timeoutSeconds: 3, failureThreshold: 6 }
+          livenessProbe: { httpGet: { path: /health, port: http }, initialDelaySeconds: 20, periodSeconds: 20, timeoutSeconds: 3, failureThreshold: 3 }
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            - { name: scratch, mountPath: /app/runtime }
+            - { name: tokenizer, mountPath: /models/qwen-tokenizer, readOnly: true }
+            - { name: model, mountPath: /models/qwen, readOnly: true }
+      volumes:
+        - { name: tmp, emptyDir: {} }
+        - name: scratch
+          persistentVolumeClaim: { claimName: {{ include "atelier.scratchClaim" . }} }
+        - name: tokenizer
+          persistentVolumeClaim: { claimName: {{ .Values.external.tokenizerClaim }} }
+        - name: model
+          persistentVolumeClaim: { claimName: {{ .Values.external.modelClaim }} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "atelier.fullname" . }}-api
+  labels: {{- include "atelier.labels" . | nindent 4 }}
+spec:
+  selector: { app.kubernetes.io/name: {{ include "atelier.name" . }}-api, app.kubernetes.io/instance: {{ .Release.Name }} }
+  ports: [{ name: http, port: {{ .Values.api.port }}, targetPort: http }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "atelier.fullname" . }}-worker
+  labels: {{- include "atelier.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector: { matchLabels: { app.kubernetes.io/name: {{ include "atelier.name" . }}-worker, app.kubernetes.io/instance: {{ .Release.Name }} } }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: {{ include "atelier.name" . }}-worker, app.kubernetes.io/instance: {{ .Release.Name }} }
+    spec:
+      serviceAccountName: {{ include "atelier.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["celery", "-A", "app.workers.tasks", "worker", "--loglevel=INFO", "--queues=documents", "--concurrency=2", "--prefetch-multiplier=1"]
+          envFrom:
+            - secretRef: { name: {{ .Values.external.databaseUrlSecret }} }
+            - secretRef: { name: {{ .Values.external.redisUrlSecret }} }
+            - secretRef: { name: {{ .Values.external.s3Secret }} }
+            - secretRef: { name: {{ .Values.external.privateAiSecret }} }
+          env:
+            - { name: TRANSLATOR_ENGINE, value: {{ .Values.external.engine | quote }} }
+            - { name: TRANSLATOR_EXECUTION_MODE, value: {{ .Values.external.executionMode | quote }} }
+            - { name: TRANSLATOR_STORAGE_BACKEND, value: {{ .Values.external.storageBackend | quote }} }
+            - { name: TRANSLATOR_DATA_DIR, value: "/app/runtime" }
+            - { name: TRANSLATOR_EXPECTED_DIR, value: {{ .Values.external.expectedDir | quote }} }
+            - { name: TRANSLATOR_TOKENIZER_PATH, value: {{ .Values.external.tokenizerPath | quote }} }
+            - { name: TRANSFORMERS_OFFLINE, value: "1" }
+            - { name: HF_HUB_OFFLINE, value: "1" }
+            - { name: TRANSLATOR_AV_SCAN_ENABLED, value: {{ .Values.external.avScanEnabled | quote }} }
+            - { name: TRANSLATOR_AV_SCAN_REQUIRED, value: {{ .Values.external.avScanRequired | quote }} }
+            - { name: TRANSLATOR_AV_SCAN_URL, value: {{ .Values.external.avScanUrl | quote }} }
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            - { name: scratch, mountPath: /app/runtime }
+            - { name: tokenizer, mountPath: /models/qwen-tokenizer, readOnly: true }
+            - { name: model, mountPath: /models/qwen, readOnly: true }
+      volumes:
+        - { name: tmp, emptyDir: {} }
+        - name: scratch
+          persistentVolumeClaim: { claimName: {{ include "atelier.scratchClaim" . }} }
+        - name: tokenizer
+          persistentVolumeClaim: { claimName: {{ .Values.external.tokenizerClaim }} }
+        - name: model
+          persistentVolumeClaim: { claimName: {{ .Values.external.modelClaim }} }

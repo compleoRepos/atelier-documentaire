@@ -1,0 +1,51 @@
+# Fichiers modifiés — Prompt 1
+
+Liste précise des sources, tests et rapports par rapport à la base commune ; aucun document original, .env, IR ou preview privé.
+
+- `.env.example`
+- `.github/workflows/ci.yml`
+- `.gitignore`
+- `backend/app/ai/context/builder.py`
+- `backend/app/ai/context/terminology.py`
+- `backend/app/ai/ocr/tesseract.py`
+- `backend/app/ai/translation/interim.py`
+- `backend/app/ai/translation/interim_guard.py`
+- `backend/app/ai/translation/service.py`
+- `backend/app/api/routes.py`
+- `backend/app/application/jobs.py`
+- `backend/app/core/settings.py`
+- `backend/app/documents/pipeline.py`
+- `backend/app/documents/preprocessing.py`
+- `backend/app/documents/raster_adapter.py`
+- `backend/app/infrastructure/validation.py`
+- `backend/pyproject.toml`
+- `backend/requirements.txt`
+- `backend/tests/e2e/test_prompt1_scanned_flow.py`
+- `backend/tests/golden_dataset/test_golden_dataset.py`
+- `backend/tests/integration/test_prompt1_previews.py`
+- `backend/tests/unit/test_context.py`
+- `backend/tests/unit/test_interim_engine.py`
+- `backend/tests/unit/test_interim_guard.py`
+- `backend/tests/unit/test_preprocessing_prompt1.py`
+- `backend/tests/unit/test_prompt1_audit_regressions.py`
+- `backend/tests/unit/test_prompt1_context.py`
+- `backend/tests/unit/test_prompt1_ingestion.py`
+- `backend/tests/unit/test_translation.py`
+- `frontend/src/app/core/models.ts`
+- `frontend/src/app/pages/document-detail.page.ts`
+- `frontend/src/app/pages/document-detail.prompt1.spec.ts`
+- `frontend/src/app/pages/review.page.prompt1.spec.ts`
+- `frontend/src/app/pages/review.page.ts`
+- `reports/prompt-1/AUDIT.md`
+- `reports/prompt-1/DEPLOYMENT-REPORT.md`
+- `reports/prompt-1/EXECUTION-RESULT.json`
+- `reports/prompt-1/GOLDEN-DATASET-REPORT.md`
+- `reports/prompt-1/IMAGE-PREPROCESSING-REPORT.md`
+- `reports/prompt-1/INTERIM-TRANSITION.md`
+- `reports/prompt-1/MERGE-INTERFACES.md`
+- `reports/prompt-1/MODIFIED-FILES.md`
+- `reports/prompt-1/QUALITY-REPORT.md`
+- `reports/prompt-1/SECURITY-REPORT.md`
+- `reports/prompt-1/TEST-REPORT.md`
+- `tools/interim_synthetic_acceptance.py`
+- `tools/preprocessing_benchmark.py`

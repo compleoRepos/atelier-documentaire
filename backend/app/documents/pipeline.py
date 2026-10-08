@@ -1,0 +1,1132 @@
+"""Pipeline local, explicable et non destructif d'analyse/traduction/reconstruction."""
+
+from __future__ import annotations
+
+import asyncio
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
+
+from app.ai.ocr.paddle_local import PaddleOCRLocal
+from app.ai.ocr.tesseract import TesseractOCR
+from app.ai.quality.metrics import (
+    protected_entity_issues,
+    reference_is_valid,
+    reference_metrics,
+    token_delta,
+)
+from app.domain.classification import classify_document, detect_language
+
+from .layout import detect_layout
+
+SUPPORTED = {".pdf", ".jpg", ".jpeg", ".png", ".docx"}
+
+
+def _warn(code, message, severity="warning", **extra):
+    value = {"code": code, "severity": severity, "message": message}
+    value.update(extra)
+    return value
+
+
+def _significant(text: str) -> bool:
+    cleaned = re.sub(r"\s+", "", text or "")
+    return len(cleaned) >= 4 and sum(c.isalnum() for c in cleaned) >= 3
+
+
+def _requires_translation(text: str) -> bool:
+    """Return false for standalone protected identifiers/numbers.
+
+    Keeping an IBAN, date, amount, email or short proper-name invariant is not
+    evidence that a translatable sentence was left untranslated.
+    """
+    value = (text or "").strip()
+    if not value:
+        return False
+    if re.fullmatch(r"[\d\s.,:/+()\-]+", value, flags=re.UNICODE):
+        return False
+    if re.fullmatch(r"[\w.+-]+@[\w.-]+", value, flags=re.UNICODE):
+        return False
+    if re.fullmatch(r"(?=.*\d)[A-Z0-9._/+\-]+", value):
+        return False
+    if value.casefold() in {
+        "iban",
+        "bic",
+        "swift",
+        "eur",
+        "usd",
+        "mad",
+        "signature",
+        "email",
+        "date",
+        "total",
+    }:
+        return False
+    return bool(re.search(r"[A-Za-zÀ-ÿ\u0600-\u06ff]", value))
+
+
+def _intersects(a, b):
+    if not a or not b or len(a) < 4 or len(b) < 4:
+        return False
+    return not (a[2] <= b[0] or a[0] >= b[2] or a[3] <= b[1] or a[1] >= b[3])
+
+
+def _language_for(text):
+    return detect_language(text)[0]
+
+
+def _save_json(path: Path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _render_pix(page, path: Path, dpi=120):
+    import fitz
+
+    pix = page.get_pixmap(matrix=fitz.Matrix(dpi / 72, dpi / 72), alpha=False)
+    pix.save(str(path))
+    return path
+
+
+def _source_preview_image(image, path: Path):
+    from PIL import Image
+
+    Image.open(image).convert("RGB").save(path)
+
+
+def _convert_docx_with_libreoffice(source: Path, output_dir: Path, timeout: float = 90.0) -> Path:
+    """Convert DOCX with a disposable LibreOffice profile and a hard timeout."""
+    soffice = "/usr/bin/soffice"
+    if not Path(soffice).is_file():
+        raise RuntimeError("LibreOffice absent: pagination DOCX non mesurable")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # The profile is isolated to prevent user extensions/macros and concurrent
+    # workers from affecting the conversion. No document-provided macro is run.
+    with (
+        tempfile.TemporaryDirectory(prefix="lo-profile-") as profile,
+        tempfile.TemporaryDirectory(prefix="lo-home-") as home,
+    ):
+        profile_url = Path(profile).as_uri()
+        env = os.environ.copy()
+        env.update({"HOME": home, "SAL_USE_VCLPLUGIN": "svp", "LANG": "C.UTF-8"})
+        command = [
+            soffice,
+            "--headless",
+            "--nologo",
+            "--nodefault",
+            "--nofirststartwizard",
+            "--norestore",
+            "--nolockcheck",
+            f"-env:UserInstallation={profile_url}",
+            "--convert-to",
+            "pdf",
+            "--outdir",
+            str(output_dir),
+            str(source),
+        ]
+        try:
+            completed = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=max(1.0, min(float(timeout), 300.0)),
+                check=False,
+                env=env,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise TimeoutError(f"LibreOffice timeout après {timeout:.1f}s") from exc
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout or "échec sans sortie").strip()
+            raise RuntimeError(f"LibreOffice conversion échouée: {detail[-500:]}")
+    converted = output_dir / f"{source.stem}.pdf"
+    if not converted.is_file() or converted.stat().st_size == 0:
+        raise RuntimeError("LibreOffice n'a pas produit de PDF")
+    return converted
+
+
+def _docx_rendered_pages(
+    source: Path, work: Path, options: dict
+) -> tuple[list[dict], list[Path], list[dict]]:
+    """Return real page dimensions/previews and conversion warnings."""
+    warnings: list[dict] = []
+    (work / "previews").mkdir(parents=True, exist_ok=True)
+    try:
+        rendered = _convert_docx_with_libreoffice(
+            source, work / "libreoffice", options.get("libreoffice_timeout", 90)
+        )
+        import fitz
+
+        doc = fitz.open(str(rendered))
+        pages = []
+        previews = []
+        for number, page in enumerate(doc, 1):
+            preview = work / "previews" / f"original-{number:03d}.png"
+            _render_pix(page, preview)
+            previews.append(preview)
+            pages.append(
+                {
+                    "number": number,
+                    "width": float(page.rect.width),
+                    "height": float(page.rect.height),
+                    "scanned": False,
+                    "coordinates_kind": "pdf",
+                    "blocks": [],
+                }
+            )
+        doc.close()
+        return pages, previews, warnings
+    except TimeoutError as exc:
+        warnings.append(_warn("DOCX_LIBREOFFICE_TIMEOUT", str(exc), "error"))
+    except Exception as exc:
+        warnings.append(_warn("DOCX_LIBREOFFICE_CONVERSION_FAILED", str(exc), "error"))
+    return [], [], warnings
+
+
+def _make_ocr(options: dict):
+    backend = str(options.get("ocr_backend", "tesseract")).casefold()
+    languages = options.get("ocr_languages") or options.get("languages")
+    if backend in {"paddle", "paddleocr", "paddleocr-local"}:
+        assets = options.get("ocr_assets") or options.get("paddle_assets")
+        return PaddleOCRLocal(
+            languages=languages, assets=assets, use_gpu=options.get("ocr_use_gpu", False)
+        )
+    if backend not in {"tesseract", "tesseract-local"}:
+        raise ValueError(f"Backend OCR local inconnu: {backend}")
+    return TesseractOCR(languages)
+
+
+def _ocr_page(page, ocr, number):
+    import fitz
+    from PIL import Image
+
+    pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+    image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    result = ocr.image_to_blocks(image)
+    sx, sy = page.rect.width / pix.width, page.rect.height / pix.height
+    out = []
+    for i, block in enumerate(result.blocks):
+        x0, y0, x1, y1 = block["bbox"]
+        text = block["text"]
+        bbox = [
+            max(0.0, min(float(page.rect.width), x0 * sx)),
+            max(0.0, min(float(page.rect.height), y0 * sy)),
+            max(0.0, min(float(page.rect.width), x1 * sx)),
+            max(0.0, min(float(page.rect.height), y1 * sy)),
+        ]
+        out.append(
+            {
+                "id": f"p{number:03d}-b{i:04d}",
+                "page": number,
+                "kind": "text",
+                "text": text,
+                "bbox": bbox,
+                "font_size": None,
+                "confidence": block["confidence"],
+                "language": _language_for(text),
+                "provenance": "ocr:tesseract",
+                "reading_order": i,
+            }
+        )
+    out.sort(key=lambda block: (round(block["bbox"][1], 1), round(block["bbox"][0], 1)))
+    for reading_order, block in enumerate(out):
+        block["reading_order"] = reading_order
+    return out, result.warnings
+
+
+def _native_blocks(page, number):
+    blocks = []
+    data = page.get_text("dict")
+    order = 0
+    for raw in data.get("blocks", []):
+        if raw.get("type") != 0:
+            continue
+        for line in raw.get("lines", []):
+            text = "".join(span.get("text", "") for span in line.get("spans", []))
+            bbox = line.get("bbox", raw.get("bbox"))
+            if not text.strip():
+                continue
+            spans = [
+                span
+                for line2 in raw.get("lines", [])
+                for span in line2.get("spans", [])
+                if span.get("text", "").strip()
+            ]
+            font_size = (
+                sum(float(span.get("size", 0)) for span in spans) / len(spans) if spans else None
+            )
+            blocks.append(
+                {
+                    "id": f"p{number:03d}-b{order:04d}",
+                    "page": number,
+                    "kind": "text",
+                    "text": text.strip(),
+                    "bbox": [float(x) for x in bbox],
+                    "font_size": font_size,
+                    "confidence": 1.0,
+                    "language": _language_for(text),
+                    "provenance": "native",
+                    "reading_order": order,
+                }
+            )
+            order += 1
+    blocks.sort(
+        key=lambda block: (round(float(block["bbox"][1]), 1), round(float(block["bbox"][0]), 1))
+    )
+    for reading_order, block in enumerate(blocks):
+        block["reading_order"] = reading_order
+    return blocks
+
+
+def _tables(page, number, blocks=None, image=None):
+    """Return structural candidates and layout coverage without duplicating text blocks."""
+    result = detect_layout(
+        image,
+        page=page,
+        blocks=blocks or [],
+        page_number=number,
+        width=float(page.rect.width),
+        height=float(page.rect.height),
+    )
+    tables = result.get("tables", [])
+    from .pdf_fidelity import enrich_tables
+    enrich_tables(page, tables, blocks or [])
+    return tables, result
+
+
+def _apply_protection(pages, protected):
+    for page in pages:
+        for block in page["blocks"]:
+            for zone in protected:
+                if int(zone.get("page", 0)) == page["number"] and _intersects(
+                    block["bbox"], zone.get("bbox", [])
+                ):
+                    block["protected"] = True
+
+
+def _docx_text(element):
+    from docx.oxml.ns import qn
+
+    return "".join(node.text or "" for node in element.iter() if node.tag == qn("w:t"))
+
+
+def _docx_paragraph_block(text, block_id, order, source_ref, kind="paragraph"):
+    return {
+        "id": block_id,
+        "page": 1,
+        "kind": kind,
+        "text": text,
+        "bbox": [36, 36 + order * 16, 576, 50 + order * 16],
+        "coordinates_kind": "logical",
+        "artificial_bbox": True,
+        "font_size": None,
+        "confidence": 1.0,
+        "language": _language_for(text),
+        "provenance": "docx:xml",
+        "reading_order": order,
+        "source_ref": source_ref,
+    }
+
+
+def _docx_ir(path: Path, work: Path, options):
+    from .docx_analysis import collect_docx_content
+
+    rendered_pages, _previews, conversion_warnings = _docx_rendered_pages(path, work, options)
+    page = rendered_pages[0] if rendered_pages else {
+        "number": 1, "width": 612.0, "height": 792.0, "scanned": False,
+        "coordinates_kind": "logical-fallback", "blocks": [],
+    }
+    blocks, tables_ir, hierarchy = collect_docx_content(path, _docx_paragraph_block)
+    header_footer_refs = [b for b in blocks if b['source_ref']['xml_part'] != 'word/document.xml']
+
+    source_copy = work / "source" / path.name
+    source_copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(path, source_copy)
+    xml_hash = hashlib.sha256(source_copy.read_bytes()).hexdigest()
+    text = "\n".join(block["text"] for block in blocks)
+    lang, languages, confidence = detect_language(text)
+    cls = classify_document(text, languages)
+    warnings = list(conversion_warnings)
+    warnings.extend(cls["warnings"])
+    # Map logical text to the actual rendered page where possible. Coordinates
+    # remain evidence from LibreOffice; unmatched blocks are review-only.
+    pages = rendered_pages or [page]
+    rendered_pdf = next((work / "libreoffice").glob("*.pdf"), None)
+    if rendered_pdf:
+        import fitz
+
+        rendered_doc = fitz.open(str(rendered_pdf))
+        for block in blocks:
+            match = None
+            needle = re.sub(r"\s+", " ", block["text"]).strip().casefold()
+            for page_number, rendered_page in enumerate(rendered_doc, 1):
+                for raw in rendered_page.get_text("blocks"):
+                    candidate = re.sub(r"\s+", " ", raw[4]).strip().casefold()
+                    if needle and (needle in candidate or candidate in needle):
+                        match = (page_number, list(raw[:4]))
+                        break
+                if match:
+                    break
+            if match:
+                block["page"], block["bbox"] = match
+                block["coordinates_kind"] = "pdf"
+                block["artificial_bbox"] = False
+            else:
+                block["unmapped_in_render"] = True
+        rendered_doc.close()
+    for rendered_page in pages:
+        rendered_page["blocks"] = [b for b in blocks if b.get("page") == rendered_page["number"]]
+    if not rendered_pages:
+        warnings.append(
+            _warn(
+                "DOCX_PAGINATION_UNAVAILABLE",
+                "La pagination réelle est indisponible; aucune preview synthétique n'est présentée comme un rendu.",
+                "error",
+            )
+        )
+    if header_footer_refs:
+        warnings.append(
+            _warn(
+                "DOCX_HEADER_FOOTER_PRESENT",
+                "En-têtes/pieds détectés et adressables par source_ref; leur résultat doit être vérifié visuellement.",
+                "warning",
+            )
+        )
+    return {
+        "schema_version": "1.0",
+        "source_path": str(path.resolve()),
+        "format": "docx",
+        "language": lang,
+        "languages": languages,
+        "language_confidence": confidence,
+        "document_type": cls["document_type"],
+        "document_type_confidence": cls["confidence"],
+        "domain": cls["domain"],
+        "pages": pages,
+        "tables": tables_ir,
+        **hierarchy,
+        "warnings": warnings,
+        "versions": {
+            "source_xml_sha256": xml_hash,
+            "source_copy": str(source_copy),
+            "docx_mapping": "package-w:t-proportional-v3",
+            "pagination": "libreoffice-pdf" if rendered_pages else None,
+        },
+        "classifier": cls,
+    }
+
+
+def analyze_document(source_path: str, work_dir: str, options: dict | None = None) -> dict:
+    options = options or {}
+    path = Path(source_path).expanduser().resolve()
+    work = Path(work_dir).resolve()
+    work.mkdir(parents=True, exist_ok=True)
+    if not path.is_file():
+        raise FileNotFoundError(source_path)
+    if path.suffix.lower() not in SUPPORTED:
+        raise ValueError(f"Format non supporté: {path.suffix}")
+    (work / "previews").mkdir(exist_ok=True)
+    if path.suffix.lower() == ".docx":
+        ir = _docx_ir(path, work, options)
+        from .protected_visuals import protect_ir
+        protect_ir(ir, options.get("protected_visual_regions") or options.get("protected_regions"))
+        _save_json(work / "analysis.json", ir)
+        return ir
+    import fitz
+
+    ocr = _make_ocr(options)
+    warnings = []
+    pages = []
+    tables = []
+    all_text = []
+    if path.suffix.lower() == ".pdf":
+        doc = fitz.open(str(path))
+        for number, page_obj in enumerate(doc, 1):
+            native = _native_blocks(page_obj, number)
+            scanned = not _significant("\n".join(block["text"] for block in native))
+            page_blocks = native
+            page_warnings = []
+            if scanned:
+                page_blocks, page_warnings = _ocr_page(page_obj, ocr, number)
+                warnings.extend(page_warnings)
+                warnings.append(
+                    _warn(
+                        "OCR_LIMITATION",
+                        f"Page {number} traitée par OCR local; calibration humaine absente.",
+                        page=number,
+                    )
+                )
+                warnings.append(
+                    _warn(
+                        "NON_TEXTUAL_UNIDENTIFIED",
+                        f"Manuscrits, signatures et cachets éventuels de la page {number} ne sont pas reconnus exhaustivement.",
+                        page=number,
+                    )
+                )
+                warnings.append(
+                    _warn(
+                        "SIGNATURE_AUTHENTICITY_NOT_VERIFIED",
+                        f"La conservation visuelle des signatures/cachets de la page {number} ne valide pas leur authenticité.",
+                        page=number,
+                    )
+                )
+            try:
+                widgets = list(page_obj.widgets() or [])
+                if widgets:
+                    warnings.append(
+                        _warn(
+                            "PDF_SIGNATURE_WIDGET_REQUIRES_REVIEW",
+                            f"{len(widgets)} widget(s) PDF détecté(s); aucune signature cryptographique n'est portée au candidat.",
+                            page=number,
+                        )
+                    )
+            except Exception:
+                pass
+            if not page_blocks:
+                warnings.append(
+                    _warn(
+                        "BLANK_OR_UNREADABLE_PAGE",
+                        f"Page {number} conservée; aucun texte exploitable détecté.",
+                        page=number,
+                    )
+                )
+            layout_image = None
+            if scanned:
+                pix = page_obj.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
+                from PIL import Image
+
+                layout_image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            page_tables, layout = _tables(page_obj, number, page_blocks, layout_image)
+            pages.append(
+                {
+                    "number": number,
+                    "width": float(page_obj.rect.width),
+                    "height": float(page_obj.rect.height),
+                    "scanned": scanned,
+                    "blocks": page_blocks,
+                    "layout": layout,
+                }
+            )
+            tables.extend(page_tables)
+            all_text.extend(block["text"] for block in page_blocks)
+            _render_pix(page_obj, work / "previews" / f"original-{number:03d}.png")
+        doc.close()
+        fmt = "pdf"
+    else:
+        from PIL import Image
+
+        image = Image.open(path).convert("RGB")
+        result = ocr.image_to_blocks(image)
+        width, height = image.size
+        page_blocks = []
+        for i, block in enumerate(result.blocks):
+            x0, y0, x1, y1 = block["bbox"]
+            page_blocks.append(
+                {
+                    "id": f"p001-b{i:04d}",
+                    "page": 1,
+                    "kind": "text",
+                    "text": block["text"],
+                    "bbox": [x0, y0, x1, y1],
+                    "font_size": None,
+                    "confidence": block["confidence"],
+                    "language": _language_for(block["text"]),
+                    "provenance": "ocr:tesseract",
+                    "reading_order": i,
+                }
+            )
+        warnings.extend(result.warnings)
+        warnings.append(
+            _warn("OCR_LIMITATION", "Image analysée par OCR local; calibration humaine absente.")
+        )
+        warnings.append(
+            _warn(
+                "NON_TEXTUAL_UNIDENTIFIED",
+                "Manuscrits, signatures et cachets éventuels ne sont pas reconnus exhaustivement.",
+            )
+        )
+        layout = detect_layout(
+            image,
+            blocks=page_blocks,
+            page_number=1,
+            width=float(width),
+            height=float(height),
+        )
+        tables.extend(layout.get("tables", []))
+        pages = [
+            {
+                "number": 1,
+                "width": float(width),
+                "height": float(height),
+                "scanned": True,
+                "blocks": page_blocks,
+                "layout": layout,
+            }
+        ]
+        all_text = [block["text"] for block in page_blocks]
+        _source_preview_image(path, work / "previews" / "original-001.png")
+        fmt = path.suffix.lower().lstrip(".")
+    _apply_protection(pages, options.get("protected_regions") or [])
+    text = "\n".join(all_text)
+    lang, languages, confidence = detect_language(text)
+    cls = classify_document(text, languages)
+    warnings.extend(cls["warnings"])
+    if len(languages) > 1:
+        warnings.append(
+            _warn(
+                "MIXED_LANGUAGES",
+                "Plusieurs langues détectées par heuristique; distribution à vérifier.",
+            )
+        )
+    ir = {
+        "schema_version": "1.0",
+        "source_path": str(path),
+        "format": fmt,
+        "language": lang,
+        "languages": languages,
+        "language_confidence": confidence,
+        "document_type": cls["document_type"],
+        "document_type_confidence": cls["confidence"],
+        "domain": cls["domain"],
+        "pages": pages,
+        "tables": tables,
+        "warnings": warnings,
+        "versions": {
+            "analysis": "local-ocr-native-v2",
+            "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        },
+        "classifier": cls,
+    }
+    from .protected_visuals import protect_ir
+    protect_ir(ir, options.get("protected_visual_regions") or options.get("protected_regions"))
+    _save_json(work / "analysis.json", ir)
+    return ir
+
+
+def _all_blocks(ir):
+    return [block for page in ir.get("pages", []) for block in page.get("blocks", [])]
+
+
+def _source_text(ir):
+    return "\n".join(block.get("text", "") for block in _all_blocks(ir))
+
+
+def _render_diff(source, candidate, out):
+    from PIL import Image, ImageChops, ImageEnhance
+
+    first = Image.open(source).convert("RGB")
+    second = Image.open(candidate).convert("RGB")
+    if first.size != second.size:
+        second = second.resize(first.size)
+    diff = ImageEnhance.Contrast(ImageChops.difference(first, second)).enhance(4)
+    diff.save(out)
+    # This is a raw normalized pixel difference, not a visual similarity score.
+    return sum(diff.convert("L").getdata()) / (255.0 * diff.width * diff.height)
+
+
+def _preview_pdf(path, work, prefix):
+    import fitz
+
+    (Path(work) / "previews").mkdir(parents=True, exist_ok=True)
+    doc = fitz.open(str(path))
+    outputs = []
+    for number, page in enumerate(doc, 1):
+        output = Path(work) / "previews" / f"{prefix}-{number:03d}.png"
+        _render_pix(page, output)
+        outputs.append(output)
+    doc.close()
+    return outputs
+
+
+def _protected_for(block, protected_regions):
+    return block.get("protected") or any(
+        int(zone.get("page", 0)) == block.get("page")
+        and _intersects(block.get("bbox", []), zone.get("bbox", []))
+        for zone in protected_regions
+    )
+
+
+def _docx_text_nodes(element):
+    from docx.oxml.ns import qn
+
+    return [node for node in element.iter() if node.tag == qn("w:t")]
+
+
+def _replace_docx_text(element, target):
+    from .docx_fidelity import redistribute_text
+    result = redistribute_text(element, target)
+    return result["node_count"] if result["applied"] else False
+
+
+def _docx_paragraph_for_ref(doc, ref):
+    """Resolve a paragraph without flattening the surrounding DOCX structure."""
+    if ref.get("header_footer"):
+        section = doc.sections[int(ref["section_index"])]
+        collection = section.header if ref["header_footer"] == "header" else section.footer
+        return collection.paragraphs[int(ref["paragraph_index"])]
+    if "paragraph_index" in ref and "table_index" not in ref:
+        return doc.paragraphs[int(ref["paragraph_index"])]
+    cell = (
+        doc.tables[int(ref["table_index"])]
+        .rows[int(ref["row_index"])]
+        .cells[int(ref["cell_index"])]
+    )
+    return cell.paragraphs[int(ref.get("cell_paragraph_index", 0))]
+
+
+def _with_render_proof(ir, translations, output, result, protected_regions):
+    from .render_metrics import measure_render_fidelity
+
+    pages = {page["number"]: page for page in ir.get("pages", [])}
+    regions = [
+        {
+            **region,
+            "page_width": pages.get(region.get("page"), {}).get("width", 1),
+            "page_height": pages.get(region.get("page"), {}).get("height", 1),
+        }
+        for region in (protected_regions or [])
+    ]
+    proof = measure_render_fidelity(
+        ir["source_path"],
+        str(output),
+        source_ir=ir,
+        translations=translations,
+        protected_regions=regions,
+        text_masks=result.get("text_masks"),
+        work_dir=output.parent / f"{output.stem}-fidelity",
+    )
+    issues = result.get("issues", []) + proof.pop("issues", [])
+    result.update(proof)
+    result["issues"] = issues
+    return result
+
+
+def _reconstruct_docx(ir, translations, source, out, protected_regions, issues):
+    from .docx_fidelity import edit_docx_package
+    from .render_metrics import parse_docx_structure
+
+    replacements = []
+    for block in _all_blocks(ir):
+        target = translations.get(block["id"], block.get("text", ""))
+        if target == block.get("text", ""):
+            continue
+        if _protected_for(block, protected_regions):
+            issues.append(_warn("PROTECTED_TRANSLATION_NOT_APPLIED",
+                                "Zone originale protégée: traduction non appliquée.", "error", block_id=block["id"]))
+            continue
+        replacements.append({"id": block["id"], "source_ref": block.get("source_ref", {}), "target": target})
+    package = edit_docx_package(source, out, replacements)
+    issues.extend(package["issues"])
+    changed = package["changed_blocks"]
+    candidate_structure = parse_docx_structure(out)
+    candidate_work = out.parent / f"{out.stem}-render"
+    candidate_pages, candidate_previews, render_warnings = _docx_rendered_pages(
+        out, candidate_work, {}
+    )
+    issues.extend(render_warnings)
+    return {
+        "output_path": str(out),
+        "issues": issues,
+        "pages_preserved": len(candidate_pages) == len(ir.get("pages", []))
+        if candidate_pages
+        else None,
+        "layout_score": None,
+        "changed_blocks": changed,
+        "pagination": "libreoffice-pdf" if candidate_pages else None,
+        "candidate_pdf_path": str(candidate_work / "libreoffice" / f"{out.stem}.pdf")
+        if candidate_pages
+        else None,
+        "candidate_preview_paths": [str(path) for path in candidate_previews],
+        "renderer_version": "docx-package-fidelity-v3",
+        "redistribution_trace": package["redistribution_trace"],
+        "table_structure": [
+            {"id": f"candidate-table-{t['index']}", "rows": t["rows"], "columns": t["columns"],
+             "cell_count": len(t["cells"]), "provenance": "candidate_ooxml"}
+            for t in candidate_structure.get("tables", [])
+        ],
+    }
+
+
+def reconstruct_document(
+    ir: dict,
+    translations: dict[str, str],
+    output_path: str,
+    protected_regions: list[dict] | None = None,
+) -> dict:
+    if not isinstance(translations, dict) or any(not isinstance(k, str) or not isinstance(v, str) for k, v in translations.items()):
+        raise ValueError("Translation candidates must be a mapping of text ids to text, never null")
+    out = Path(output_path).resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    source = Path(ir["source_path"])
+    if source.resolve() == out.resolve() or (out.exists() and os.path.samefile(source, out)):
+        raise ValueError("Original/source must not be overwritten by reconstruction")
+    expected_sha = ir.get("versions", {}).get("source_sha256") or ir.get("versions", {}).get("source_xml_sha256")
+    if expected_sha and hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha:
+        raise ValueError("Original immutable SHA256 mismatch")
+    from .protected_visuals import normalize_regions
+    protected_regions = normalize_regions(
+        list(ir.get("protected_visual_regions") or []) + list(protected_regions or []),
+        ir.get("pages", []), expected_sha or hashlib.sha256(source.read_bytes()).hexdigest())
+    issues = []
+    if ir.get("format") == "pdf":
+        issues.append(
+            _warn(
+                "SIGNATURE_AUTHENTICITY_NOT_VERIFIED",
+                "Le candidat dérivé conserve des éléments visuels mais ne porte pas de validation cryptographique de la signature source.",
+            )
+        )
+    if ir.get("format") == "docx":
+        result = _reconstruct_docx(ir, translations, source, out, protected_regions, issues)
+        return _with_render_proof(ir, translations, out, result, protected_regions)
+    from .pdf_fidelity import render_pdf
+    result = render_pdf(ir, translations, source, out, protected_regions)
+    result["issues"] = issues + result.get("issues", [])
+    result["protected_regions"] = protected_regions
+    result["renderer_version"] = "pdf-cell-fidelity-v3"
+    return _with_render_proof(ir, translations, out, result, protected_regions)
+
+
+def _quality_contract(ir, translations, render_result, reference, options=None):
+    """Call the coordinator-owned quality contract without importing it at startup."""
+    try:
+        from importlib import import_module
+
+        module = import_module("app.ai.quality.engine")
+        evaluator = module.evaluate_quality
+    except (ImportError, AttributeError):
+        return None, _warn(
+            "QUALITY_ENGINE_UNAVAILABLE",
+            "Le moteur qualité contractuel est absent; aucun score qualité n'est fabriqué.",
+            "error",
+        )
+    try:
+        result = evaluator(ir, translations, render_result, reference, options or {})
+    except Exception as exc:  # fail closed: a broken scorer is not a PASS
+        return None, _warn("QUALITY_ENGINE_ERROR", str(exc), "error")
+    if not isinstance(result, dict):
+        return None, _warn(
+            "QUALITY_ENGINE_INVALID_RESULT", "Résultat qualité non dictionnaire.", "error"
+        )
+    return result, None
+
+
+def evaluate_document(
+    ir: dict,
+    translations: dict[str, str],
+    render_result: dict | None = None,
+    reference: dict | None = None,
+    options: dict | None = None,
+) -> dict:
+    issues = []
+    critical = []
+    untranslated = []
+    deltas = []
+    blocks = _all_blocks(ir)
+    known_ids = {block["id"] for block in blocks}
+    for unknown_id in sorted(set(translations) - known_ids):
+        issues.append(
+            _warn(
+                "UNKNOWN_TRANSLATION_BLOCK",
+                "Identifiant de traduction absent de l'IR.",
+                "error",
+                block_id=unknown_id,
+            )
+        )
+    protected_regions = (render_result or {}).get("protected_regions", [])
+    for block in blocks:
+        source = block.get("text", "")
+        if block["id"] not in translations:
+            issues.append(
+                _warn(
+                    "MISSING_TRANSLATION_BLOCK",
+                    "Bloc source sans candidat de traduction; aucune coercition silencieuse.",
+                    "error",
+                    block_id=block["id"],
+                )
+            )
+            continue
+        target = translations[block["id"]]
+        protected = _protected_for(block, protected_regions)
+        if target == source and source.strip():
+            if protected:
+                issues.append(
+                    _warn(
+                        "PROTECTED_TRANSLATION_NOT_APPLIED",
+                        "Bloc protégé conservé; résultat explicitement inconnu.",
+                        "warning",
+                        block_id=block["id"],
+                    )
+                )
+            elif _requires_translation(source) and (
+                (block.get("language") and block.get("language") not in ("fra", "fr"))
+                or (not block.get("language") and ir.get("language") not in ("fra", "fr"))
+            ):
+                untranslated.append(block["id"])
+                issues.append(
+                    _warn(
+                        "UNTRANSLATED",
+                        "Segment non français conservé sans traduction vérifiable.",
+                        "error",
+                        block_id=block["id"],
+                    )
+                )
+        if target is not None:
+            entity_issues = protected_entity_issues(source, target)
+            for entity_issue in entity_issues:
+                entity_issue["block_id"] = block["id"]
+                if not ir.get("protected_entities") and entity_issue.get("entity_type") in {
+                    "name",
+                    "company",
+                    "address",
+                }:
+                    entity_issue["severity"] = "warning"
+                    entity_issue["code"] = "UNPROTECTED_ENTITY_REQUIRES_REVIEW"
+            issues.extend(entity_issues)
+            critical.extend(issue for issue in entity_issues if issue.get("severity") == "critical")
+            deltas.append({"block_id": block["id"], "tokens": token_delta(source, target)})
+    if render_result:
+        issues.extend(render_result.get("issues", []))
+    ref_valid = reference_is_valid(reference)
+    geometry = (render_result or {}).get("layout_score")
+    # Never expose raw pixel dissimilarity under a similarity/quality score.
+    quality = {
+        "ocr": None,
+        "translation": None,
+        "semantic": None,
+        "reference_status": "validated" if ref_valid else "not_available",
+        "geometry_only_layout": geometry,
+        "visual_difference": (render_result or {}).get("visual_difference"),
+        "visual_score_method": None,
+        "numeric_entity_deltas": deltas,
+    }
+    contract_quality, contract_warning = _quality_contract(
+        ir, translations, render_result, reference, options
+    )
+    if contract_warning:
+        issues.append(contract_warning)
+    result = {
+        "critical_entity_errors": critical,
+        "untranslated_blocks": untranslated,
+        "layout_score": geometry,
+        "visual_score": None,
+        "ocr_score": None,
+        "translation_score": None,
+        "semantic_score": None,
+        "issues": issues,
+        "status": "REVIEW_REQUIRED",
+        "quality": quality,
+        "reference_status": "validated" if ref_valid else "not_evaluated",
+        "metrics": reference_metrics(_source_text(ir), "\n".join(translations.values()), reference),
+    }
+    if contract_quality is not None:
+        explicit_entities = bool(ir.get("protected_entities"))
+        contract_issues = []
+        for issue in contract_quality.get("issues", []):
+            # Automatic name/company/address candidates are coverage warnings
+            # until a caller supplies explicit protected annotations. Numeric
+            # and identifier mismatches remain critical through the local
+            # occurrence comparison above.
+            if (
+                not explicit_entities
+                and isinstance(issue, dict)
+                and issue.get("severity") == "critical"
+                and issue.get("entity_type") in {"name", "company", "address"}
+            ):
+                issue = {
+                    **issue,
+                    "severity": "warning",
+                    "code": "UNPROTECTED_ENTITY_REQUIRES_REVIEW",
+                    "message": "Entité nominative détectée automatiquement sans annotation protégée explicite.",
+                }
+            contract_issues.append(issue)
+        for key in (
+            "ocr_score",
+            "translation_score",
+            "semantic_score",
+            "layout_score",
+            "visual_score",
+            "status",
+            "issues",
+            "critical_entity_errors",
+            "hallucination_errors",
+            "reference_status",
+            "provenance",
+            "coverage",
+        ):
+            if key in contract_quality:
+                result[key] = contract_quality[key]
+        result["issues"] = issues + contract_issues
+        result["untranslated_blocks"] = sorted(
+            set(untranslated + (contract_quality.get("untranslated_blocks") or []))
+        )
+        result["critical_entity_errors"] = [
+            issue
+            for issue in result.get("critical_entity_errors", [])
+            if issue.get("severity") == "critical"
+            and (
+                explicit_entities or issue.get("entity_type") not in {"name", "company", "address"}
+            )
+        ]
+        result["hallucination_errors"] = [
+            issue
+            for issue in result.get("hallucination_errors", [])
+            if explicit_entities or issue.get("entity_type") not in {"name", "company", "address"}
+        ]
+        result["quality_contract"] = contract_quality
+    else:
+        result["hallucination_errors"] = []
+        result["provenance"] = {"quality_engine": "unavailable"}
+        result["coverage"] = {"quality_engine": False}
+    # Pipeline-facing reference lifecycle is distinct from provider availability.
+    # Keep the provider's raw status in quality_contract/provenance; absence is
+    # never a reference validation and never a PASS.
+    if not reference:
+        result["reference_status"] = "not_evaluated"
+    if result.get("critical_entity_errors") or result.get("issues"):
+        result["status"] = "REVIEW_REQUIRED"
+    return result
+
+
+async def translate_document(ir: dict, work_dir: str, options: dict | None = None) -> dict:
+    options = options or {}
+    work = Path(work_dir).resolve()
+    work.mkdir(parents=True, exist_ok=True)
+    (work / "previews").mkdir(parents=True, exist_ok=True)
+    blocks = {block["id"]: block.get("text", "") for block in _all_blocks(ir)}
+    issues = []
+    result = {}
+    try:
+        from app.ai.translation.service import translate_blocks
+
+        result = translate_blocks(ir, options)
+        if asyncio.iscoroutine(result):
+            result = await result
+        result = result or {}
+    except (ImportError, AttributeError):
+        result = {}
+        if options.get("engine", "offline") != "offline":
+            issues.append(
+                _warn(
+                    "PRIVATE_TRANSLATION_UNAVAILABLE",
+                    "Service de traduction privé indisponible; aucun appel public n'est effectué.",
+                    "critical",
+                )
+            )
+    except Exception as exc:
+        result = {}
+        issues.append(_warn("TRANSLATION_SERVICE_ERROR", str(exc), "critical"))
+    translations = dict(result.get("translations") or {})
+    if not translations:
+        memory = options.get("memory") or {}
+        glossary = {
+            item.get("source"): item.get("target")
+            for item in options.get("glossary", [])
+            if isinstance(item, dict)
+        }
+        for block_id, text in blocks.items():
+            block = next(block for block in _all_blocks(ir) if block["id"] == block_id)
+            translations[block_id] = memory.get(text, glossary.get(text, text))
+            if (
+                translations[block_id] == text
+                and text.strip()
+                and _requires_translation(text)
+                and block.get("language") not in ("fra", "fr")
+            ):
+                issues.append(
+                    _warn(
+                        "UNTRANSLATED",
+                        "Segment conservé hors ligne faute de mémoire/glossaire.",
+                        "error",
+                        block_id=block_id,
+                    )
+                )
+    untranslated = list(
+        result.get("untranslated_blocks")
+        or [
+            block_id
+            for block_id, text in blocks.items()
+            if text.strip()
+            and translations.get(block_id, text) == text
+            and _requires_translation(text)
+            and next(block for block in _all_blocks(ir) if block["id"] == block_id).get("language")
+            not in ("fra", "fr")
+        ]
+    )
+    issues.extend(result.get("issues") or [])
+    source = Path(ir["source_path"])
+    original_previews = sorted((work / "previews").glob("original-*.png"))
+    if not original_previews and ir.get("format") == "pdf":
+        original_previews = _preview_pdf(source, work, "original")
+    candidate = work / ("candidate.docx" if ir.get("format") == "docx" else "candidate.pdf")
+    render = reconstruct_document(
+        ir, translations, str(candidate), options.get("protected_regions")
+    )
+    if ir.get("format") in ("pdf", "jpg", "jpeg", "png"):
+        translated = _preview_pdf(candidate, work, "translated")
+        for index, (before, after) in enumerate(
+            zip(original_previews, translated, strict=False), 1
+        ):
+            try:
+                raw_difference = _render_diff(
+                    before, after, work / "previews" / f"diff-{index:03d}.png"
+                )
+                render.setdefault("raw_visual_differences", []).append(raw_difference)
+            except Exception as exc:
+                issues.append(_warn("DIFF_RENDER_ERROR", str(exc), "warning", page=index))
+    else:
+        translated = [Path(path) for path in render.get("candidate_preview_paths", [])]
+        # DOCX previews are generated by the same isolated LibreOffice path as
+        # the source/candidate pagination; never fabricate a page image here.
+        for index, (before, after) in enumerate(
+            zip(original_previews, translated, strict=False), 1
+        ):
+            try:
+                _render_diff(before, after, work / "previews" / f"diff-{index:03d}.png")
+            except Exception as exc:
+                issues.append(_warn("DIFF_RENDER_ERROR", str(exc), "warning", page=index))
+    render["source_preview_paths"] = [str(path) for path in original_previews]
+    render["candidate_preview_paths"] = [str(path) for path in translated if Path(path).is_file()]
+    render["diff_preview_paths"] = [
+        str(path) for path in sorted((work / "previews").glob("diff-*.png"))
+    ]
+    render.setdefault("protected_regions", options.get("protected_regions") or [])
+    render.setdefault("text_masks", [])
+    if len(original_previews) != len(translated) and original_previews:
+        issues.append(
+            _warn(
+                "PAGE_COUNT_CHANGED",
+                "Le nombre de pages du candidat diffère du rendu source; revue requise.",
+                "error",
+                source_pages=len(original_previews),
+                candidate_pages=len(translated),
+            )
+        )
+    render["issues"] = render.get("issues", [])
+    issues.extend(render["issues"])
+    evaluation = evaluate_document(ir, translations, render, options.get("reference"), options)
+    issues.extend(evaluation["issues"])
+    from .fidelity_report import write_visual_artifacts
+    fidelity = write_visual_artifacts(work, render, evaluation)
+    versions = {"pipeline": "local-v2", "candidate": str(candidate), "renderer": render.get("renderer_version")}
+    service_versions = result.get("versions") or {}
+    if isinstance(service_versions, dict):
+        versions.update(service_versions)
+    for key in ("model", "prompt", "glossary", "translation_memory"):
+        if key in result:
+            versions[key] = result[key]
+    output = {
+        "translations": translations,
+        "issues": issues,
+        "quality": evaluation,
+        "document_fidelity": fidelity,
+        "versions": versions,
+        "untranslated_blocks": untranslated,
+        "translation_telemetry": result.get("translation_telemetry")
+        or ir.get("_translation_telemetry")
+        or {},
+    }
+    _save_json(work / "translation.json", output)
+    return output

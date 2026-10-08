@@ -1,0 +1,216 @@
+name: Private document translator
+
+on:
+  pull_request:
+    paths:
+      - '**'
+      - '.github/workflows/ai-document-translator.yml'
+  push:
+    branches: ['main']
+    paths:
+      - '**'
+      - '.github/workflows/ai-document-translator.yml'
+  workflow_dispatch:
+    inputs:
+      private_acceptance:
+        description: 'Run strict acceptance on the authorized bank-private runner'
+        type: boolean
+        default: false
+      release_environment:
+        description: 'Protected environment selected by the operator; no automatic deployment'
+        type: choice
+        options: [dev, test, production]
+        default: dev
+
+permissions:
+  contents: read
+
+concurrency:
+  group: translator-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-fra fonts-dejavu-core libreoffice-writer
+      - run: python -m pip install -r backend/requirements.txt 'pytest==9.1.1' 'pytest-asyncio==1.4.0' 'ruff==0.16.10' pip-audit
+      - run: ruff check backend tools
+      - run: PYTHONPATH=backend pytest backend/tests/unit backend/tests/integration backend/tests/e2e backend/tests/regression backend/tests/security --junitxml=test-report/ci.xml
+      - run: pip-audit -r backend/requirements.txt --strict
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: translator-technical-tests
+          path: test-report/ci.xml
+          retention-days: 7
+
+  backend-integration-and-migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-bookworm
+        env:
+          POSTGRES_DB: translator_ci
+          POSTGRES_USER: translator_ci
+          POSTGRES_PASSWORD: translator_ci_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U translator_ci -d translator_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      TRANSLATOR_DATABASE_URL: postgresql+psycopg://translator_ci:translator_ci_only@127.0.0.1:5432/translator_ci
+      TRANSLATOR_JWT_SECRET: ci-only-not-a-production-secret-0123456789
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-fra fonts-dejavu-core libreoffice-writer
+      - run: python -m pip install -r backend/requirements.txt 'pytest==9.1.1' 'pytest-asyncio==1.4.0'
+      - name: Upgrade the real PostgreSQL schema through Alembic
+        run: |
+          PYTHONPATH=backend python - <<'PY'
+          import os
+          from alembic import command
+          from alembic.config import Config
+          config = Config()
+          config.set_main_option('script_location', 'backend/migrations')
+          config.set_main_option('sqlalchemy.url', os.environ['TRANSLATOR_DATABASE_URL'])
+          command.upgrade(config, 'head')
+          PY
+      - run: PYTHONPATH=backend pytest backend/tests/integration -q --junitxml=test-report/integration.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: translator-integration-tests
+          path: test-report/integration.xml
+          retention-days: 7
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck && npm test && npm run build
+      - run: npm audit --audit-level=high
+
+  container-and-manifest-validation:
+    runs-on: ubuntu-latest
+    needs: [backend, backend-integration-and-migrations, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.17.3
+      - name: Validate Compose with synthetic non-secret values
+        run: |
+          cat > /tmp/compose-ci.env <<'EOF'
+          POSTGRES_DB=translator_ci
+          POSTGRES_USER=translator_ci
+          POSTGRES_PASSWORD=ci-only-postgres-password
+          REDIS_PASSWORD=ci-only-redis-password
+          MINIO_ROOT_USER=ci-minio-user
+          MINIO_ROOT_PASSWORD=ci-only-minio-password
+          MINIO_KMS_SECRET_KEY=ci-only:synthetic-key
+          MINIO_BUCKET=documents-ci
+          TRANSLATOR_JWT_SECRET=ci-only-jwt-secret-012345678901234567890123
+          EOF
+          docker compose --env-file /tmp/compose-ci.env config --quiet
+      - run: helm lint infrastructure/helm/atelier-documentaire
+      - run: helm template ci infrastructure/helm/atelier-documentaire >/tmp/atelier-documentaire.yaml
+      - name: Build runtime images with Docker
+        run: |
+          docker build --pull=false --tag atelier-documentaire-api:ci -f backend/Dockerfile .
+          docker build --pull=false --tag atelier-documentaire-frontend:ci -f frontend/Dockerfile .
+
+  private-acceptance:
+    if: github.event_name == 'workflow_dispatch' && inputs.private_acceptance
+    needs: [backend, frontend]
+    environment: bank-private-acceptance
+    runs-on: [self-hosted, bank-private]
+    env:
+      TRANSLATOR_GOLDEN_TENANT_ID: ${{ vars.GOLDEN_TENANT_ID }}
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require private runner provisioning
+        run: |
+          test -d /opt/translator/golden/input
+          test -d /opt/translator/golden/metadata
+          test -d /opt/translator/golden/expected
+          test -n "$TRANSLATOR_GOLDEN_TENANT_ID"
+          test "$TRANSLATOR_ENGINE" = private
+          test -n "$TRANSLATOR_PRIVATE_AI_BASE_URL"
+          test -d "$TRANSLATOR_TOKENIZER_PATH"
+          test -n "$TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS"
+          test -f /opt/translator/golden/baseline.json
+      - name: Link local confidential dataset (never upload it)
+        run: |
+          mkdir -p dataset
+          for name in input metadata expected; do
+            target="dataset/$name"
+            source="/opt/translator/golden/$name"
+            if test -L "$target"; then
+              test "$(readlink "$target")" = "$source" || exit 1
+              continue
+            fi
+            if test -d "$target"; then
+              if find "$target" -mindepth 1 ! -name .gitkeep | grep -q .; then
+                echo "Refus de remplacer un répertoire contenant des données" >&2
+                exit 1
+              fi
+              rm -f "$target/.gitkeep"
+              rmdir "$target"
+            fi
+            ln -s "$source" "$target"
+          done
+      - run: python3 -m venv .ci-venv && .ci-venv/bin/pip install --no-index --find-links=/opt/translator/wheels -r backend/requirements.txt pytest pytest-asyncio
+      - run: PYTHONPATH=backend .ci-venv/bin/pytest backend/tests/golden_dataset
+      - run: .ci-venv/bin/python tools/golden_report.py --engine private --tenant-id "$TRANSLATOR_GOLDEN_TENANT_ID" --out test-report
+      - run: .ci-venv/bin/python tools/verify_acceptance.py --root .
+      - run: .ci-venv/bin/python tools/compare_baseline.py --baseline /opt/translator/golden/baseline.json
+      # No automatic deployment and no confidential artifact upload.
+      # Production promotion remains a separate protected environment approval.
+      # Configurer les reviewers de bank-private-acceptance avant son activation.
+
+  manual-release-gate:
+    if: github.event_name == 'workflow_dispatch' && inputs.release_environment != ''
+    needs: [backend, backend-integration-and-migrations, frontend, container-and-manifest-validation]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.release_environment }}
+    env:
+      RELEASE_ATTESTATION_JSON: ${{ secrets.RELEASE_ATTESTATION_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require protected private evidence and run fail-closed gate
+        run: |
+          test -n "$RELEASE_ATTESTATION_JSON"
+          proof="$(mktemp)"
+          trap 'rm -f "$proof"' EXIT
+          printf '%s' "$RELEASE_ATTESTATION_JSON" > "$proof"
+          python tools/release_gate.py --environment "${{ inputs.release_environment }}" \
+            --proof "$proof" --repository-root "$GITHUB_WORKSPACE"
+      # This job only gates a manually approved environment; it never deploys.

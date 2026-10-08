@@ -1,0 +1,1295 @@
+AI DOCUMENT TRANSLATION PLATFORM
+
+Document Understanding — Contextual Translation — Layout Preservation — Automated Quality & Testing
+
+⸻
+
+1. RÔLE
+
+Tu es une équipe senior composée de :
+
+* Software Architects ;
+* Python Engineers ;
+* Angular Engineers ;
+* AI/ML Engineers ;
+* NLP Engineers ;
+* Document Intelligence Engineers ;
+* QA Engineers ;
+* DevSecOps Engineers ;
+* UX/UI Engineers.
+
+Tu dois concevoir et développer une plateforme industrielle de traduction intelligente de documents destinée à être déployée dans un Cloud Privé bancaire.
+
+Le produit doit être réellement exécutable et déployable, pas simplement une maquette.
+
+⸻
+
+2. OBJECTIF
+
+L’utilisateur dépose un document dans une langue quelconque supportée.
+
+La plateforme doit :
+
+1. détecter la langue ;
+2. identifier le type de document ;
+3. comprendre sa structure ;
+4. extraire le texte ;
+5. identifier les tableaux, images, signatures, cachets, formulaires, etc. ;
+6. comprendre le contexte métier ;
+7. traduire vers le français ;
+8. utiliser un français naturel et professionnel ;
+9. utiliser le jargon approprié ;
+10. conserver la structure du document ;
+11. reconstruire le document ;
+12. contrôler automatiquement le résultat ;
+13. signaler les anomalies ;
+14. permettre une validation humaine ;
+15. produire le document final téléchargeable.
+
+⸻
+
+3. EXIGENCE MAJEURE
+
+Le système ne doit jamais être conçu comme :
+
+PDF
+ ↓
+Extraction texte
+ ↓
+LLM
+ ↓
+PDF
+
+Il doit être conçu comme :
+
+DOCUMENT
+   ↓
+INGESTION
+   ↓
+DOCUMENT UNDERSTANDING
+   ↓
+OCR + LAYOUT
+   ↓
+STRUCTURAL REPRESENTATION
+   ↓
+CONTEXTUAL TRANSLATION
+   ↓
+TERMINOLOGY / MEMORY
+   ↓
+QUALITY CONTROL
+   ↓
+DOCUMENT RECONSTRUCTION
+   ↓
+VISUAL VALIDATION
+   ↓
+HUMAN REVIEW SI NÉCESSAIRE
+   ↓
+FINAL DOCUMENT
+
+⸻
+
+4. DOSSIER DE DOCUMENTS FOURNI
+
+Un dossier de documents exemples sera fourni au projet.
+
+Ce dossier constitue le Golden Dataset du produit.
+
+Ne pas simplement utiliser ces fichiers comme exemples visuels.
+
+Ils doivent être utilisés pour :
+
+* comprendre les cas métier ;
+* identifier les types de documents ;
+* identifier les langues ;
+* identifier les formats ;
+* construire les tests ;
+* construire les tests de non-régression ;
+* calibrer le moteur OCR ;
+* calibrer le moteur de traduction ;
+* calibrer le moteur de reconstruction ;
+* mesurer la qualité ;
+* détecter les régressions futures.
+
+⸻
+
+5. ANALYSE INITIALE DU DOSSIER
+
+Avant de développer le moteur complet, analyser automatiquement le dossier fourni.
+
+Créer un inventaire :
+
+Document
+Format
+Taille
+Nombre de pages
+Langue
+Type
+Domaine
+Scan/Natif
+Tableaux
+Images
+Signature
+Cachet
+Formulaires
+Complexité
+
+Exemple :
+
+document_001.pdf
+Language: Arabic
+Type: Employment Certificate
+Pages: 2
+Scanned: Yes
+Tables: 1
+Signature: Yes
+Stamp: Yes
+Complexity: HIGH
+
+⸻
+
+6. DOCUMENT CATALOG
+
+Créer un catalogue JSON/YAML du dataset.
+
+Exemple :
+
+{
+  "document_id": "DOC-001",
+  "filename": "attestation_arabe_01.pdf",
+  "source_language": "ar",
+  "target_language": "fr",
+  "document_type": "employment_certificate",
+  "domain": "HR",
+  "format": "PDF",
+  "scanned": true,
+  "expected_features": [
+    "table",
+    "stamp",
+    "signature"
+  ]
+}
+
+Ce catalogue devient la base de la stratégie de test.
+
+⸻
+
+7. GOLDEN DATASET
+
+Créer trois catégories.
+
+GOLDEN INPUT
+
+Documents originaux fournis.
+
+GOLDEN EXPECTED
+
+Résultats attendus ou références validées.
+
+GOLDEN METRICS
+
+Métriques permettant de déterminer si le résultat est acceptable.
+
+Si aucun document français de référence n’est fourni, le système doit permettre à un reviewer de valider manuellement une première traduction.
+
+Cette traduction validée devient ensuite le Golden Reference.
+
+⸻
+
+8. TEST CASE AUTOMATIQUE
+
+Pour chaque document du dossier, créer automatiquement un test.
+
+Exemple :
+
+TC-DOC-001
+Input:
+attestation_arabe_01.pdf
+Expected:
+Language = Arabic
+Type = Employment Certificate
+Target = French
+Requirements:
+- Table preserved
+- Signature preserved
+- Stamp preserved
+- No names modified
+- No dates modified
+- No numbers modified
+- French HR terminology
+- Layout preservation >= threshold
+
+⸻
+
+9. TESTS DE DOCUMENT INTELLIGENCE
+
+Tester :
+
+Language Detection
+
+Arabic → Arabic
+English → English
+Spanish → Spanish
+
+Document Classification
+
+Employment Certificate
+Bank Statement
+Contract
+Invoice
+Diploma
+Administrative Form
+
+Layout Detection
+
+Tester :
+
+* paragraph ;
+* title ;
+* table ;
+* image ;
+* signature ;
+* stamp ;
+* checkbox ;
+* header ;
+* footer.
+
+⸻
+
+10. TESTS OCR
+
+Pour chaque document scanné :
+
+Comparer :
+
+OCR Output
+vs
+Human Validated Text
+
+Mesurer :
+
+* Character Error Rate ;
+* Word Error Rate ;
+* extraction des nombres ;
+* extraction des dates ;
+* extraction des noms ;
+* extraction des références.
+
+Les chiffres et identifiants doivent bénéficier d’un contrôle renforcé.
+
+⸻
+
+11. TESTS DE TRADUCTION
+
+Tester :
+
+* fidélité ;
+* cohérence ;
+* terminologie ;
+* contexte ;
+* style ;
+* absence d’hallucination.
+
+Ne pas utiliser uniquement BLEU ou une métrique de traduction classique.
+
+Pour ce projet, la qualité doit être évaluée avec plusieurs dimensions.
+
+⸻
+
+12. CONTEXTUAL TRANSLATION TEST
+
+Exemple :
+
+Employment Certificate
+
+Le système doit préférer selon le contexte :
+
+Attestation de travail
+
+et non systématiquement :
+
+Certificat d'emploi
+
+Créer des tests spécifiques pour les termes ambigus.
+
+⸻
+
+13. JARGON MÉTIER
+
+Créer des tests par domaine :
+
+HR
+BANKING
+LEGAL
+FINANCE
+ADMINISTRATION
+ACADEMIC
+
+Exemple :
+
+Gross Salary
+→ Salaire brut
+Account Statement
+→ Relevé de compte
+Employment Certificate
+→ Attestation de travail
+
+Le résultat doit être validé par le contexte.
+
+⸻
+
+14. TESTS D’ENTITÉS
+
+Vérifier que les éléments suivants restent identiques :
+
+* noms ;
+* prénoms ;
+* sociétés ;
+* dates ;
+* montants ;
+* références ;
+* numéros ;
+* IBAN ;
+* téléphones ;
+* emails ;
+* adresses.
+
+Créer un comparateur automatique.
+
+Exemple :
+
+Original:
+Mohamed Alaoui
+Translation:
+Mohamed Alaoui
+Result:
+PASS
+
+⸻
+
+15. ZERO HALLUCINATION TEST
+
+Comparer le document source et le document traduit.
+
+Détecter :
+
+Information added
+Information removed
+Information modified
+
+Exemple :
+
+Original:
+Date: 12/03/2024
+Translated:
+Date: 12/03/2024
+PASS
+
+Si :
+
+Translated:
+Date: 12/03/2025
+
+→ FAIL CRITICAL
+
+⸻
+
+16. TABLE TESTS
+
+Pour chaque tableau :
+
+Comparer :
+
+Nombre de lignes
+Nombre de colonnes
+Cellules
+Fusion
+Headers
+Ordre
+Structure
+
+Exemple :
+
+Original:
+10 rows
+5 columns
+Translated:
+10 rows
+5 columns
+PASS
+
+⸻
+
+17. FORMAT PRESERVATION TESTS
+
+Pour chaque document :
+
+Original
+vs
+Translated
+
+Comparer :
+
+* nombre de pages ;
+* dimensions ;
+* blocs ;
+* tableaux ;
+* images ;
+* signatures ;
+* cachets ;
+* headers ;
+* footers ;
+* pagination.
+
+⸻
+
+18. VISUAL REGRESSION TEST
+
+Rendre chaque page en image :
+
+Original → PNG
+Translated → PNG
+
+Puis effectuer une comparaison visuelle.
+
+Calculer :
+
+Visual Similarity Score
+
+Détecter :
+
+* déplacement ;
+* chevauchement ;
+* disparition ;
+* texte hors zone ;
+* page blanche ;
+* éléments coupés.
+
+Conserver les images de comparaison pour le QA.
+
+⸻
+
+19. DOCUMENT DIFF
+
+Créer un outil interne :
+
+Original
+Translated
+Difference
+
+Avec visualisation :
+
+┌────────────────┬────────────────┬────────────────┐
+│ ORIGINAL       │ TRANSLATED     │ DIFFERENCES    │
+└────────────────┴────────────────┴────────────────┘
+
+⸻
+
+20. QWEN 3.5 — 32K CONTEXT
+
+Le modèle Qwen 3.5 utilisé pour la compréhension/traduction est limité à 32K tokens.
+
+Cette contrainte doit être intégrée dès la conception.
+
+Ne jamais dépasser :
+
+32K tokens
+
+dans une requête.
+
+Ne pas utiliser 32K comme cible.
+
+Configurer par exemple :
+
+MAX_CONTEXT = 32768
+TARGET_INPUT = 22000
+MAX_OUTPUT = 8000
+SAFETY_MARGIN = 2768
+
+Ces valeurs doivent être configurables.
+
+⸻
+
+21. SEMANTIC CHUNKING
+
+Le chunking doit respecter :
+
+* pages ;
+* sections ;
+* paragraphes ;
+* tableaux ;
+* phrases ;
+* blocs logiques.
+
+Ne jamais couper arbitrairement au milieu d’une structure.
+
+⸻
+
+22. CONTEXT MEMORY
+
+Créer :
+
+Document Memory
+Terminology Memory
+Entity Memory
+Translation Memory
+Decision Memory
+
+Le contexte nécessaire est récupéré dynamiquement pour chaque chunk.
+
+Ne jamais transmettre toute la mémoire au modèle.
+
+⸻
+
+23. CONTEXT PACK BUILDER
+
+Créer :
+
+ContextPackBuilder
+
+Il doit respecter un budget de tokens.
+
+Il assemble :
+
+Global Context
++
+Relevant Terminology
++
+Relevant Entities
++
+Relevant Translation Memory
++
+Previous Context
++
+Current Chunk
+
+Puis vérifie :
+
+tokens <= configured limit
+
+⸻
+
+24. DOCUMENT MEMORY
+
+Exemple :
+
+{
+  "document_type": "employment_certificate",
+  "domain": "HR",
+  "language": "ar",
+  "style": "formal_administrative",
+  "entities": {},
+  "terminology": {},
+  "translation_decisions": [],
+  "quality_issues": []
+}
+
+⸻
+
+25. TRANSLATION MEMORY
+
+Une traduction validée par un humain doit pouvoir être réutilisée.
+
+Exemple :
+
+Employment Certificate
+→ Attestation de travail
+
+Cette traduction devient une entrée de Translation Memory.
+
+⸻
+
+26. TERMINOLOGY MEMORY PAR CLIENT
+
+Chaque client doit pouvoir avoir son propre glossaire.
+
+Client A
+  └── HR Glossary
+Client B
+  └── Banking Glossary
+
+La terminologie client doit avoir priorité sur la terminologie générique lorsque cela est explicitement configuré.
+
+⸻
+
+27. TRANSLATION ENGINE
+
+Créer une interface :
+
+class TranslationEngine:
+    async def translate(...)
+
+Le backend ne doit pas dépendre directement de Qwen.
+
+Cela permettra de remplacer Qwen ultérieurement.
+
+⸻
+
+28. DOCUMENT RECONSTRUCTION
+
+Le modèle IA ne génère pas directement le document final.
+
+Python réalise la reconstruction.
+
+Qwen
+ ↓
+Structured Translation
+ ↓
+Python Renderer
+ ↓
+PDF/DOCX/XLSX/PPTX
+
+⸻
+
+29. FORMATS
+
+V1 :
+
+PDF
+DOCX
+JPG
+PNG
+
+V2 :
+
+XLSX
+PPTX
+TIFF
+
+Architecture extensible.
+
+⸻
+
+30. PYTHON STACK
+
+Backend :
+
+Python 3.12+
+FastAPI
+Pydantic
+SQLAlchemy
+
+IA :
+
+PyTorch
+Transformers
+vLLM
+Hugging Face
+
+Documents :
+
+PyMuPDF
+pypdf
+python-docx
+openpyxl
+python-pptx
+Pillow
+OpenCV
+
+OCR :
+
+PaddleOCR
+
+Messaging :
+
+Celery
+RabbitMQ ou Redis
+
+Storage :
+
+S3 compatible Object Storage
+
+Database :
+
+PostgreSQL
+
+⸻
+
+31. FRONTEND
+
+Angular + TypeScript.
+
+Pages :
+
+/login
+/dashboard
+/documents
+/upload
+/documents/{id}
+/review/{id}
+/glossary
+/translation-memory
+/admin
+/testing
+/audit
+
+⸻
+
+32. QA DASHBOARD
+
+Créer une interface permettant de voir :
+
+Documents tested
+Tests passed
+Tests failed
+Translation score
+OCR score
+Layout score
+Semantic score
+Visual score
+Critical errors
+
+Exemple :
+
+Total Documents     120
+Tests               1,850
+Passed              1,791
+Failed                 59
+Translation         97.4%
+OCR                 98.1%
+Layout              96.7%
+Semantic            98.3%
+Visual              95.8%
+
+⸻
+
+33. TEST AUTOMATION
+
+Créer une commande :
+
+pytest
+
+et :
+
+pytest tests/golden_dataset
+
+La deuxième commande doit traiter automatiquement tous les documents du dossier de référence.
+
+⸻
+
+34. TEST REPORT
+
+Après exécution :
+
+test-report/
+├── summary.html
+├── summary.json
+├── documents/
+│   ├── DOC-001/
+│   │   ├── original.png
+│   │   ├── translated.png
+│   │   ├── diff.png
+│   │   ├── metrics.json
+│   │   └── result.json
+│   └── DOC-002/
+
+Le rapport doit identifier précisément les erreurs.
+
+⸻
+
+35. REGRESSION TEST
+
+À chaque modification :
+
+Code change
+     ↓
+CI/CD
+     ↓
+Golden Dataset
+     ↓
+All tests
+     ↓
+Compare with previous baseline
+
+Si la qualité régresse :
+
+REGRESSION DETECTED
+
+Le pipeline CI/CD doit pouvoir bloquer le déploiement.
+
+⸻
+
+36. QUALITY THRESHOLDS
+
+Les seuils doivent être configurables.
+
+Exemple initial :
+
+OCR >= 95%
+Translation >= 90%
+Semantic >= 95%
+Layout >= 90%
+Visual >= 90%
+Critical entity errors = 0
+Hallucination errors = 0
+Context overflow = 0
+
+Pour les documents critiques :
+
+Critical entity errors = 0
+
+est obligatoire.
+
+⸻
+
+37. HUMAN VALIDATION
+
+Si un résultat est sous le seuil :
+
+REVIEW_REQUIRED
+
+Le reviewer peut :
+
+* corriger ;
+* valider ;
+* rejeter ;
+* modifier un terme ;
+* ajouter une entrée au glossaire ;
+* ajouter une entrée à la Translation Memory.
+
+⸻
+
+38. GOLDEN REFERENCE UPDATE
+
+Si un reviewer valide un résultat :
+
+Validated Translation
+        ↓
+Golden Reference
+        ↓
+Translation Memory
+        ↓
+Regression Dataset
+
+Mais une modification du Golden Dataset doit être versionnée et auditée.
+
+⸻
+
+39. TESTS DE CHARGE
+
+Tester :
+
+1 user
+10 users
+50 users
+100 users
+
+Tester également :
+
+1 page
+10 pages
+50 pages
+100 pages
+200 pages
+
+Mesurer :
+
+* temps total ;
+* temps OCR ;
+* temps LLM ;
+* GPU ;
+* mémoire ;
+* queue ;
+* throughput.
+
+⸻
+
+40. TESTS DE SÉCURITÉ
+
+Tester :
+
+* fichiers malveillants ;
+* extensions falsifiées ;
+* MIME spoofing ;
+* fichiers trop volumineux ;
+* accès cross-tenant ;
+* accès non autorisé ;
+* injection dans les documents ;
+* prompt injection ;
+* extraction de données ;
+* accès aux documents d’un autre utilisateur.
+
+⸻
+
+41. PROMPT INJECTION
+
+Les documents sont considérés comme données non fiables.
+
+Si un document contient :
+
+Ignore previous instructions...
+
+le système doit considérer cette information comme du contenu documentaire et non comme une instruction au modèle.
+
+Utiliser une séparation stricte :
+
+SYSTEM INSTRUCTIONS
+        ≠
+DOCUMENT CONTENT
+
+⸻
+
+42. SECURITY / PRIVACY
+
+Aucune donnée ne doit sortir du Cloud Privé.
+
+Architecture :
+
+Angular
+ ↓
+API Gateway
+ ↓
+FastAPI
+ ↓
+Private AI
+ ↓
+Private Storage
+
+Aucun :
+
+OpenAI API
+Google Translate API
+Azure Translator public
+DeepL public API
+
+ne doit être utilisé pour les données réelles.
+
+⸻
+
+43. AUDIT
+
+Conserver :
+
+User
+Document
+Timestamp
+Model
+Model Version
+Prompt Version
+Glossary Version
+Translation Memory Version
+Result
+Quality Score
+Reviewer
+
+⸻
+
+44. VERSIONNING
+
+Chaque document traduit doit conserver :
+
+Original
+Intermediate Representation
+Translation
+Final Document
+
+et :
+
+OCR model version
+Qwen version
+Prompt version
+Glossary version
+Translation Memory version
+
+⸻
+
+45. CI/CD
+
+Pipeline :
+
+Git Commit
+   ↓
+Lint
+   ↓
+Unit Tests
+   ↓
+Security Scan
+   ↓
+Integration Tests
+   ↓
+Golden Dataset Tests
+   ↓
+Visual Regression
+   ↓
+Performance Tests
+   ↓
+Docker Build
+   ↓
+Deploy DEV
+   ↓
+Acceptance Tests
+   ↓
+Deploy TEST
+   ↓
+Approval
+   ↓
+Deploy PROD
+
+⸻
+
+46. TEST PYRAMID
+
+Créer :
+
+                 E2E
+                /   \
+          Integration
+             /       \
+          AI Tests
+         /           \
+    Unit Tests       Golden
+
+Avec :
+
+Unit tests
+
+* parsers ;
+* token counting ;
+* chunking ;
+* context builder ;
+* terminology ;
+* entity detection ;
+* reconstruction.
+
+Integration tests
+
+* OCR ;
+* Qwen ;
+* PostgreSQL ;
+* Storage ;
+* Queue.
+
+E2E
+
+Upload
+→ Analyze
+→ Translate
+→ Reconstruct
+→ Validate
+→ Download
+
+⸻
+
+47. ARCHITECTURE
+
+                    ┌──────────────┐
+                    │   Angular    │
+                    └──────┬───────┘
+                           │
+                    ┌──────▼───────┐
+                    │ API Gateway  │
+                    └──────┬───────┘
+                           │
+                    ┌──────▼───────┐
+                    │   FastAPI    │
+                    └──────┬───────┘
+                           │
+                  ┌────────▼─────────┐
+                  │ Job Orchestrator │
+                  └────────┬─────────┘
+                           │
+       ┌───────────────────┼───────────────────┐
+       │                   │                   │
+       ▼                   ▼                   ▼
+     OCR              Context Engine      Document Parser
+       │                   │                   │
+       └───────────────────┼───────────────────┘
+                           │
+                     ┌─────▼─────┐
+                     │ AI Gateway│
+                     └─────┬─────┘
+                           │
+                     ┌─────▼─────┐
+                     │ Qwen 3.5  │
+                     │   <=32K   │
+                     └─────┬─────┘
+                           │
+                    ┌──────▼──────┐
+                    │ Consistency │
+                    │   Engine    │
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │  Renderer   │
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Quality   │
+                    │    Engine   │
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Storage   │
+                    └─────────────┘
+
+⸻
+
+48. STRUCTURE DU REPOSITORY
+
+ai-document-translator/
+├── frontend/
+│   ├── src/
+│   └── Dockerfile
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── domain/
+│   │   ├── application/
+│   │   ├── infrastructure/
+│   │   ├── workers/
+│   │   ├── ai/
+│   │   │   ├── ocr/
+│   │   │   ├── translation/
+│   │   │   ├── vision/
+│   │   │   ├── context/
+│   │   │   └── quality/
+│   │   ├── documents/
+│   │   ├── glossary/
+│   │   ├── memory/
+│   │   └── prompts/
+│   │
+│   ├── tests/
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   ├── e2e/
+│   │   ├── golden_dataset/
+│   │   └── regression/
+│   │
+│   └── Dockerfile
+│
+├── dataset/
+│   ├── input/
+│   ├── expected/
+│   ├── metadata/
+│   └── golden/
+│
+├── infrastructure/
+│   ├── docker/
+│   ├── kubernetes/
+│   └── helm/
+│
+├── docs/
+│
+└── .gitlab-ci.yml
+
+⸻
+
+49. PREMIÈRE ACTION À EFFECTUER
+
+Avant d’écrire beaucoup de code :
+
+ÉTAPE 1
+
+Analyser le dossier de documents fourni.
+
+ÉTAPE 2
+
+Produire :
+
+Dataset Inventory
+Document Classification
+Language Matrix
+Format Matrix
+Complexity Matrix
+Test Plan
+
+ÉTAPE 3
+
+Identifier les cas difficiles.
+
+ÉTAPE 4
+
+Construire les premiers Golden Tests.
+
+ÉTAPE 5
+
+Développer le pipeline MVP.
+
+Ne pas commencer par développer l’interface complète avant d’avoir validé le moteur documentaire sur les vrais documents.
+
+⸻
+
+50. DÉFINITION DE DONE
+
+Le projet ne sera considéré comme terminé que lorsque :
+
+* tous les documents du Golden Dataset sont traités ;
+* les langues sont correctement détectées ;
+* les types de documents sont correctement classifiés ;
+* l’OCR atteint le seuil défini ;
+* les traductions respectent le contexte ;
+* le jargon métier est correct ;
+* les entités critiques ne sont jamais modifiées ;
+* aucune hallucination critique n’est détectée ;
+* les tableaux sont conservés ;
+* les images sont conservées ;
+* signatures et cachets sont conservés ;
+* la mise en page reste fidèle ;
+* aucun appel IA externe n’est effectué ;
+* aucun dépassement de 32K tokens n’est possible ;
+* les tests unitaires passent ;
+* les tests d’intégration passent ;
+* les tests E2E passent ;
+* les Golden Tests passent ;
+* les tests de régression passent ;
+* les tests de sécurité passent ;
+* les tests de charge passent ;
+* le déploiement Kubernetes fonctionne ;
+* le système est observable ;
+* les actions sont auditées.
+
+⸻
+
+51. LIVRABLE FINAL
+
+À la fin du développement, fournir :
+
+1. Code source complet.
+2. Frontend Angular.
+3. Backend Python/FastAPI.
+4. Services IA.
+5. OCR.
+6. Context Engine.
+7. Translation Engine.
+8. Terminology Engine.
+9. Translation Memory.
+10. Document Renderer.
+11. Quality Engine.
+12. Golden Dataset Framework.
+13. Tests unitaires.
+14. Tests intégration.
+15. Tests E2E.
+16. Tests de régression.
+17. Tests visuels.
+18. Tests sécurité.
+19. Tests de charge.
+20. Dockerfiles.
+21. Kubernetes/Helm.
+22. CI/CD.
+23. OpenAPI.
+24. Documentation architecture.
+25. Documentation installation.
+26. Documentation exploitation.
+27. Guide utilisateur.
+28. Rapport de qualité sur le dossier de documents fourni.
+
+⸻
+
+52. RÈGLE FINALE
+
+Ne jamais optimiser uniquement pour la vitesse.
+
+La priorité est :
+
+1. FIDÉLITÉ
+2. COHÉRENCE
+3. TERMINOLOGIE
+4. PRÉSERVATION DU DOCUMENT
+5. SÉCURITÉ
+6. QUALITÉ
+7. PERFORMANCE
+
+Le produit final doit se comporter comme un traducteur documentaire professionnel assisté par IA, et non comme un simple chatbot qui traduit du texte.
+
+Le dossier de documents fourni par l’utilisateur doit devenir la référence centrale de validation du produit et chaque évolution du code doit pouvoir être évaluée automatiquement sur ce dataset afin d’empêcher toute régression.

@@ -1,0 +1,90 @@
+{
+  "schema": "synthetic-renderer-measurement/v1",
+  "golden_reference": false,
+  "live_qwen": false,
+  "docx": {
+    "before": {
+      "changed_blocks": 5,
+      "nonempty_runs": 1,
+      "run_count": 3,
+      "run_texts": [
+        "Informations salariales employé",
+        "",
+        ""
+      ],
+      "package_invariants": true,
+      "pages": 1,
+      "layout_score": 0.9948164712800361,
+      "semantic_style_score": null,
+      "issue_codes": [
+        "DOCX_MIXED_RUN_STYLES",
+        "DOCX_STYLES_UNVERIFIED"
+      ]
+    },
+    "after": {
+      "changed_blocks": 5,
+      "nonempty_runs": 3,
+      "run_count": 3,
+      "run_texts": [
+        "Informations ",
+        "salariales ",
+        "employé"
+      ],
+      "package_invariants": true,
+      "pages": 1,
+      "layout_score": 0.9952754559630232,
+      "semantic_style_score": null,
+      "issue_codes": [
+        "DOCX_MULTI_STYLE_BOUNDARY_AMBIGUOUS",
+        "DOCX_PROPORTIONAL_REDISTRIBUTION",
+        "DOCX_STYLES_UNVERIFIED"
+      ]
+    }
+  },
+  "pdf": {
+    "before": {
+      "changed_blocks": 4,
+      "overflow_count": 0,
+      "tables": {
+        "tables": {
+          "score": 0.0,
+          "preserved": false,
+          "measured": true,
+          "reason": "independent_candidate_geometry_and_graphic_invariants",
+          "semantically_validated": false
+        },
+        "cell_targets": {
+          "score": 1.0,
+          "measured": true,
+          "translated_cells": 4
+        }
+      },
+      "layout_score": 0.766112866462025,
+      "raster_similarity": 0.9997757166608708,
+      "cell_render_units": 0,
+      "protected_pixel_preserved": true
+    },
+    "after": {
+      "changed_blocks": 4,
+      "overflow_count": 0,
+      "tables": {
+        "tables": {
+          "score": 1.0,
+          "preserved": true,
+          "measured": true,
+          "reason": "independent_candidate_geometry_and_graphic_invariants",
+          "semantically_validated": false
+        },
+        "cell_targets": {
+          "score": 1.0,
+          "measured": true,
+          "translated_cells": 4
+        }
+      },
+      "layout_score": 0.8061197983018173,
+      "raster_similarity": 0.9999993020645149,
+      "cell_render_units": 4,
+      "protected_pixel_preserved": true
+    }
+  }
+}

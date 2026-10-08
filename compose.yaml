@@ -1,0 +1,252 @@
+name: atelier-documentaire
+
+services:
+  postgres:
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [private]
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["sh", "-c", "redis-server --appendonly yes --requirepass \"$$REDIS_PASSWORD\""]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [private]
+
+  minio:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/minio.Dockerfile
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+      MINIO_KMS_SECRET_KEY: ${MINIO_KMS_SECRET_KEY:?set a DEV-only static key or replace MinIO with bank KMS-backed S3}
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [private]
+
+  minio-provision:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/mc.Dockerfile
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        mc alias set private http://minio:9000 "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}"
+        mc mb --ignore-existing "private/$${MINIO_BUCKET}"
+        mc anonymous set none "private/$${MINIO_BUCKET}"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:?set MINIO_BUCKET}
+    networks: [private]
+
+  clamav:
+    image: clamav/clamav:1.4.3
+    profiles: ["antivirus"]
+    volumes:
+      - clamav-data:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "clamdscan --ping 1 >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    read_only: true
+    tmpfs: [/tmp, /run/clamav]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [private]
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/appuser:uid=10001,gid=10001
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: ${API_MEMORY_LIMIT:-2g}
+    cpus: ${API_CPUS:-2.0}
+    volumes:
+      - runtime-data:/app/runtime
+      - expected-data:/app/dataset/expected
+      - model-data:/models:ro
+    environment:
+      TRANSLATOR_ENVIRONMENT: ${TRANSLATOR_ENVIRONMENT:-local}
+      TRANSLATOR_JWT_SECRET: ${TRANSLATOR_JWT_SECRET:?set TRANSLATOR_JWT_SECRET}
+      TRANSLATOR_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:?set POSTGRES_USER}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:?set POSTGRES_DB}
+      TRANSLATOR_DATA_DIR: /app/runtime
+      TRANSLATOR_EXPECTED_DIR: /app/dataset/expected
+      TRANSLATOR_ENGINE: ${TRANSLATOR_ENGINE:-offline}
+      TRANSLATOR_STORAGE_BACKEND: s3
+      TRANSLATOR_S3_BUCKET: ${MINIO_BUCKET:?set MINIO_BUCKET}
+      TRANSLATOR_S3_ENDPOINT_URL: http://minio:9000
+      TRANSLATOR_S3_REGION: ${TRANSLATOR_S3_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+      TRANSLATOR_EXECUTION_MODE: ${TRANSLATOR_EXECUTION_MODE:-celery}
+      TRANSLATOR_CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
+      TRANSLATOR_ALLOWED_ORIGINS: ${TRANSLATOR_ALLOWED_ORIGINS:-http://localhost:8080}
+      TRANSLATOR_PRIVATE_AI_BASE_URL: ${TRANSLATOR_PRIVATE_AI_BASE_URL:-}
+      TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS: ${TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS:-}
+      TRANSLATOR_PRIVATE_AI_MODEL: ${TRANSLATOR_PRIVATE_AI_MODEL:-}
+      TRANSLATOR_PRIVATE_AI_MODEL_VERSION: ${TRANSLATOR_PRIVATE_AI_MODEL_VERSION:-}
+      TRANSLATOR_AUTO_CREATE_SCHEMA: ${TRANSLATOR_AUTO_CREATE_SCHEMA:-true}
+      TRANSLATOR_AUTH_MODE: ${TRANSLATOR_AUTH_MODE:-hybrid}
+      TRANSLATOR_COOKIE_SECURE: ${TRANSLATOR_COOKIE_SECURE:-false}
+      TRANSLATOR_METRICS_TOKEN: ${TRANSLATOR_METRICS_TOKEN:-}
+      TRANSLATOR_OCR_BACKEND: ${TRANSLATOR_OCR_BACKEND:-tesseract}
+      TRANSLATOR_PADDLE_MODEL_DIR: ${TRANSLATOR_PADDLE_MODEL_DIR:-}
+      TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR:-}
+      TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION:-}
+      TRANSLATOR_QUALITY_PRIVATE_JUDGE_ENABLED: ${TRANSLATOR_QUALITY_PRIVATE_JUDGE_ENABLED:-false}
+      TRANSLATOR_TOKENIZER_PATH: ${TRANSLATOR_TOKENIZER_PATH:-/models/qwen-tokenizer}
+      TRANSLATOR_MAX_CONTEXT: ${TRANSLATOR_MAX_CONTEXT:-32768}
+      TRANSLATOR_TARGET_INPUT: ${TRANSLATOR_TARGET_INPUT:-22000}
+      TRANSLATOR_MAX_OUTPUT: ${TRANSLATOR_MAX_OUTPUT:-8000}
+      TRANSLATOR_SAFETY_MARGIN: ${TRANSLATOR_SAFETY_MARGIN:-2768}
+      TRANSLATOR_AV_SCAN_ENABLED: ${TRANSLATOR_AV_SCAN_ENABLED:-false}
+      TRANSLATOR_AV_SCAN_REQUIRED: ${TRANSLATOR_AV_SCAN_REQUIRED:-false}
+      TRANSLATOR_AV_HOST: ${TRANSLATOR_AV_HOST:-clamav}
+      TRANSLATOR_AV_PORT: ${TRANSLATOR_AV_PORT:-3310}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio-provision: { condition: service_completed_successfully }
+    command: ["app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    networks: [private]
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/appuser:uid=10001,gid=10001
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: ${WORKER_MEMORY_LIMIT:-4g}
+    cpus: ${WORKER_CPUS:-2.0}
+    volumes:
+      - runtime-data:/app/runtime
+      - expected-data:/app/dataset/expected:ro
+      - model-data:/models:ro
+    environment:
+      TRANSLATOR_ENVIRONMENT: ${TRANSLATOR_ENVIRONMENT:-local}
+      TRANSLATOR_JWT_SECRET: ${TRANSLATOR_JWT_SECRET:?set TRANSLATOR_JWT_SECRET}
+      TRANSLATOR_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:?set POSTGRES_USER}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:?set POSTGRES_DB}
+      TRANSLATOR_DATA_DIR: /app/runtime
+      TRANSLATOR_EXPECTED_DIR: /app/dataset/expected
+      TRANSLATOR_ENGINE: ${TRANSLATOR_ENGINE:-offline}
+      TRANSLATOR_STORAGE_BACKEND: s3
+      TRANSLATOR_S3_BUCKET: ${MINIO_BUCKET:?set MINIO_BUCKET}
+      TRANSLATOR_S3_ENDPOINT_URL: http://minio:9000
+      TRANSLATOR_S3_REGION: ${TRANSLATOR_S3_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+      TRANSLATOR_EXECUTION_MODE: ${TRANSLATOR_EXECUTION_MODE:-celery}
+      TRANSLATOR_CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
+      TRANSLATOR_PRIVATE_AI_BASE_URL: ${TRANSLATOR_PRIVATE_AI_BASE_URL:-}
+      TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS: ${TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS:-}
+      TRANSLATOR_PRIVATE_AI_MODEL: ${TRANSLATOR_PRIVATE_AI_MODEL:-}
+      TRANSLATOR_PRIVATE_AI_MODEL_VERSION: ${TRANSLATOR_PRIVATE_AI_MODEL_VERSION:-}
+      TRANSLATOR_AUTO_CREATE_SCHEMA: ${TRANSLATOR_AUTO_CREATE_SCHEMA:-true}
+      TRANSLATOR_AUTH_MODE: ${TRANSLATOR_AUTH_MODE:-hybrid}
+      TRANSLATOR_COOKIE_SECURE: ${TRANSLATOR_COOKIE_SECURE:-false}
+      TRANSLATOR_METRICS_TOKEN: ${TRANSLATOR_METRICS_TOKEN:-}
+      TRANSLATOR_OCR_BACKEND: ${TRANSLATOR_OCR_BACKEND:-tesseract}
+      TRANSLATOR_PADDLE_MODEL_DIR: ${TRANSLATOR_PADDLE_MODEL_DIR:-}
+      TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR:-}
+      TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION:-}
+      TRANSLATOR_QUALITY_PRIVATE_JUDGE_ENABLED: ${TRANSLATOR_QUALITY_PRIVATE_JUDGE_ENABLED:-false}
+      TRANSLATOR_TOKENIZER_PATH: ${TRANSLATOR_TOKENIZER_PATH:-/models/qwen-tokenizer}
+      TRANSLATOR_MAX_CONTEXT: ${TRANSLATOR_MAX_CONTEXT:-32768}
+      TRANSLATOR_TARGET_INPUT: ${TRANSLATOR_TARGET_INPUT:-22000}
+      TRANSLATOR_MAX_OUTPUT: ${TRANSLATOR_MAX_OUTPUT:-8000}
+      TRANSLATOR_SAFETY_MARGIN: ${TRANSLATOR_SAFETY_MARGIN:-2768}
+      TRANSLATOR_AV_SCAN_ENABLED: ${TRANSLATOR_AV_SCAN_ENABLED:-false}
+      TRANSLATOR_AV_SCAN_REQUIRED: ${TRANSLATOR_AV_SCAN_REQUIRED:-false}
+      TRANSLATOR_AV_HOST: ${TRANSLATOR_AV_HOST:-clamav}
+      TRANSLATOR_AV_PORT: ${TRANSLATOR_AV_PORT:-3310}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import celery; print('worker-import-ok')"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio-provision: { condition: service_completed_successfully }
+    entrypoint: ["celery"]
+    command: ["-A", "app.workers.tasks", "worker", "--loglevel=INFO", "--queues=documents", "--concurrency=2", "--prefetch-multiplier=1"]
+    networks: [private]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        ANGULAR_OUTPUT_DIR: ${ANGULAR_OUTPUT_DIR:-dist/atelier-documentaire}
+    read_only: true
+    tmpfs: [/tmp, /var/cache/nginx, /var/run]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: ${FRONTEND_MEMORY_LIMIT:-512m}
+    cpus: ${FRONTEND_CPUS:-1.0}
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-8080}:8080"
+    depends_on:
+      api: { condition: service_started }
+    networks: [private, gateway]
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  runtime-data:
+  expected-data:
+  model-data:
+  clamav-data:
+
+networks:
+  private:
+    driver: bridge
+    internal: true
+  gateway:
+    driver: bridge

@@ -24,6 +24,7 @@ from urllib.parse import urlparse
 import httpx
 
 from app.ai.context.builder import ContextPackBuilder
+from app.ai.translation.typography import typography_equivalent
 
 MAX_CONTEXT_CEILING = 32768
 DEFAULTS = {"max_context": 32768, "target_input": 22000, "max_output": 8000, "safety_margin": 2768}
@@ -656,8 +657,32 @@ def _config(options: Mapping[str, Any]) -> dict[str, int]:
     return values
 
 
-def _instructions(options: Mapping[str, Any]) -> str:
-    return (
+_RETRY_UNCHANGED_INSTRUCTION = (
+    "Every block supplied below was returned unchanged by a previous request although its "
+    "detected language is not the target language. Translate each block into the target "
+    "language now. Returning the source text unchanged is acceptable only for proper names, "
+    "identifiers, codes, or text that is already written in the target language. "
+)
+
+
+def _retry_candidate(block: Mapping[str, Any], returned: str, document_language: Any) -> bool:
+    """A block returned verbatim although it is evidently not French.
+
+    Conservative: the detected language must be known and non-French, and the
+    source must contain at least two alphabetic words of four letters or more,
+    so proper names, codes and identifiers are not retried.
+    """
+    source = str(block.get("text", ""))
+    if returned.split() != source.split():
+        return False
+    language = block.get("language") or document_language
+    if not language or str(language).lower() in {"unknown", "und", "none"} or _is_french(language):
+        return False
+    return len(re.findall(r"[^\W\d_]{4,}", source, flags=re.UNICODE)) >= 2
+
+
+def _instructions(options: Mapping[str, Any], retry_unchanged: bool = False) -> str:
+    return (_RETRY_UNCHANGED_INSTRUCTION if retry_unchanged else "") + (
         "Translate each supplied block faithfully into the requested target language. "
         "Use natural, professional French suited to the supplied document type and business domain. "
         "Never add, omit or invent facts; preserve names and other protected entities exactly. "
@@ -969,12 +994,15 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
         max_blocks = int(options.get("interim_max_blocks_per_request", 40)) if mode == "interim" else 0
 
         async def _translate_active(
-            chunk: dict[str, Any], active_blocks: list[dict[str, Any]], depth: int = 0
+            chunk: dict[str, Any],
+            active_blocks: list[dict[str, Any]],
+            depth: int = 0,
+            retry_unchanged: bool = False,
         ) -> None:
             if max_blocks and len(active_blocks) > max_blocks:
                 half = len(active_blocks) // 2
-                await _translate_active(chunk, active_blocks[:half], depth)
-                await _translate_active(chunk, active_blocks[half:], depth)
+                await _translate_active(chunk, active_blocks[:half], depth, retry_unchanged)
+                await _translate_active(chunk, active_blocks[half:], depth, retry_unchanged)
                 return
             chunk_ids = [str(block.get("id")) for block in active_blocks]
             protected_blocks: list[dict[str, Any]] = []
@@ -1018,7 +1046,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
             telemetry["inputs"]["terminology_version"] = terminology_version
             pack = builder.pack(ir, active_chunk, chunk_options)
             messages = [
-                {"role": "system", "content": _instructions(options)},
+                {"role": "system", "content": _instructions(options, retry_unchanged)},
                 {"role": "user", "content": _user_payload(pack, protected_blocks, target_language)},
             ]
             messages = _fit_prompt_to_budget(builder, messages, config["target_input"])
@@ -1125,17 +1153,72 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                     translations[block_id] = str(block_by_id[block_id].get("text", ""))
                     untranslated.append(block_id)
                 return
+            # Blocks whose answer was rejected by the entity guard are restored
+            # to their source: they must NOT look "unchanged" to the retry below
+            # (final audit D26: the retry re-sent them, a second answer passed
+            # the marker/number check and was applied while the critical
+            # PROTECTED_ENTITY_CHANGED issue stayed recorded).
+            guard_rejected: set[str] = set()
+            typography_only: list[str] = []
             for block_id in chunk_ids:
+                source_text = str(block_by_id[block_id].get("text", ""))
                 text, issue = _restore_and_validate(
-                    str(block_by_id[block_id].get("text", "")),
+                    source_text,
                     result.translations[block_id],
                     mappings.get(block_id, {}),
                     block_id,
                 )
+                # D27: an answer that only re-spaces punctuation, swaps quote or
+                # space variants or changes case is the source, not a
+                # translation. Keep the exact source so the retry below and the
+                # pipeline's UNTRANSLATED check both see it as unchanged.
+                if not issue and text != source_text and typography_equivalent(text, source_text):
+                    text = source_text
+                    typography_only.append(block_id)
                 translations[block_id] = text
                 if issue:
                     issues.append(issue)
                     untranslated.append(block_id)
+                    guard_rejected.add(block_id)
+            if typography_only:
+                issues.append(
+                    {
+                        "code": "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED",
+                        "severity": "info",
+                        "message": "Sortie identique à la source à la typographie près: source conservée.",
+                        "blocks": len(typography_only),
+                        "block_ids": typography_only,
+                    }
+                )
+            # Observed on the real corpus (DOC-001, same request replayed): the
+            # model may return evidently non-French blocks verbatim. One bounded
+            # retry, through the same context builder and token preflight; a
+            # block still unchanged afterwards stays UNTRANSLATED for review.
+            if mode != "offline" and not retry_unchanged:
+                retry = [
+                    block
+                    for block in active_blocks
+                    if str(block["id"]) not in guard_rejected
+                    and _retry_candidate(
+                        block_by_id[str(block["id"])],
+                        translations.get(str(block["id"]), ""),
+                        document_language,
+                    )
+                ]
+                if retry:
+                    issues.append(
+                        {
+                            "code": "UNCHANGED_TRANSLATION_RETRY",
+                            "severity": "info",
+                            "message": "Blocs non français renvoyés inchangés: une seule nouvelle requête, même contrôle de budget.",
+                            "blocks": len(retry),
+                            "block_ids": [str(block["id"]) for block in retry],
+                        }
+                    )
+                    telemetry.setdefault("unchanged_retries", []).append(
+                        {"blocks": len(retry), "depth": depth}
+                    )
+                    await _translate_active(chunk, retry, depth + 1, True)
 
         for chunk in chunks:
             unmapped = [
@@ -1166,6 +1249,107 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                 for block in chunk.get("blocks", [])
                 if not _is_french(block.get("language") or document_language)
             ]
+            # Unreadable OCR noise (low confidence AND no real word) is never
+            # sent: a model would "translate" it into invented text. It stays
+            # as source and is listed for human review.
+            unreliable = [
+                block
+                for block in active_blocks
+                if block_by_id.get(str(block.get("id")), {}).get("ocr_unreliable")
+            ]
+            if unreliable:
+                active_blocks = [block for block in active_blocks if block not in unreliable]
+                for block in unreliable:
+                    issues.append(
+                        {
+                            "code": "OCR_UNRELIABLE_NOT_TRANSLATED",
+                            "severity": "warning",
+                            "message": "Texte OCR illisible (confiance faible, aucun mot exploitable): conservé tel quel, revue humaine requise.",
+                            "block_id": str(block.get("id")),
+                        }
+                    )
+            # Two OCR readings disagree on a critical value (date, amount,
+            # identifier): rewriting would print an unproven value over the
+            # original. The block keeps its original pixels and is reviewed.
+            disagreeing = [
+                block
+                for block in chunk.get("blocks", [])
+                if block_by_id.get(str(block.get("id")), {}).get("entity_read_disagreement")
+            ]
+            if disagreeing:
+                active_blocks = [block for block in active_blocks if block not in disagreeing]
+                for block in disagreeing:
+                    detail = (
+                        block_by_id.get(str(block.get("id")), {}).get("entity_read_disagreement")
+                        or {}
+                    )
+                    issues.append(
+                        {
+                            "code": "OCR_CRITICAL_ENTITY_DISAGREEMENT",
+                            "severity": "error",
+                            "message": "Deux lectures OCR divergent sur une valeur critique (date, montant, identifiant): bloc non réécrit, original conservé, revue humaine requise.",
+                            "block_id": str(block.get("id")),
+                            "line_count": int(detail.get("count") or 1),
+                        }
+                    )
+            # A block crossing form/table rules (OCR ruling glyphs, vertical rule
+            # through a line, horizontal rule between its lines) cannot be
+            # rewritten without moving values out of their cells: original kept.
+            structural = [
+                block
+                for block in active_blocks
+                if block_by_id.get(str(block.get("id")), {}).get("form_structure_risk")
+            ]
+            if structural:
+                active_blocks = [block for block in active_blocks if block not in structural]
+                for block in structural:
+                    detail = (
+                        block_by_id.get(str(block.get("id")), {}).get("form_structure_risk") or {}
+                    )
+                    issues.append(
+                        {
+                            "code": "FORM_STRUCTURE_PRESERVED",
+                            "severity": "warning",
+                            "message": "Bloc traversant des filets de formulaire ou de tableau: non réécrit (structure et valeurs d'origine conservées), revue humaine requise.",
+                            "block_id": str(block.get("id")),
+                            "reasons": list(detail.get("reasons") or []),
+                        }
+                    )
+            # Lines made only of identifiers/numbers carry nothing translatable.
+            identifiers = [
+                block
+                for block in active_blocks
+                if block_by_id.get(str(block.get("id")), {}).get("identifier_only")
+            ]
+            if identifiers:
+                active_blocks = [block for block in active_blocks if block not in identifiers]
+                for block in identifiers:
+                    issues.append(
+                        {
+                            "code": "IDENTIFIER_ONLY_KEPT",
+                            "severity": "info",
+                            "message": "Ligne composée uniquement d'identifiants ou de nombres: conservée à l'identique (pixels d'origine).",
+                            "block_id": str(block.get("id")),
+                        }
+                    )
+            # A low-confidence line in a script marginal on its page is OCR noise
+            # (labels read as another alphabet): sending it would invent words.
+            noise = [
+                block
+                for block in active_blocks
+                if block_by_id.get(str(block.get("id")), {}).get("minority_script_low_confidence")
+            ]
+            if noise:
+                active_blocks = [block for block in active_blocks if block not in noise]
+                for block in noise:
+                    issues.append(
+                        {
+                            "code": "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED",
+                            "severity": "warning",
+                            "message": "Ligne OCR à faible confiance dans une écriture marginale sur la page: non envoyée au modèle, pixels d'origine conservés, revue humaine requise.",
+                            "block_id": str(block.get("id")),
+                        }
+                    )
             for block in chunk.get("blocks", []):
                 if block not in active_blocks:
                     translations[str(block["id"])] = str(block.get("text", ""))

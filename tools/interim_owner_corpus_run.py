@@ -133,6 +133,14 @@ async def run_one(
             for block in page.get("blocks", []):
                 block.pop("protected", None)
         protect_ir(ir)
+        # Line verification (highlight + critical-entity double reading) is
+        # idempotent and measured on the original raster: re-applied so that a
+        # reused analysis carries the current safety net.
+        if any(p.get("scanned") for p in ir.get("pages", [])):
+            from app.documents.pipeline import run_line_verification
+
+            run_line_verification(ir, source)
+            (work / "analysis.json").write_text(json.dumps(ir, ensure_ascii=False))
         for stale in [*(work / "previews").glob("translated-*.png"), *(work / "previews").glob("diff-*.png")]:
             stale.unlink()
         service_module.translate_blocks = _reusing_translate(work) if reuse else _capturing_translate(work)

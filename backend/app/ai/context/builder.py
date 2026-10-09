@@ -216,7 +216,7 @@ class ContextPackBuilder:
                 current, current_tokens = [], 0
 
         for unit in self.units(ir):
-            unit_tokens = self.count_tokens(self._unit_json(unit))
+            unit_tokens = self.count_tokens(self._unit_wire(unit))
             if unit_tokens > self.max_tokens:
                 flush()
                 chunks.append(self._chunk([unit], overflow=True))
@@ -231,6 +231,30 @@ class ContextPackBuilder:
     @staticmethod
     def _unit_json(unit: ContextUnit) -> dict[str, Any]:
         return {"page": unit.page, "kind": unit.kind, "blocks": list(unit.blocks)}
+
+    @staticmethod
+    def _unit_wire(unit: ContextUnit) -> dict[str, Any]:
+        """Projection of a unit as it is actually sent to the model.
+
+        Measured failure (DOC-004, final run): grouped OCR blocks carry
+        rendering metadata (source_lines, style evidence, geometry) that is
+        never sent; counting it declared a 62-cell table "over budget" and
+        blocked it without any request. Only id/text/language reach the wire
+        (see service._translate_active); the complete-request 32K bound is
+        still enforced on the final messages by the engine guard.
+        """
+        return {
+            "page": unit.page,
+            "kind": unit.kind,
+            "blocks": [
+                {
+                    "id": str(block.get("id")),
+                    "text": str(block.get("text", "")),
+                    "language": block.get("language"),
+                }
+                for block in unit.blocks
+            ],
+        }
 
     def _chunk(self, units: Iterable[ContextUnit], *, overflow: bool) -> dict[str, Any]:
         units = list(units)

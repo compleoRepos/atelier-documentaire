@@ -11,6 +11,248 @@ def _intersects(a, b):
     return bool(a and b and a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1])
 
 
+def _area(box):
+    return max(0.0, box[2] - box[0]) * max(0.0, box[3] - box[1]) if box else 0.0
+
+
+def _inter_area(a, b):
+    if not _intersects(a, b):
+        return 0.0
+    return (min(a[2], b[2]) - max(a[0], b[0])) * (min(a[3], b[3]) - max(a[1], b[1]))
+
+
+def is_user_region(region):
+    """Human annotations stay strict: any contact protects the block."""
+    provenance = str(region.get("provenance") or "")
+    return provenance.startswith(("user", "human")) or bool(region.get("annotation"))
+
+
+def significant_overlap(block_box, region_box):
+    """Overlap large enough to make the block part of the protected visual.
+
+    Measured failure mode: a stamp touching the corner of a paragraph, or a
+    form frame enclosing labels, protected whole text blocks. A block is now
+    protected by an AUTOMATIC candidate only if the overlap covers 30 % of the
+    block or half of the candidate; smaller contacts are recorded as
+    ``near_protected_regions`` and avoided by the renderer instead.
+    """
+    inter = _inter_area(block_box, region_box)
+    if inter <= 0:
+        return False
+    return inter >= 0.3 * max(_area(block_box), 1e-6) or inter >= 0.5 * max(_area(region_box), 1e-6)
+
+
+_WORD4 = None
+
+
+def _readable_line(block):
+    import re
+
+    global _WORD4
+    if _WORD4 is None:
+        _WORD4 = re.compile(r"[^\W\d_]{4,}", re.UNICODE)
+    return float(block.get("confidence") or 0.0) >= 0.6 and bool(
+        _WORD4.search(str(block.get("text") or ""))
+    )
+
+
+def _candidate_pixels(ir, page_number, box):
+    """Original RGB pixels of a candidate (4x), or None when unavailable."""
+    source = ir.get("source_path")
+    if not source:
+        return None
+    try:
+        from pathlib import Path
+
+        import numpy as np
+
+        path = Path(source)
+        if path.suffix.lower() == ".pdf":
+            import fitz
+
+            with fitz.open(path) as doc:
+                page = doc[int(page_number) - 1]
+                pix = page.get_pixmap(matrix=fitz.Matrix(4, 4), clip=fitz.Rect(*box), alpha=False)
+                return np.frombuffer(pix.samples, dtype=np.uint8).reshape(
+                    pix.height, pix.width, pix.n
+                )[:, :, :3]
+        from PIL import Image, ImageSequence
+
+        page = next(
+            (p for p in ir.get("pages", []) if int(p.get("number", 0)) == int(page_number)), None
+        )
+        with Image.open(path) as image:
+            frame = next(
+                f for i, f in enumerate(ImageSequence.Iterator(image)) if i == int(page_number) - 1
+            ).convert("RGB")
+            scale = frame.width / float(page["width"])
+            crop = frame.crop(tuple(int(round(v * scale)) for v in box))
+            return np.asarray(crop)
+    except Exception:  # noqa: BLE001 - unavailable evidence is reported as None
+        return None
+
+
+def multicolor_evidence(rgb):
+    """Significant hues (30 degree bins) of saturated pixels and whether at
+    least two of them are >= 60 degrees apart (logo pictogram), as opposed to
+    one hue family (coloured title, marker highlight)."""
+    import numpy as np
+
+    if rgb is None or rgb.size == 0:
+        return None
+    c = np.asarray(rgb, dtype=np.float32) / 255.0
+    high, low = c.max(axis=2), c.min(axis=2)
+    chroma = high - low
+    coloured = (chroma >= 0.25) & (high >= 0.25)
+    if int(coloured.sum()) < 20:
+        return {"hues": [], "multicolor": False}
+    r, g, b = c[..., 0][coloured], c[..., 1][coloured], c[..., 2][coloured]
+    m, d = high[coloured], chroma[coloured]
+    hue = (
+        np.where(m == r, ((g - b) / d) % 6, np.where(m == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
+    )
+    hist = np.bincount((hue // 30).astype(int) % 12, minlength=12) / len(hue)
+    hues = [i * 30 for i, share in enumerate(hist) if share >= 0.12]
+    far = any(
+        min(abs(a - b), 360 - abs(a - b)) >= 60 for i, a in enumerate(hues) for b in hues[i + 1 :]
+    )
+    return {"hues": hues, "multicolor": bool(far)}
+
+
+def reclassify_text_candidates(ir):
+    """Drop automatic raster candidates that are text structure, with a trace.
+
+    * ``conservative_dark_contour`` frames enclosing >= 2 readable OCR lines and
+      large enough to be layout (>= 4 % of the page or >= 35 % of its width)
+      are form/section frames, not stamps.
+    * ``color_connected_components`` contained in a readable OCR line (grown by
+      0.3 line height) and no taller than 1.8 line heights are the coloured
+      letters of that line (e.g. a coloured title), not a logo -- unless the
+      original pixels show two hue families >= 60 degrees apart: a logo
+      pictogram read by OCR as part of a line (measured on the final corpus:
+      orange/green pictogram next to a company wordmark) stays protected.
+
+    Human annotations and PDF-native visuals are never reclassified.
+    """
+    pages = {int(p["number"]): p for p in ir.get("pages", [])}
+    kept, moved, warnings, vetoed = [], [], [], []
+    for region in ir.get("protected_visual_regions") or []:
+        page = pages.get(int(region.get("page", 0) or 0))
+        box = region.get("bbox")
+        if (
+            page is None
+            or not page.get("scanned")
+            or str(region.get("provenance")) != "automatic_candidate:preprocessing"
+            or not box
+        ):
+            kept.append(region)
+            continue
+        lines = [b for b in page.get("blocks", []) if b.get("bbox") and _readable_line(b)]
+        detector = str(region.get("detector") or "")
+        page_area = float(page.get("width", 0)) * float(page.get("height", 0)) or 1.0
+        reason, members = None, []
+        if detector == "conservative_dark_contour":
+            members = [
+                b for b in lines if _inter_area(b["bbox"], box) >= 0.8 * max(_area(b["bbox"]), 1e-6)
+            ]
+            large = _area(box) >= 0.04 * page_area or (box[2] - box[0]) >= 0.35 * float(
+                page.get("width", 0)
+            )
+            if len(members) >= 2 and large:
+                reason = "text_container_frame"
+        elif detector == "color_connected_components":
+            for line in lines:
+                lb = line["bbox"]
+                height = lb[3] - lb[1]
+                grown = [
+                    lb[0] - 0.3 * height,
+                    lb[1] - 0.3 * height,
+                    lb[2] + 0.3 * height,
+                    lb[3] + 0.3 * height,
+                ]
+                if (box[3] - box[1]) <= 1.8 * height and _inter_area(box, grown) >= 0.7 * max(
+                    _area(box), 1e-6
+                ):
+                    reason, members = "colored_text_glyphs", [line]
+                    break
+            if reason == "colored_text_glyphs":
+                evidence = multicolor_evidence(_candidate_pixels(ir, region.get("page"), box))
+                if evidence and evidence["multicolor"]:
+                    region["reclassification_veto"] = {
+                        "reason": "multicolor_logo",
+                        "hues": evidence["hues"],
+                    }
+                    vetoed.append(
+                        {
+                            "page": int(region.get("page", 0)),
+                            "bbox": [round(float(v), 3) for v in box],
+                            "reason": "multicolor_logo",
+                            "hues": evidence["hues"],
+                        }
+                    )
+                    reason, members = None, []
+        if reason is None:
+            kept.append(region)
+            continue
+        moved.append(
+            {
+                "page": int(region.get("page", 0)),
+                "bbox": [round(float(v), 3) for v in box],
+                "detector": detector,
+                "subtype": region.get("subtype"),
+                "reason": reason,
+                "line_ids": [str(b.get("id")) for b in members],
+            }
+        )
+    by_page = {}
+    for item in moved:
+        by_page.setdefault(item["page"], []).append(item["reason"])
+    for page_number, reasons in sorted(by_page.items()):
+        warnings.append(
+            {
+                "code": "PROTECTED_CANDIDATE_RECLASSIFIED_TEXT",
+                "message": "Candidats visuels automatiques reconnus comme structure de texte (cadre de formulaire ou lettres colorées); non protégés, tracés.",
+                "severity": "info",
+                "page": page_number,
+                "count": len(reasons),
+                "reasons": sorted(set(reasons)),
+            }
+        )
+    ir["protected_visual_regions"] = kept
+    ir["reclassified_visual_candidates"] = _merge_trace(
+        ir.get("reclassified_visual_candidates"), moved
+    )
+    if vetoed:
+        ir["reclassification_vetoes"] = _merge_trace(ir.get("reclassification_vetoes"), vetoed)
+        warnings.append(
+            {
+                "code": "PROTECTED_CANDIDATE_MULTICOLOR_KEPT",
+                "message": "Candidat coloré inclus dans une ligne OCR mais multicolore (pictogramme de logo): protection conservée.",
+                "severity": "info",
+                "count": len(vetoed),
+            }
+        )
+    ir.setdefault("warnings", []).extend(warnings)
+    return ir
+
+
+def _merge_trace(existing: list[dict] | None, new: list[dict]) -> list[dict]:
+    """Append trace entries once: re-applying protection on a reused analysis
+    must not duplicate them (measured: a veto counted twice after reuse)."""
+
+    def key(item: dict) -> tuple:
+        bbox = tuple(round(float(v), 1) for v in (item.get("bbox") or []))
+        return (item.get("page"), bbox, item.get("reason"), item.get("id"))
+
+    out, seen = [], set()
+    for item in list(existing or []) + list(new):
+        k = key(item)
+        if k not in seen:
+            seen.add(k)
+            out.append(item)
+    return out
+
+
 def normalize_regions(regions, pages, source_id):
     """Fail closed on invalid annotations rather than silently dropping them."""
     dimensions = {int(p["number"]): (float(p["width"]), float(p["height"])) for p in pages}
@@ -251,6 +493,7 @@ def protect_ir(ir, annotations=None):
         detected, warnings = detect_pdf_visuals(source, ir["pages"], ir.get("tables", []))
     else:
         detected, warnings = [], []
+    reclassify_text_candidates(ir)
     existing = list(ir.get("protected_visual_regions") or [])
     normalized = normalize_regions(
         existing + detected + list(annotations or []), ir["pages"], source_id
@@ -266,10 +509,31 @@ def protect_ir(ir, annotations=None):
     ir.setdefault("versions", {})["source_sha256"] = source_id
     ir.setdefault("warnings", []).extend(warnings)
     for page in ir["pages"]:
+        scanned = bool(page.get("scanned"))
         for block in page.get("blocks", []):
-            if any(
-                region["page"] == page["number"] and _intersects(block.get("bbox"), region["bbox"])
+            hits = [
+                region
                 for region in regions
-            ):
-                block["protected"] = True
+                if region["page"] == page["number"]
+                and _intersects(block.get("bbox"), region["bbox"])
+            ]
+            protecting = [
+                region
+                for region in hits
+                if not scanned
+                or is_user_region(region)
+                or significant_overlap(block.get("bbox"), region["bbox"])
+            ]
+            near = [region for region in hits if region not in protecting]
+            # Recomputed from the final region list (strict on native PDFs and
+            # for human annotations, significant overlap on scans).
+            block["protected"] = bool(protecting)
+            if protecting:
+                block["protected_by"] = [str(region.get("id")) for region in protecting]
+            else:
+                block.pop("protected_by", None)
+            if near:
+                block["near_protected_regions"] = [str(region.get("id")) for region in near]
+            else:
+                block.pop("near_protected_regions", None)
     return ir

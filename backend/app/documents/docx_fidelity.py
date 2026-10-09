@@ -392,7 +392,7 @@ def _issue(code: str, message: str, severity: str = "warning", **extra: Any) -> 
     return issue
 
 
-def redistribute_text(element: Any, target: str) -> dict:
+def redistribute_text(element: Any, target: str, *, allow_single_hyperlink: bool = False) -> dict:
     """Safely redistribute ``target`` over existing ``w:t`` nodes.
 
     Only node text (and, when needed, ``xml:space=preserve``) is changed.  Runs,
@@ -438,7 +438,7 @@ def redistribute_text(element: Any, target: str) -> dict:
                 "error",
             )
         )
-    if metadata["hyperlinks"]:
+    if metadata["hyperlinks"] and not allow_single_hyperlink:
         issues.append(
             _issue(
                 "DOCX_HYPERLINK_BOUNDARY_AMBIGUOUS",
@@ -446,6 +446,25 @@ def redistribute_text(element: Any, target: str) -> dict:
                 "error",
             )
         )
+    elif metadata["hyperlinks"]:
+        hyperlink_nodes = list(_iter(element, "hyperlink"))
+        hyperlink_text_nodes = {
+            node for hyperlink in hyperlink_nodes for node in _iter(hyperlink, "t")
+        }
+        # A paragraph containing only one hyperlink has an unambiguous writable
+        # boundary: redistribute inside its existing runs and retain r:id.
+        # Mixed hyperlink/non-hyperlink paragraphs still require review because
+        # proportional splitting could silently move link text across the edge.
+        if len(hyperlink_nodes) != 1 or any(
+            node not in hyperlink_text_nodes for node in all_nodes if node not in field_protected
+        ):
+            issues.append(
+                _issue(
+                    "DOCX_HYPERLINK_BOUNDARY_AMBIGUOUS",
+                    "Hyperlink boundaries are ambiguous for proportional redistribution.",
+                    "error",
+                )
+            )
     if metadata["bookmarks"]:
         issues.append(
             _issue(
@@ -851,7 +870,7 @@ def edit_docx_package(
                         ],
                     }
                 else:
-                    result = redistribute_text(paragraph, target)
+                    result = redistribute_text(paragraph, target, allow_single_hyperlink=True)
             except Exception as exc:
                 result = {
                     "applied": False,

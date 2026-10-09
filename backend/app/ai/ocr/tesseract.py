@@ -145,6 +145,80 @@ def _uncertainties(blocks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return issues
 
 
+LINE_SPLIT_GAP_FACTOR = 2.0
+LINE_SPLIT_TALL_WORD_FACTOR = 2.2
+
+
+def split_line_at_gaps(
+    item: dict[str, list[Any]],
+    factor: float = LINE_SPLIT_GAP_FACTOR,
+    tall_factor: float = LINE_SPLIT_TALL_WORD_FACTOR,
+) -> list[dict[str, Any]]:
+    """Split one Tesseract line where two consecutive words (left to right) are
+    separated by a blank >= ``factor`` x the median word height.
+
+    Measured on the authorised corpus: Tesseract groups texts of separate form
+    cells, columns or zones into ONE line when they share a baseline (a ministry
+    name and a header 265 pt apart, four form cells, a footer and its far-right
+    "Page No:"). One line box then spans the blank: the size estimated from its
+    width was 19.9 pt for 7 pt print and the translation was written across the
+    cells. A normal space is ~0.3 x the word height and a justified one stays
+    below 1 x, so 2 x only separates distinct zones. Each segment keeps its own
+    box and mean confidence; its text keeps the OCR reading order (RTL safe).
+
+    In lines of >= 3 words, a "word" >= ``tall_factor`` x the median word height
+    is isolated as its own segment: it is a graphic read as a glyph (a crest
+    fragment read as "2" made a 7 pt line box 22.5 pt tall: font 12.7 pt and a
+    mask erasing the line above). Ascender/descender variation stays < 2 x.
+    """
+    words = [
+        {
+            "order": index,
+            "text": item["text"][index],
+            "left": item["left"][index],
+            "top": item["top"][index],
+            "right": item["right"][index],
+            "bottom": item["bottom"][index],
+            "confidence": item["confidence"][index],
+        }
+        for index in range(len(item["text"]))
+    ]
+    heights = sorted(max(1, w["bottom"] - w["top"]) for w in words)
+    median = heights[len(heights) // 2]
+    threshold = factor * median
+    tall = (
+        {w["order"] for w in words if (w["bottom"] - w["top"]) >= tall_factor * median}
+        if len(words) >= 3
+        else set()
+    )
+    by_x = sorted(words, key=lambda w: (w["left"], w["order"]))
+    segments: list[list[dict[str, Any]]] = [[by_x[0]]]
+    right = by_x[0]["right"]
+    for previous, word in zip(by_x, by_x[1:], strict=False):
+        isolate = word["order"] in tall or previous["order"] in tall
+        if isolate or word["left"] - right >= threshold:
+            segments.append([word])
+        else:
+            segments[-1].append(word)
+        right = max(right, word["right"])
+    out = []
+    for segment in segments:
+        ordered = sorted(segment, key=lambda w: w["order"])
+        out.append(
+            {
+                "text": " ".join(w["text"] for w in ordered),
+                "bbox": [
+                    min(w["left"] for w in segment),
+                    min(w["top"] for w in segment),
+                    max(w["right"] for w in segment),
+                    max(w["bottom"] for w in segment),
+                ],
+                "confidence": sum(w["confidence"] for w in segment) / len(segment),
+            }
+        )
+    return out
+
+
 class TesseractOCR:
     def __init__(self, languages: list[str] | str | None = None, psm: int = 3, timeout: float = 90):
         self.requested = normalize_languages(languages)
@@ -173,9 +247,38 @@ class TesseractOCR:
 
         used, warnings, script = select_languages(self.requested, self._available)
         config = f"--psm {self.psm}"
-        data = pytesseract.image_to_data(
-            image, lang="+".join(used), config=config, output_type=Output.DICT, timeout=self.timeout
-        )
+        try:
+            data = pytesseract.image_to_data(
+                image,
+                lang="+".join(used),
+                config=config,
+                output_type=Output.DICT,
+                timeout=self.timeout,
+            )
+        except RuntimeError as exc:
+            # pytesseract raises RuntimeError("Tesseract process timeout") when
+            # the CPU is saturated. One bounded retry (2x, max 300 s) instead of
+            # failing the whole document; any other error is re-raised as is.
+            if "timeout" not in str(exc).lower() or self.timeout >= 300:
+                raise
+            retry_timeout = min(300.0, 2.0 * self.timeout)
+            data = pytesseract.image_to_data(
+                image,
+                lang="+".join(used),
+                config=config,
+                output_type=Output.DICT,
+                timeout=retry_timeout,
+            )
+            warnings = [
+                *warnings,
+                {
+                    "code": "OCR_TIMEOUT_RETRIED",
+                    "severity": "info",
+                    "message": "OCR relancé une fois après dépassement du délai",
+                    "timeout_s": self.timeout,
+                    "retry_timeout_s": retry_timeout,
+                },
+            ]
         groups: dict[tuple[int, int, int], dict[str, Any]] = {}
         n = len(data.get("text", []))
         for i in range(n):
@@ -199,20 +302,22 @@ class TesseractOCR:
             item["bottom"].append(y + h)
             item["confidence"].append(confidence)
         blocks = []
+        split_lines = 0
         for item in groups.values():
-            blocks.append(
+            segments = split_line_at_gaps(item)
+            split_lines += len(segments) > 1
+            for segment in segments:
+                blocks.append({**segment, "provenance": "ocr:tesseract-local"})
+        if split_lines:
+            warnings = [
+                *warnings,
                 {
-                    "text": " ".join(item["text"]),
-                    "bbox": [
-                        min(item["left"]),
-                        min(item["top"]),
-                        max(item["right"]),
-                        max(item["bottom"]),
-                    ],
-                    "confidence": sum(item["confidence"]) / len(item["confidence"]),
-                    "provenance": "ocr:tesseract-local",
-                }
-            )
+                    "code": "OCR_LINE_SPLIT_AT_GAP",
+                    "severity": "info",
+                    "message": "Lignes OCR découpées aux grands blancs (colonnes, cellules ou zones distinctes lues comme une seule ligne)",
+                    "count": split_lines,
+                },
+            ]
         blocks.sort(key=lambda block: (block["bbox"][1], block["bbox"][0]))
         uncertainties = _uncertainties(blocks)
         warnings.extend(uncertainties)

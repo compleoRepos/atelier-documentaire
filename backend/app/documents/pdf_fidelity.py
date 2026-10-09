@@ -475,21 +475,27 @@ def _fit_on_scratch(
     size: float,
     style: dict[str, Any],
     align: int,
+    min_ratio: float | None = None,
 ) -> tuple[bool, float, float]:
     scratch = fitz.open(stream=source_bytes, filetype="pdf")
     try:
         result = -1.0
         current = size
-        minimum = max(4.0, min(size, rect.height * 0.32))
-        for _ in range(8):
+        if min_ratio:
+            # Scan path: never shrink below ``min_ratio`` of the measured size
+            # (a smaller font is a fidelity defect, reported for review).
+            minimum, step, tries = max(4.0, size * min_ratio), 0.95, 16
+        else:
+            minimum, step, tries = max(4.0, min(size, rect.height * 0.32)), 0.86, 8
+        for _ in range(tries):
             kwargs = _font_kwargs(current, style, align)
             kwargs = {key: value for key, value in kwargs.items() if value is not None}
             result = scratch[page_number - 1].insert_textbox(rect, text, **kwargs)
             if result >= 0:
                 return True, result, current
-            current *= 0.86
-            if current < minimum:
+            if current * step < minimum - 1e-6:
                 break
+            current *= step
         return False, result, current
     finally:
         scratch.close()
@@ -563,11 +569,349 @@ def _paper_color(page: Any, box: list[float]) -> list[float]:
     return [sorted(c[k] for c in light)[len(light) // 2] / 255.0 for k in range(3)]
 
 
+SCAN_TRUSTED_SIZE_CONFIDENCE = 0.8
+
+
+def _band_is_blank(page: Any, rect: list[float], max_dark_share: float = 0.004) -> bool:
+    """True when ``rect`` holds no ink on the page as rendered now (original
+    raster plus anything already drawn): rules, labels, stamps or text."""
+    try:
+        clip = fitz.Rect(*rect) & page.rect
+        if clip.is_empty or clip.width < 1 or clip.height < 1:
+            return False
+        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), clip=clip, colorspace=fitz.csGRAY)
+    except Exception:
+        return False
+    samples = pix.samples
+    if not samples:
+        return False
+    dark = sum(1 for value in samples if value < 140)
+    return dark / len(samples) <= max_dark_share
+
+
+# A translation is never drawn over original ink that no mask hides (residual
+# source under the new text). Thresholds at 2x: a few glyphs of a 6-7 pt line.
+_SOURCE_INK_DARK = 140
+
+# Frame growth outside the source box (vertical or to the right) must stay in
+# space proven blank on the original raster: no rule, label, graphic or text
+# that OCR did not box. Rows/columns this inky stop the growth.
+_INK_ZOOM = 2.0
+_GROWTH_ROW_SHARE = 0.02
+_GROWTH_COL_SHARE = 0.05
+_GROWTH_GAP = 0.6
+_GROWTH_MAX_SHARE = 0.004
+_GROWTH_MIN_PIXELS = 6
+
+
+def _page_dark(page: Any) -> Any:
+    """Dark-pixel mask of the page as rendered now, at _INK_ZOOM (cached on the
+    page object: planning happens before any drawing)."""
+    import numpy as np
+
+    cached = getattr(page, "_atelier_dark_mask", None)
+    if cached is not None:
+        return cached
+    try:
+        pix = page.get_pixmap(matrix=fitz.Matrix(_INK_ZOOM, _INK_ZOOM), colorspace=fitz.csGRAY)
+        arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, -1)[:, : pix.width]
+        dark = arr < _SOURCE_INK_DARK
+    except Exception:
+        return None
+    try:
+        page._atelier_dark_mask = dark
+    except Exception:
+        pass
+    return dark
+
+
+def _px(page: Any, value: float, axis: int) -> int:
+    origin = page.rect.x0 if axis == 0 else page.rect.y0
+    return int(round((value - origin) * _INK_ZOOM))
+
+
+def _walk(
+    shares: Any, start: int, step: int, stop: int, absorb: int, threshold: float
+) -> tuple[int, int | None]:
+    """Walk outward from a box edge over row/column dark shares. Ink contiguous
+    with the box (its own glyphs past the OCR box) is absorbed up to ``absorb``
+    pixels, except rules (>= _RULE_RUN_SHARE), which are obstacles at once.
+    Returns (absorbed edge index, first obstacle index or None)."""
+    edge, index, absorbing = start - step, start, True
+    while (index < stop) if step > 0 else (index > stop):
+        share = float(shares[index])
+        if share >= _RULE_RUN_SHARE:
+            return edge, index
+        inky = share > threshold
+        if absorbing:
+            if inky and abs(index - start) < absorb:
+                edge = index
+            elif inky:
+                return edge, index  # contiguous ink beyond own reach: a neighbour
+            else:
+                absorbing = False
+        elif inky:
+            return edge, index
+        index += step
+    return edge, None
+
+
+def _ink_obstacles(
+    page: Any, box: list[float], right_limit: float, reach: float
+) -> tuple[list[float], list[list[float]]]:
+    """(box extended over its own contiguous ink, synthetic obstacles at the
+    nearest separate ink above/below over its width and to its right over its
+    height). Rules touching the box are obstacles, never absorbed."""
+    dark = _page_dark(page)
+    if dark is None:
+        return list(box), []
+    height, width = dark.shape
+    x0, x1 = max(0, _px(page, box[0], 0)), min(width, _px(page, box[2], 0))
+    y0, y1 = max(0, _px(page, box[1], 1)), min(height, _px(page, box[3], 1))
+    if x1 - x0 < 2 or y1 - y0 < 1:
+        return list(box), []
+    line_px = max(1, y1 - y0)
+    span = int(round(reach * _INK_ZOOM))
+    to_pt_y = lambda row: page.rect.y0 + row / _INK_ZOOM  # noqa: E731
+    to_pt_x = lambda col: page.rect.x0 + col / _INK_ZOOM  # noqa: E731
+    found: list[list[float]] = []
+    ext = list(box)
+    rows = dark[:, x0:x1].mean(axis=1)
+    edge, hit = _walk(
+        rows, y0 - 1, -1, max(-1, y0 - 1 - span), int(0.35 * line_px), _GROWTH_ROW_SHARE
+    )
+    ext[1] = min(box[1], to_pt_y(edge + 1))
+    if hit is not None:
+        found.append([box[0], to_pt_y(hit) - 0.5, box[2], to_pt_y(hit) + 0.5])
+    edge, hit = _walk(rows, y1, 1, min(height, y1 + span), int(0.35 * line_px), _GROWTH_ROW_SHARE)
+    ext[3] = max(box[3], to_pt_y(edge))
+    if hit is not None:
+        found.append([box[0], to_pt_y(hit) - 0.5, box[2], to_pt_y(hit) + 0.5])
+    limit = min(width, _px(page, right_limit, 0))
+    cols = dark[y0:y1, :].mean(axis=0)
+    edge, hit = _walk(cols, x1, 1, max(x1, limit), int(0.5 * line_px), _GROWTH_COL_SHARE)
+    ext[2] = max(box[2], to_pt_x(edge))
+    if hit is not None:
+        found.append([to_pt_x(hit) - 0.5, box[1], to_pt_x(hit) + 0.5, box[3]])
+    return ext, found
+
+
+def _growth_is_blank(page: Any, rect: list[float], box: list[float]) -> bool:
+    """True when every part of ``rect`` outside the source ``box`` (plus a small
+    anti-aliasing gap) holds no ink on the original raster."""
+    dark = _page_dark(page)
+    if dark is None:
+        return True
+    height, width = dark.shape
+    strips = []
+    if rect[1] < box[1] - _GROWTH_GAP:
+        strips.append([rect[0], rect[1], rect[2], box[1] - _GROWTH_GAP])
+    if rect[3] > box[3] + _GROWTH_GAP:
+        strips.append([rect[0], box[3] + _GROWTH_GAP, rect[2], rect[3]])
+    if rect[2] > box[2] + _GROWTH_GAP:
+        strips.append([box[2] + _GROWTH_GAP, rect[1], rect[2], rect[3]])
+    for strip in strips:
+        sx0, sx1 = max(0, _px(page, strip[0], 0)), min(width, _px(page, strip[2], 0))
+        sy0, sy1 = max(0, _px(page, strip[1], 1)), min(height, _px(page, strip[3], 1))
+        if sx1 <= sx0 or sy1 <= sy0:
+            continue
+        part = dark[sy0:sy1, sx0:sx1]
+        count = int(part.sum())
+        if count >= _GROWTH_MIN_PIXELS and count / part.size > _GROWTH_MAX_SHARE:
+            return False
+    return True
+
+
+_SOURCE_INK_MIN_PIXELS = 60
+_SOURCE_INK_MIN_SHARE = 0.01
+# Rows/columns this dark are table rules or frames (structure, not text).
+_RULE_RUN_SHARE = 0.7
+
+
+def _uncovered_source_ink(
+    page: Any, inner: list[float], covers: list[list[float]], zoom: float = 2.0
+) -> tuple[int, int]:
+    """(dark original pixels no planned mask covers, measured pixels) in rect."""
+    import numpy as np
+
+    try:
+        clip = fitz.Rect(*inner) & page.rect
+        if clip.is_empty or clip.width < 1 or clip.height < 1:
+            return 0, 0
+        pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), clip=clip, colorspace=fitz.csGRAY)
+    except Exception:
+        return 0, 0
+    if not pix.samples or pix.width < 1 or pix.height < 1:
+        return 0, 0
+    arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, -1)[:, : pix.width]
+    dark = arr < _SOURCE_INK_DARK
+    dark[dark.mean(axis=1) >= _RULE_RUN_SHARE, :] = False
+    dark[:, dark.mean(axis=0) >= _RULE_RUN_SHARE] = False
+    for cover in covers:
+        part = fitz.Rect(*cover) & clip
+        if part.is_empty:
+            continue
+        x0 = max(0, math.floor((part.x0 - clip.x0) * zoom) - 1)
+        y0 = max(0, math.floor((part.y0 - clip.y0) * zoom) - 1)
+        x1 = min(pix.width, math.ceil((part.x1 - clip.x0) * zoom) + 1)
+        y1 = min(pix.height, math.ceil((part.y1 - clip.y0) * zoom) + 1)
+        dark[y0:y1, x0:x1] = False
+    count = int(dark.sum())
+    return count, int(dark.size)
+
+
+def _drawn_line_rects(scratch: Any, page_rect: Any, item: dict[str, Any]) -> list[list[float]]:
+    """Line boxes of the glyphs this item will actually draw (same text, rect,
+    size and style on a blank scratch page). The text frame can be larger than
+    the drawn text (grown into blank space); only drawn lines can hide ink."""
+    try:
+        blank = scratch.new_page(width=page_rect.width, height=page_rect.height)
+        kwargs = _font_kwargs(item["size"], item["style"], item["align"])
+        kwargs = {key: value for key, value in kwargs.items() if value is not None}
+        if blank.insert_textbox(fitz.Rect(*item["inner"]), item["text"], **kwargs) < 0:
+            return [list(item["inner"])]
+        rects = [
+            list(line["bbox"])
+            for block in blank.get_text("dict").get("blocks", [])
+            for line in block.get("lines", [])
+            if line.get("spans")
+        ]
+    except Exception:
+        return [list(item["inner"])]
+    return rects or [list(item["inner"])]
+
+
+def _apply_full_covers(kept: list[dict[str, Any]]) -> None:
+    """Per source line, use the full cover when every neighbouring block it
+    overlaps is itself replaced (redrawn), else the cover shrunk away from it.
+    Recomputed at each fixed-point step: dropping an item can only shrink."""
+    replaced = {(int(k["page"]), str(b)) for k in kept for b in k["block_ids"]}
+    for item in kept:
+        full, overlaps = item.get("full_source_rects"), item.get("full_overlap_ids")
+        shrunk = item.get("shrunk_source_rects")
+        if not full or overlaps is None or shrunk is None or len(full) != len(shrunk):
+            continue
+        page = int(item["page"])
+        chosen, extended = [], 0
+        for index, cover in enumerate(full):
+            if all((page, oid) in replaced for oid in overlaps[index]):
+                chosen.append(list(cover))
+                extended += cover != shrunk[index]
+            else:
+                chosen.append(list(shrunk[index]))
+        item["source_rects"] = chosen
+        item["extended_cover_lines"] = extended
+
+
+def _drop_text_over_source_ink(
+    doc: Any, ir: dict[str, Any], valid: list[dict[str, Any]], issues: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Fixed point over all planned replacements of scanned pages: an item whose
+    drawn text lines still lie over unmasked original ink is dropped (original
+    kept, critical issue). Dropping removes its masks, which can only expose more
+    ink under other items, so the loop is monotone and terminates."""
+    scanned = {int(p.get("number", 0)) for p in ir.get("pages", []) if p.get("scanned")}
+    if not any(int(item["page"]) in scanned for item in valid):
+        return list(valid)
+    scratch = fitz.open()
+    drawn: dict[int, list[list[float]]] = {}
+    for item in valid:
+        if int(item["page"]) in scanned:
+            drawn[id(item)] = _drawn_line_rects(scratch, doc[int(item["page"]) - 1].rect, item)
+    scratch.close()
+    kept = list(valid)
+    while True:
+        _apply_full_covers(kept)
+        covers: dict[int, list[list[float]]] = {}
+        for item in kept:
+            covers.setdefault(int(item["page"]), []).extend(item["source_rects"])
+        dropped: list[tuple[dict[str, Any], int, float]] = []
+        for item in kept:
+            page_number = int(item["page"])
+            if page_number not in scanned:
+                continue
+            count, area = 0, 0
+            for line_rect in drawn.get(id(item), [item["inner"]]):
+                line_count, line_area = _uncovered_source_ink(
+                    doc[page_number - 1], line_rect, covers.get(page_number, [])
+                )
+                count += line_count
+                area += line_area
+            share = count / max(1, area)
+            if count >= _SOURCE_INK_MIN_PIXELS and share >= _SOURCE_INK_MIN_SHARE:
+                dropped.append((item, count, share))
+        if not dropped:
+            for item in kept:
+                if item.get("extended_cover_lines"):
+                    block_ids = [str(b) for b in item.get("block_ids") or []]
+                    issues.append(
+                        _warn(
+                            "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR",
+                            "Masque de ligne étendu sur un bloc voisin lui-même remplacé (masques dessinés avant les textes).",
+                            "info",
+                            block_id=block_ids[0] if len(block_ids) == 1 else None,
+                            lines=int(item["extended_cover_lines"]),
+                        )
+                    )
+            return kept
+        gone = {id(item) for item, _, _ in dropped}
+        for item, count, share in dropped:
+            block_ids = [str(b) for b in item.get("block_ids") or []]
+            issues.append(
+                _warn(
+                    "SCAN_TEXT_OVER_SOURCE_INK",
+                    "La traduction recouvrirait du texte source non masqué; original conservé.",
+                    "critical",
+                    block_id=block_ids[0] if len(block_ids) == 1 else None,
+                    block_ids=block_ids,
+                    cell_id=item.get("cell_id"),
+                    ink_pixels=count,
+                    ink_share=round(share, 4),
+                )
+            )
+        kept = [item for item in kept if id(item) not in gone]
+
+
 def _line_count(text: str) -> int:
     return max(1, len([line for line in str(text).splitlines() if line.strip()]))
 
 
 def _scan_line_size(block: dict[str, Any]) -> float | None:
+    from .segmentation import width_font_size
+
+    bold = (
+        bool((block.get("style") or {}).get("bold"))
+        if isinstance(block.get("style"), dict)
+        else False
+    )
+    lines = block.get("source_lines") or [block]
+    by_width = sorted(
+        size
+        for line in lines
+        if float(line.get("confidence") or 0) >= 0.6
+        and (box := _rect(line.get("bbox")))
+        and (size := width_font_size(str(line.get("text", "")), box[2] - box[0], bold))
+    )
+    height_based = _height_line_size(block)
+    if by_width:
+        size = by_width[len(by_width) // 2]
+        if height_based:
+            size = max(0.5 * height_based, min(1.2 * height_based, size))
+        return size
+    return height_based
+
+
+def _height_line_size(block: dict[str, Any]) -> float | None:
+    heights = sorted(float(h) for h in block.get("line_heights") or [] if h and float(h) > 0)
+    if heights:
+        # Grouped block (segmentation): the paragraph box is NOT a line height.
+        # Upper quartile = lines with ascenders and descenders; the line pitch
+        # bounds it when OCR boxes are swollen by nearby ink.
+        size = heights[int(round(0.75 * (len(heights) - 1)))] * 0.95
+        pitch = block.get("line_pitch")
+        if pitch and len(heights) >= 2 and float(pitch) > 0:
+            size = min(size, float(pitch) / 1.12)
+        return size
     box = _rect(block.get("bbox"))
     if not box:
         return None
@@ -593,7 +937,21 @@ def _scan_body_size(blocks: list[dict[str, Any]]) -> float | None:
 
 def _scan_font_size(block: dict[str, Any], body: float | None) -> float:
     own = _scan_line_size(block) or 10.0
-    # Same body text keeps one size; only genuinely smaller print keeps its own.
+    # Same body text keeps one size; genuinely smaller print and genuine
+    # headings (role or >= 1.25 x body) keep their own measured size.
+    heading = block.get("role") == "heading" or (body and own >= 1.25 * body)
+    if heading:
+        if (
+            body
+            and own > body
+            and float(block.get("confidence") or 0) < SCAN_TRUSTED_SIZE_CONFIDENCE
+        ):
+            # Low-confidence OCR line much taller than the body text: its box is
+            # swollen by a stamp/graphic crossing it (measured on the corpus:
+            # confidence 0.56-0.74, 22 pt "lines" on a 9 pt letter, rendered as
+            # a giant salutation). Its height is not a font size.
+            return max(6.0, min(14.0, body))
+        return max(6.0, min(22.0, own))
     size = body if body and own >= 0.75 * body else own
     return max(6.0, min(14.0, size))
 
@@ -647,6 +1005,385 @@ def _grow_right(box: list[float], limit: float, obstacles: list[list[float]]) ->
     while x1 + 2 <= limit and not any(_strict_overlap([x1, y0, x1 + 2, y1], o) for o in obstacles):
         x1 += 2
     return [x0, y0, x1, y1]
+
+
+_SCAN_MIN_FONT_RATIO = 0.72
+# Max candidate height of a one-line block, in font sizes: 2 lines at 72 % need
+# 2 x 1.2 x 0.72 = 1.73, so 1.45 keeps one line while allowing the ascent.
+_SCAN_SINGLE_LINE_HEIGHT = 1.45
+_ALIGN = {"left": 0, "center": 1, "right": 2, "justify": 3}
+
+
+def _scan_style(block: dict[str, Any]) -> tuple[dict[str, Any], int]:
+    """Style measured on the original raster by the segmentation (bold from
+    stroke width, chromatic ink colour, alignment within its column/cell)."""
+    style = block.get("style") if isinstance(block.get("style"), dict) else {}
+    out: dict[str, Any] = {}
+    if style.get("bold"):
+        out["bold"] = True
+    color = style.get("color")
+    if isinstance(color, (list, tuple)) and len(color) == 3:
+        out["color"] = [float(c) for c in color]
+    return out, _ALIGN.get(str(style.get("align") or "left"), 0)
+
+
+def _line_boxes(block: dict[str, Any]) -> list[list[float]]:
+    lines = block.get("source_lines") or [{"bbox": block.get("bbox")}]
+    return [box for line in lines if (box := _rect(line.get("bbox")))]
+
+
+def _scan_covers(
+    block: dict[str, Any],
+    others: list[list[float]],
+    regions: list[list[float]],
+    page_rect: Any,
+) -> tuple[list[list[float]] | None, list[str]]:
+    """Paper covers for every OCR source line, padded to swallow accents and
+    anti-aliasing (bounded), never reaching another block or a protected
+    region. Returns (None, reasons) when a line cannot be covered safely."""
+    covers: list[list[float]] = []
+    notes: list[str] = []
+    for raw in _line_boxes(block):
+        box = list(raw)
+        touching = [o for o in others + regions if _strict_overlap(box, o)]
+        if touching:
+            shrunk = _shrink_away(box, touching)
+            if not shrunk:
+                return None, ["line_overlaps_neighbour_or_protected_region"]
+            box = shrunk
+            notes.append("line_shrunk")
+        h = box[3] - box[1]
+        pad_x, pad_y = min(0.3 * h, 3.0), min(0.15 * h, 1.5)
+        padded = [
+            max(page_rect.x0, box[0] - pad_x),
+            max(page_rect.y0, box[1] - pad_y),
+            min(page_rect.x1, box[2] + pad_x),
+            min(page_rect.y1, box[3] + pad_y),
+        ]
+        for o in others + regions:
+            if not _strict_overlap(padded, o):
+                continue
+            if o[0] >= box[2]:
+                padded[2] = min(padded[2], o[0] - 0.2)
+            elif o[2] <= box[0]:
+                padded[0] = max(padded[0], o[2] + 0.2)
+            elif o[1] >= box[3]:
+                padded[3] = min(padded[3], o[1] - 0.2)
+            elif o[3] <= box[1]:
+                padded[1] = max(padded[1], o[3] + 0.2)
+        if any(_strict_overlap(padded, o) for o in others + regions):
+            padded = box
+        covers.append(padded)
+    return covers, notes
+
+
+def _scan_region_protects(block: dict[str, Any], region: dict[str, Any]) -> bool:
+    from .protected_visuals import is_user_region, significant_overlap
+
+    box, rbox = _rect(block.get("bbox")), _rect(region.get("bbox"))
+    if not box or not rbox or not _intersects(box, rbox):
+        return False
+    return is_user_region(region) or significant_overlap(box, rbox)
+
+
+def _plan_scan_block(
+    *,
+    block: dict[str, Any],
+    target: str,
+    page: Any,
+    page_number: int,
+    ir_blocks: list[dict[str, Any]],
+    protected_regions: list[dict[str, Any]],
+    body_size: float | None,
+    body_right: float | None,
+    source_bytes: bytes,
+    bound: list[float] | None,
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]], bool]:
+    """Plan the replacement of one OCR block (line or grouped paragraph) on a
+    scanned page. Returns (item | None, issues, overflow)."""
+    block_id = str(block.get("id"))
+    issues: list[dict[str, Any]] = []
+    page_regions = [
+        r
+        for r in protected_regions
+        if int(r.get("page", 0)) == page_number and _rect(r.get("bbox"))
+    ]
+    if block.get("protected") or any(_scan_region_protects(block, r) for r in page_regions):
+        issues.append(
+            _warn(
+                "PROTECTED_TRANSLATION_NOT_APPLIED",
+                "Le bloc fait partie d'une zone protégée (cachet, logo, signature ou annotation); revue humaine.",
+                "error",
+                block_id=block_id,
+            )
+        )
+        return None, issues, False
+    if _RTL.search(target):
+        issues.append(
+            _warn(
+                "RTL_SHAPING_UNSUPPORTED",
+                "Façonnage RTL non configuré; insertion bloquée.",
+                "error",
+                block_id=block_id,
+            )
+        )
+        return None, issues, False
+    box = _rect(block.get("bbox"))
+    if not box:
+        return None, issues, False
+    region_boxes = [_rect(r.get("bbox")) for r in page_regions]
+    others = [lb for o in ir_blocks if str(o.get("id")) != block_id for lb in _line_boxes(o)]
+    other_ids = [
+        (str(o.get("id")), lb)
+        for o in ir_blocks
+        if str(o.get("id")) != block_id
+        for lb in _line_boxes(o)
+    ]
+    covers, notes = _scan_covers(block, others, region_boxes, page.rect)
+    if covers is None:
+        issues.append(
+            _warn(
+                "NATIVE_REDACTION_OVERLAP",
+                "Une ligne source chevauche un autre bloc ou une zone protégée; masquage sûr impossible, revue humaine.",
+                "error",
+                block_id=block_id,
+                reasons=notes,
+            )
+        )
+        return None, issues, False
+    if "line_shrunk" in notes:
+        issues.append(
+            _warn(
+                "SCAN_REDACTION_SHRUNK",
+                "Masque de ligne réduit pour ne pas toucher un bloc voisin ou une zone protégée.",
+                "warning",
+                block_id=block_id,
+            )
+        )
+    if _graphic_conflict(page, box):
+        issues.append(
+            _warn(
+                "PROTECTED_NATIVE_GRAPHIC",
+                "Widget, formulaire ou graphique recouvert; remplacement refusé.",
+                "error",
+                block_id=block_id,
+            )
+        )
+        return None, issues, False
+    size = _scan_font_size(block, body_size)
+    style, align = _scan_style(block)
+    obstacles = [o for o in others if not _strict_overlap(o, box)] + region_boxes
+    inner = list(box)
+    if bound:
+        inner = [
+            max(inner[0], bound[0]),
+            max(inner[1], bound[1]),
+            min(inner[2], bound[2]),
+            min(inner[3], bound[3]),
+        ]
+        if inner[2] - inner[0] < 2 or inner[3] - inner[1] < 2:
+            inner = list(box)
+        bx0, by0, bx1, by1 = bound
+        obstacles = obstacles + [
+            [page.rect.x0, page.rect.y0, page.rect.x1, by0],
+            [page.rect.x0, by1, page.rect.x1, page.rect.y1],
+            [page.rect.x0, page.rect.y0, bx0, page.rect.y1],
+            [bx1, page.rect.y0, page.rect.x1, page.rect.y1],
+        ]
+    # The text box must not cover any protected region (overlay text on a stamp).
+    hit = [r for r in region_boxes if _strict_overlap(inner, r)]
+    if hit:
+        shrunk = _shrink_away(inner, hit)
+        if not shrunk:
+            issues.append(
+                _warn(
+                    "PROTECTED_OVERLAP_REVIEW",
+                    "Zone de texte traduite chevauchant un élément protégé; revue humaine.",
+                    "error",
+                    block_id=block_id,
+                )
+            )
+            return None, issues, False
+        inner = shrunk
+    lines = int(block.get("line_count") or _line_count(block.get("text", "")))
+    right_limit = bound[2] if bound else (body_right or page.rect.width - 36)
+    # Growth stops at the nearest original ink (rules, labels, graphics, text
+    # that OCR did not box) and every candidate is re-checked below.
+    ink_box, ink_obstacles = _ink_obstacles(page, box, right_limit, size * 1.25 * lines * 2)
+    obstacles = obstacles + ink_obstacles
+    candidates = [_grow_vertical(inner, size * 1.25 * lines, obstacles, page.rect)]
+    candidates.append(_grow_right(candidates[0], right_limit, obstacles))
+    candidates.append(
+        _grow_vertical(
+            candidates[1], (candidates[1][3] - candidates[1][1]) * 1.6, obstacles, page.rect
+        )
+    )
+    if lines == 1:
+        # A one-line source stays one line: an OCR box taller than its print
+        # (rule or graphic underneath) let a section heading wrap onto the row
+        # below it. Shrink (>= 72 %) or extend right first; wrapping is only a
+        # fallback into space proven blank (see below), else LAYOUT_OVERFLOW.
+        single = size * _SCAN_SINGLE_LINE_HEIGHT
+        candidates = [[r[0], r[1], r[2], min(r[3], r[1] + single)] for r in candidates]
+    best = None
+    ink_rejected = 0
+    for rect in candidates:
+        if not _growth_is_blank(page, rect, ink_box):
+            ink_rejected += 1
+            continue
+        ok, remainder, used = _fit_on_scratch(
+            source_bytes,
+            page_number,
+            fitz.Rect(*rect),
+            target,
+            size,
+            style,
+            align,
+            _SCAN_MIN_FONT_RATIO,
+        )
+        if ok and (best is None or used > best[2] + 1e-6):
+            best = (rect, remainder, used)
+        if ok and used >= size * 0.97:
+            break
+    if ink_rejected:
+        issues.append(
+            _warn(
+                "SCAN_FRAME_GROWTH_INK_REJECTED",
+                "Cadre agrandi refusé : il recouvrirait de l'encre originale (filet, libellé, graphisme).",
+                "info",
+                block_id=block_id,
+                candidates=ink_rejected,
+            )
+        )
+    if best is None and lines == 1:
+        # Fallback: wrap only where the extra area under the one-line source is
+        # free of EVERY other OCR box (including those overlapping this box,
+        # which the obstacle filter ignores), of protected zones and of ink.
+        all_others = [
+            lb for o in ir_blocks if str(o.get("id")) != block_id for lb in _line_boxes(o)
+        ]
+        # Explicit 2- and 3-line frames at the source width and at the
+        # right-extended width (one-line candidates are too short to wrap).
+        widths = sorted({round(candidates[0][2], 2), round(candidates[1][2], 2)})
+        wrapped = [
+            [inner[0], inner[1], x1, inner[1] + size * 1.25 * n] for n in (2, 3) for x1 in widths
+        ]
+        for rect in wrapped:
+            if rect[3] > page.rect.y1 - 18:
+                continue
+            below = [rect[0], box[1] + size * _SCAN_SINGLE_LINE_HEIGHT, rect[2], rect[3]]
+            if below[3] - below[1] < size:
+                continue
+            if any(_strict_overlap(below, o) for o in all_others + region_boxes):
+                continue
+            if not _band_is_blank(page, below):
+                continue
+            ok, remainder, used = _fit_on_scratch(
+                source_bytes,
+                page_number,
+                fitz.Rect(*rect),
+                target,
+                size,
+                style,
+                align,
+                _SCAN_MIN_FONT_RATIO,
+            )
+            if ok and (best is None or used > best[2] + 1e-6):
+                best = (rect, remainder, used)
+        if best is not None:
+            issues.append(
+                _warn(
+                    "SINGLE_LINE_WRAPPED_INTO_BLANK",
+                    "Ligne unique traduite sur plusieurs lignes dans un espace vérifié vide (aucun bloc, zone protégée ni encre).",
+                    "info",
+                    block_id=block_id,
+                )
+            )
+    if best is None:
+        issues.append(
+            _warn(
+                "LAYOUT_OVERFLOW",
+                "Le texte traduit ne tient pas sans réduction excessive; source conservée, revue humaine.",
+                "critical",
+                block_id=block_id,
+                font_size=round(size, 2),
+                min_font_size=round(size * _SCAN_MIN_FONT_RATIO, 2),
+            )
+        )
+        return None, issues, True
+    rect, remainder, used = best
+    if used < size * 0.85:
+        issues.append(
+            _warn(
+                "FONT_REDUCED",
+                "Taille de police réduite pour contenir la traduction (réduction bornée).",
+                "info",
+                block_id=block_id,
+                font_size=round(size, 2),
+                used_font_size=round(used, 2),
+                ratio=round(used / size, 3),
+            )
+        )
+    block_style = block.get("style") if isinstance(block.get("style"), dict) else {}
+    background = block_style.get("background") if block_style.get("highlight") else None
+    # Highlight measured per source line (line_verification) wins: a marker on
+    # one line of a paragraph must not paint the others. Covers follow the
+    # order of _line_boxes(block).
+    line_marks = [
+        (line.get("highlight_evidence") or {})
+        for line in (block.get("source_lines") or [block])
+        if _rect(line.get("bbox"))
+    ]
+    fills = []
+    for index, cover in enumerate(covers):
+        mark = line_marks[index] if index < len(line_marks) else {}
+        if mark.get("highlight") and mark.get("rgb"):
+            fills.append([float(c) for c in mark["rgb"]])
+        elif background and not any(m.get("highlight") is not None for m in line_marks):
+            fills.append([float(c) for c in background])
+        else:
+            fills.append(_paper_color(page, cover))
+    # Full covers (shrunk only away from protected regions) and, per line, the
+    # neighbouring blocks they overlap. The final phase uses a full cover only
+    # when every overlapped neighbour is itself replaced (its pixels are
+    # redrawn as translation): a neighbour kept as original is never masked.
+    full, _full_notes = _scan_covers(block, [], region_boxes, page.rect)
+    full_overlaps: list[list[str]] | None = None
+    if full is not None and len(full) == len(covers):
+        full_overlaps = [
+            sorted({oid for oid, lb in other_ids if _strict_overlap(cover, lb)}) for cover in full
+        ]
+    else:
+        full = None
+    if any(m.get("highlight") and m.get("partial") for m in line_marks):
+        issues.append(
+            _warn(
+                "HIGHLIGHT_SPAN_APPROXIMATED",
+                "Surlignage partiel d'une ligne reproduit sur toute la ligne traduite (position des mots non transposable).",
+                "info",
+                block_id=block_id,
+            )
+        )
+    item = {
+        "page": page_number,
+        "rect": box,
+        "inner": rect,
+        "text": target,
+        "size": used,
+        "measured_size": size,
+        "style": style,
+        "align": align,
+        "block_ids": [block_id],
+        "source_line_ids": [str(x.get("id")) for x in block.get("source_lines") or []],
+        "table": False,
+        "source_rects": covers,
+        "shrunk_source_rects": [list(c) for c in covers],
+        "full_source_rects": full,
+        "full_overlap_ids": full_overlaps,
+        "cover_fills": fills,
+        "cover": None,
+    }
+    return item, issues, False
 
 
 def _page_ir_blocks(ir: dict[str, Any]) -> dict[int, list[dict[str, Any]]]:
@@ -738,6 +1475,8 @@ def render_pdf(
             # by one; each block keeps its own protection/overlap/graphic checks.
             fallback_ids: set[str] = set()
             page_is_scan = bool(ir.get("pages", [])[page_number - 1].get("scanned"))
+            scan_body = _scan_body_size(ir_blocks) if page_is_scan else None
+            cell_bounds: dict[str, list[float]] = {}
             for table in source_tables:
                 for cell in table.get("cells", []):
                     ids = [str(block_id) for block_id in cell.get("block_ids", [])]
@@ -808,6 +1547,8 @@ def render_pdf(
                         _protected(block, protected_regions) for block in blocks
                     ):
                         trace["status"] = "fallback_blocks_protected"
+                        if page_is_scan and box:
+                            cell_bounds.update({bid: box for bid in ids})
                         issues.append(
                             _warn(
                                 "TABLE_CELL_FALLBACK_TO_BLOCKS",
@@ -823,6 +1564,8 @@ def render_pdf(
                         continue
                     if _graphic_conflict(page, box):
                         trace["status"] = "fallback_blocks_graphic"
+                        if page_is_scan and box:
+                            cell_bounds.update({bid: box for bid in ids})
                         issues.append(
                             _warn(
                                 "TABLE_CELL_FALLBACK_TO_BLOCKS",
@@ -936,6 +1679,42 @@ def render_pdf(
                             max(6.0, min(14.0, (inner[3] - inner[1]) * 0.72)),
                         )
                     )
+                    scan_covers = None
+                    if page_is_scan:
+                        main = max(blocks, key=lambda b: len(str(b.get("text", ""))), default={})
+                        size = _scan_font_size(main, scan_body)
+                        scan_style, scan_align = _scan_style(main)
+                        style = {**style, **scan_style}
+                        align = scan_align if (main.get("style") or {}).get("align") else align
+                        others_cell = [
+                            lb
+                            for o in ir_blocks
+                            if str(o.get("id")) not in ids
+                            for lb in _line_boxes(o)
+                        ]
+                        region_cell = [
+                            r
+                            for region in protected_regions
+                            if int(region.get("page", 0)) == page_number
+                            and (r := _rect(region.get("bbox")))
+                        ]
+                        scan_covers = []
+                        for member in blocks:
+                            covers_m, _notes = _scan_covers(
+                                member, others_cell, region_cell, page.rect
+                            )
+                            if covers_m is None:
+                                scan_covers = None
+                                break
+                            scan_covers.extend(
+                                [
+                                    max(c[0], box[0]),
+                                    max(c[1], box[1]),
+                                    min(c[2], box[2]),
+                                    min(c[3], box[3]),
+                                ]
+                                for c in covers_m
+                            )
                     ok, remainder, used_size = _fit_on_scratch(
                         source_bytes,
                         page_number,
@@ -944,7 +1723,10 @@ def render_pdf(
                         size,
                         style,
                         align,
+                        _SCAN_MIN_FONT_RATIO if page_is_scan else None,
                     )
+                    if page_is_scan and ok and scan_covers is None:
+                        ok, remainder = False, -1.0
                     if not ok:
                         if page_is_scan:
                             # Each OCR block has its own measured bbox; rendering
@@ -955,6 +1737,7 @@ def render_pdf(
                                     "overflow": float(remainder),
                                 }
                             )
+                            cell_bounds.update({bid: box for bid in ids})
                             issues.append(
                                 _warn(
                                     "TABLE_CELL_FALLBACK_TO_BLOCKS",
@@ -1012,7 +1795,9 @@ def render_pdf(
                             "cell_id": cell.get("id"),
                             "table_id": table.get("id"),
                             "table": True,
-                            "source_rects": [list(b["bbox"]) for b in blocks],
+                            "source_rects": scan_covers
+                            if page_is_scan and scan_covers
+                            else [list(b["bbox"]) for b in blocks],
                         }
                     )
                     table_trace.append(trace)
@@ -1041,6 +1826,24 @@ def render_pdf(
                 original = str(block.get("text", ""))
                 target = translations.get(block_id, original)
                 if target == original:
+                    continue
+                if scanned_flag:
+                    item, scan_issues, overflowed = _plan_scan_block(
+                        block=block,
+                        target=target,
+                        page=page,
+                        page_number=page_number,
+                        ir_blocks=ir_blocks,
+                        protected_regions=protected_regions,
+                        body_size=body_size,
+                        body_right=body_right,
+                        source_bytes=source_bytes,
+                        bound=cell_bounds.get(block_id),
+                    )
+                    issues.extend(scan_issues)
+                    overflow_count += int(overflowed)
+                    if item:
+                        valid.append(item)
                     continue
                 if _protected(block, protected_regions):
                     issues.append(
@@ -1189,19 +1992,36 @@ def render_pdf(
                 )
         # Transaction per cell/block: if final fit diverges, restore original
         # state for this unit while retaining earlier successful replacements.
+        valid = _drop_text_over_source_ink(doc, ir, valid, issues)
+        scanned_numbers = {int(p.get("number", 0)) for p in ir.get("pages", []) if p.get("scanned")}
+        # Drawing units. Native page: one transaction per item (as before).
+        # Scanned page: all masks of the page first, then all texts, so that no
+        # mask (possibly extended over a replaced neighbour) can hide a drawn
+        # translation. If a final insertion diverges, the unit is restored and
+        # re-planned without that item (masks re-checked against source ink).
+        units: dict[tuple[str, int], list[dict[str, Any]]] = {}
+        queue: list[tuple[str, int]] = []
         for item in valid:
-            checkpoint = doc.tobytes()
-            page = doc[item["page"] - 1]
-            for source_rect in item["source_rects"]:
-                page.add_redact_annot(fitz.Rect(*source_rect), fill=None)
-            scanned_page = next(
-                (
-                    p.get("scanned", False)
-                    for p in ir.get("pages", [])
-                    if p.get("number") == item["page"]
-                ),
-                False,
+            key = (
+                ("scan", int(item["page"]))
+                if int(item["page"]) in scanned_numbers
+                else ("item", id(item))
             )
+            if key not in units:
+                units[key] = []
+                queue.append(key)
+            units[key].append(item)
+        while queue:
+            key = queue.pop(0)
+            items = units.get(key) or []
+            if not items:
+                continue
+            checkpoint = doc.tobytes()
+            page = doc[int(items[0]["page"]) - 1]
+            scanned_page = key[0] == "scan"
+            for item in items:
+                for source_rect in item["source_rects"]:
+                    page.add_redact_annot(fitz.Rect(*source_rect), fill=None)
             try:
                 # Images are never modified (0 = keep): re-encoding scan strips
                 # alters pixels outside the box. Only a hidden text layer is removed.
@@ -1209,59 +2029,82 @@ def render_pdf(
             except TypeError:
                 page.apply_redactions(images=0, graphics=0)
             if scanned_page:
-                cover = item.get("cover")
                 from .cover_layer import cover_ocg
 
                 layer = cover_ocg(doc)
-                for source_rect in item["source_rects"]:
-                    fill = cover or _paper_color(page, source_rect)
-                    page.draw_rect(
-                        fitz.Rect(*source_rect), color=None, fill=fill, overlay=True, oc=layer
-                    )
-            kwargs = _font_kwargs(item["size"], item["style"], item["align"])
-            kwargs = {key: value for key, value in kwargs.items() if value is not None}
-            result = page.insert_textbox(fitz.Rect(*item["inner"]), item["text"], **kwargs)
-            if result < 0:
+                for item in items:
+                    cover = item.get("cover")
+                    fills = item.get("cover_fills") or []
+                    for index, source_rect in enumerate(item["source_rects"]):
+                        fill = (
+                            (fills[index] if index < len(fills) else None)
+                            or cover
+                            or _paper_color(page, source_rect)
+                        )
+                        page.draw_rect(
+                            fitz.Rect(*source_rect), color=None, fill=fill, overlay=True, oc=layer
+                        )
+            failed: tuple[dict[str, Any], float] | None = None
+            for item in items:
+                kwargs = _font_kwargs(item["size"], item["style"], item["align"])
+                kwargs = {key_: value for key_, value in kwargs.items() if value is not None}
+                result = page.insert_textbox(fitz.Rect(*item["inner"]), item["text"], **kwargs)
+                if result < 0:
+                    failed = (item, float(result))
+                    break
+            if failed is not None:
+                bad, result = failed
                 overflow_count += 1
+                block_ids = [str(b) for b in bad.get("block_ids") or []]
                 issues.append(
                     _warn(
                         "LAYOUT_OVERFLOW",
                         "Insertion finale divergente: source de cette cellule restaurée.",
                         "critical",
-                        cell_id=item.get("cell_id"),
-                        overflow=float(result),
+                        cell_id=bad.get("cell_id"),
+                        block_id=block_ids[0] if len(block_ids) == 1 else None,
+                        overflow=result,
                     )
                 )
                 doc.close()
                 doc = fitz.open(stream=checkpoint, filetype="pdf")
+                remaining = [item for item in items if item is not bad]
+                if remaining and scanned_page:
+                    remaining = _drop_text_over_source_ink(doc, ir, remaining, issues)
+                units[key] = remaining
+                if remaining:
+                    queue.insert(0, key)
                 continue
-            original_fonts = [
-                b.get("font_size")
-                for b in ir_pages.get(item["page"], [])
-                if str(b.get("id")) in item["block_ids"] and b.get("font_size")
-            ]
-            if original_fonts and item["size"] < min(original_fonts) * 0.75:
-                issues.append(
-                    _warn(
-                        "PDF_FONT_REDUCTION_REQUIRES_REVIEW",
-                        "Réduction typographique significative mesurée.",
-                        "warning",
-                        cell_id=item.get("cell_id"),
-                        font_size=item["size"],
+            for item in items:
+                original_fonts = [
+                    b.get("font_size")
+                    for b in ir_pages.get(item["page"], [])
+                    if str(b.get("id")) in item["block_ids"] and b.get("font_size")
+                ]
+                if original_fonts and item["size"] < min(original_fonts) * 0.75:
+                    issues.append(
+                        _warn(
+                            "PDF_FONT_REDUCTION_REQUIRES_REVIEW",
+                            "Réduction typographique significative mesurée.",
+                            "warning",
+                            cell_id=item.get("cell_id"),
+                            font_size=item["size"],
+                        )
                     )
-                )
-            changed_blocks += len(item["block_ids"])
-            for source_rect in item["source_rects"]:
-                text_masks.append(
-                    {"page": item["page"], "bbox": source_rect, "block_ids": item["block_ids"]}
-                )
-            # Exclude only actual inserted text glyphs, not whole cells or borders.
-            for target_block in _blocks_from_page(page, item["page"]):
-                box = _rect(target_block["bbox"])
-                if _contains(item["inner"], box, 1):
+                changed_blocks += len(item["block_ids"])
+                for source_rect in item["source_rects"]:
                     text_masks.append(
-                        {"page": item["page"], "bbox": box, "cell_id": item.get("cell_id")}
+                        {"page": item["page"], "bbox": source_rect, "block_ids": item["block_ids"]}
                     )
+            # Exclude only actual inserted text glyphs, not whole cells or borders.
+            page_blocks = _blocks_from_page(page, int(items[0]["page"]))
+            for item in items:
+                for target_block in page_blocks:
+                    box = _rect(target_block["bbox"])
+                    if _contains(item["inner"], box, 1):
+                        text_masks.append(
+                            {"page": item["page"], "bbox": box, "cell_id": item.get("cell_id")}
+                        )
         doc.save(str(out_path), garbage=4, deflate=True)
     finally:
         doc.close()

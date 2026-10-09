@@ -20,6 +20,7 @@ from app.ai.quality.metrics import (
     reference_metrics,
     token_delta,
 )
+from app.ai.translation.typography import typography_equivalent
 from app.domain.classification import classify_document, detect_language
 
 from .layout import detect_layout
@@ -288,9 +289,17 @@ def _tables(page, number, blocks=None, image=None):
     sx = float(page.rect.width) / image.width if image is not None else 1.0
     sy = float(page.rect.height) / image.height if image is not None else 1.0
     layout_blocks = [
-        {**block, "bbox": [block["bbox"][0]/sx, block["bbox"][1]/sy,
-                           block["bbox"][2]/sx, block["bbox"][3]/sy]}
-        if image is not None and block.get("bbox") else block
+        {
+            **block,
+            "bbox": [
+                block["bbox"][0] / sx,
+                block["bbox"][1] / sy,
+                block["bbox"][2] / sx,
+                block["bbox"][3] / sy,
+            ],
+        }
+        if image is not None and block.get("bbox")
+        else block
         for block in (blocks or [])
     ]
     result = detect_layout(
@@ -302,24 +311,26 @@ def _tables(page, number, blocks=None, image=None):
         height=float(page.rect.height),
     )
     if image is not None:
+
         def source_coordinates(value):
             if isinstance(value, dict):
                 if isinstance(value.get("bbox"), (list, tuple)) and len(value["bbox"]) == 4:
                     box = value["bbox"]
-                    value["bbox"] = [box[0]*sx, box[1]*sy, box[2]*sx, box[3]*sy]
+                    value["bbox"] = [box[0] * sx, box[1] * sy, box[2] * sx, box[3] * sy]
                     value["coordinates_kind"] = "source"
                 for nested in value.values():
                     source_coordinates(nested)
             elif isinstance(value, list):
                 for nested in value:
                     source_coordinates(nested)
+
         source_coordinates(result)
     tables = result.get("tables", [])
     # Merge P1/P2: enrichment runs on SOURCE (PDF point) coordinates only.
     from .pdf_fidelity import enrich_tables
+
     enrich_tables(page, tables, blocks or [])
     return tables, result
-
 
 
 def _clip_candidate_regions(regions, pages, warnings):
@@ -334,16 +345,39 @@ def _clip_candidate_regions(regions, pages, warnings):
         page = int(region.get("page", 1))
         box = region.get("bbox") or []
         if page not in sizes or len(box) != 4:
-            warnings.append(_warn("PROTECTED_CANDIDATE_INVALID", "Candidat visuel automatique sans page/bbox valide ignoré; revue requise.", "warning", page=page))
+            warnings.append(
+                _warn(
+                    "PROTECTED_CANDIDATE_INVALID",
+                    "Candidat visuel automatique sans page/bbox valide ignoré; revue requise.",
+                    "warning",
+                    page=page,
+                )
+            )
             continue
         width, height = sizes[page]
-        clipped = [min(max(float(box[0]), 0.0), width), min(max(float(box[1]), 0.0), height),
-                   min(max(float(box[2]), 0.0), width), min(max(float(box[3]), 0.0), height)]
+        clipped = [
+            min(max(float(box[0]), 0.0), width),
+            min(max(float(box[1]), 0.0), height),
+            min(max(float(box[2]), 0.0), width),
+            min(max(float(box[3]), 0.0), height),
+        ]
         if clipped[2] - clipped[0] < 0.5 or clipped[3] - clipped[1] < 0.5:
-            warnings.append(_warn("PROTECTED_CANDIDATE_DEGENERATE", "Candidat visuel automatique dégénéré ignoré; revue requise.", "warning", page=page))
+            warnings.append(
+                _warn(
+                    "PROTECTED_CANDIDATE_DEGENERATE",
+                    "Candidat visuel automatique dégénéré ignoré; revue requise.",
+                    "warning",
+                    page=page,
+                )
+            )
             continue
-        kept.append({**region, "bbox": clipped,
-                     "provenance": region.get("provenance") or "automatic_candidate:preprocessing"})
+        kept.append(
+            {
+                **region,
+                "bbox": clipped,
+                "provenance": region.get("provenance") or "automatic_candidate:preprocessing",
+            }
+        )
     return kept
 
 
@@ -367,9 +401,15 @@ def _exclude_table_art(regions, page_tables, warnings, page_number, threshold=0.
         box = region.get("bbox") or []
         match = next((b for b in boxes if len(box) == 4 and _iou(box, b) >= threshold), None)
         if match is not None:
-            warnings.append(_warn("PROTECTED_CANDIDATE_TABLE_ART",
-                                  "Candidat visuel automatique identique au cadre d'un tableau détecté: non protégé, tableau traité par le renderer de cellules.",
-                                  "info", page=page_number, bbox=[round(float(v), 2) for v in box]))
+            warnings.append(
+                _warn(
+                    "PROTECTED_CANDIDATE_TABLE_ART",
+                    "Candidat visuel automatique identique au cadre d'un tableau détecté: non protégé, tableau traité par le renderer de cellules.",
+                    "info",
+                    page=page_number,
+                    bbox=[round(float(v), 2) for v in box],
+                )
+            )
             continue
         kept.append(region)
     return kept
@@ -413,12 +453,20 @@ def _docx_ir(path: Path, work: Path, options):
     from .docx_analysis import collect_docx_content
 
     rendered_pages, _previews, conversion_warnings = _docx_rendered_pages(path, work, options)
-    page = rendered_pages[0] if rendered_pages else {
-        "number": 1, "width": 612.0, "height": 792.0, "scanned": False,
-        "coordinates_kind": "logical-fallback", "blocks": [],
-    }
+    page = (
+        rendered_pages[0]
+        if rendered_pages
+        else {
+            "number": 1,
+            "width": 612.0,
+            "height": 792.0,
+            "scanned": False,
+            "coordinates_kind": "logical-fallback",
+            "blocks": [],
+        }
+    )
     blocks, tables_ir, hierarchy = collect_docx_content(path, _docx_paragraph_block)
-    header_footer_refs = [b for b in blocks if b['source_ref']['xml_part'] != 'word/document.xml']
+    header_footer_refs = [b for b in blocks if b["source_ref"]["xml_part"] != "word/document.xml"]
 
     source_copy = work / "source" / path.name
     source_copy.parent.mkdir(parents=True, exist_ok=True)
@@ -497,44 +545,101 @@ def _docx_ir(path: Path, work: Path, options):
     }
 
 
-def _analyze_image(image, ocr, number, work, width, height, options):
+def _analyze_image(image, ocr, number, work, width, height, options, style_image=None):
     from .preprocessing import map_bbox, preprocess_image
 
     sx, sy = width / image.width, height / image.height
     supplied = []
     for region in options.get("protected_regions") or []:
         if int(region.get("page", 0)) == number:
-            supplied.append({**region, "bbox": [region["bbox"][0]/sx, region["bbox"][1]/sy,
-                                               region["bbox"][2]/sx, region["bbox"][3]/sy]})
+            supplied.append(
+                {
+                    **region,
+                    "bbox": [
+                        region["bbox"][0] / sx,
+                        region["bbox"][1] / sy,
+                        region["bbox"][2] / sx,
+                        region["bbox"][3] / sy,
+                    ],
+                }
+            )
     processed = preprocess_image(
-        image, ocr, work / "preprocessing" / f"page-{number:03d}", page=number,
-        profile=options.get("preprocessing_profile", options.get("image_preprocessing_profile", "auto")), protected_regions=supplied,
+        image,
+        ocr,
+        work / "preprocessing" / f"page-{number:03d}",
+        page=number,
+        profile=options.get(
+            "preprocessing_profile", options.get("image_preprocessing_profile", "auto")
+        ),
+        protected_regions=supplied,
         max_variants=options.get("preprocessing_max_variants", 6),
         orientation=options.get("preprocessing_orientation", True),
     )
     processed.image.save(work / "previews" / f"enhanced-{number:03d}.png")
+    # Style evidence (stroke, ink and paper colour) is measured on the ORIGINAL
+    # raster, never on the enhanced OCR copy.
+    import numpy as np
+
+    from .segmentation import line_style_evidence
+
+    # The 2x analysis raster (144 dpi) saturates sub-pixel strokes of 7-10 pt
+    # text; scans are 200-300 dpi, so style is measured on a 4x render.
+    style_source = style_image if style_image is not None else image
+    original_rgb = np.asarray(style_source.convert("RGB"))
+    style_scale = style_source.width / float(width)
     blocks = []
     for i, block in enumerate(processed.ocr.blocks):
-        bbox = map_bbox(block["bbox"], processed.metadata["transform_processing_to_source"], image.width, image.height)
-        blocks.append({"id": f"p{number:03d}-b{i:04d}", "page": number, "kind": "text",
-                       "text": block["text"], "bbox": [bbox[0]*sx,bbox[1]*sy,bbox[2]*sx,bbox[3]*sy],
-                       "font_size": None, "confidence": block["confidence"],
-                       "language": _language_for(block["text"]),
-                       "provenance": "ocr:" + getattr(processed.ocr,"backend","local"),
-                       "reading_order": i, "coordinates_kind": "source"})
-    regions = [{**r, "bbox": [r["bbox"][0]*sx,r["bbox"][1]*sy,r["bbox"][2]*sx,r["bbox"][3]*sy],
-                "coordinates_kind": "source"} for r in processed.protected_visual_regions]
+        bbox = map_bbox(
+            block["bbox"],
+            processed.metadata["transform_processing_to_source"],
+            image.width,
+            image.height,
+        )
+        item = {
+            "id": f"p{number:03d}-b{i:04d}",
+            "page": number,
+            "kind": "text",
+            "text": block["text"],
+            "bbox": [bbox[0] * sx, bbox[1] * sy, bbox[2] * sx, bbox[3] * sy],
+            "font_size": None,
+            "confidence": block["confidence"],
+            "language": _language_for(block["text"]),
+            "provenance": "ocr:" + getattr(processed.ocr, "backend", "local"),
+            "reading_order": i,
+            "coordinates_kind": "source",
+        }
+        style_box = [
+            bbox[0] * sx * style_scale,
+            bbox[1] * sy * style_scale,
+            bbox[2] * sx * style_scale,
+            bbox[3] * sy * style_scale,
+        ]
+        evidence = line_style_evidence(original_rgb, style_box, points_per_pixel=1.0 / style_scale)
+        if evidence is not None:
+            item["style_evidence"] = evidence
+        blocks.append(item)
+    regions = [
+        {
+            **r,
+            "bbox": [r["bbox"][0] * sx, r["bbox"][1] * sy, r["bbox"][2] * sx, r["bbox"][3] * sy],
+            "coordinates_kind": "source",
+        }
+        for r in processed.protected_visual_regions
+    ]
     # Renderer operates in PDF points or original image pixels. Composed matrices
     # explicitly convert those SOURCE coordinates to/from processing-image pixels.
-    import numpy as np
-    scale = np.diag([sx,sy,1.0])
+    scale = np.diag([sx, sy, 1.0])
     meta = processed.metadata
     meta["processing_image_path"] = str(work / "previews" / f"enhanced-{number:03d}.png")
     meta["transform_processing_to_source_pixels"] = meta["transform_processing_to_source"]
     meta["transform_source_pixels_to_processing"] = meta["transform_source_to_processing"]
-    meta["transform_processing_to_source"] = (scale @ np.asarray(meta["transform_processing_to_source"])).tolist()
-    meta["transform_source_to_processing"] = (np.asarray(meta["transform_source_to_processing"]) @ np.linalg.inv(scale)).tolist()
-    meta["source_coordinate_size"] = [width,height]
+    meta["transform_processing_to_source"] = (
+        scale @ np.asarray(meta["transform_processing_to_source"])
+    ).tolist()
+    meta["transform_source_to_processing"] = (
+        np.asarray(meta["transform_source_to_processing"]) @ np.linalg.inv(scale)
+    ).tolist()
+    meta["source_coordinate_size"] = [width, height]
     return blocks, meta, regions, list(processed.ocr.warnings) + processed.warnings
 
 
@@ -552,9 +657,15 @@ def analyze_document(source_path: str, work_dir: str, options: dict | None = Non
     if path.suffix.lower() == ".docx":
         ir = _docx_ir(path, work, options)
         from .protected_visuals import protect_ir
+
         protect_ir(ir, options.get("protected_visual_regions") or options.get("protected_regions"))
         ir["versions"]["source_sha256"] = source_sha
-        ir["source_metadata"] = {"name":path.name,"size":path.stat().st_size,"format":"docx","version":1}
+        ir["source_metadata"] = {
+            "name": path.name,
+            "size": path.stat().st_size,
+            "format": "docx",
+            "version": 1,
+        }
         if hashlib.sha256(path.read_bytes()).hexdigest() != source_sha:
             raise RuntimeError("ORIGINAL_INTEGRITY_MISMATCH")
         _save_json(work / "analysis.json", ir)
@@ -582,90 +693,232 @@ def analyze_document(source_path: str, work_dir: str, options: dict | None = Non
                 page_blocks = native
                 if page_obj.rect.width * page_obj.rect.height * (4 if scanned else 1) > 24_000_000:
                     raise ValueError("PREPROCESSING_PIXEL_LIMIT")
-                pix = page_obj.get_pixmap(matrix=fitz.Matrix(2 if scanned else 1, 2 if scanned else 1), alpha=False)
+                pix = page_obj.get_pixmap(
+                    matrix=fitz.Matrix(2 if scanned else 1, 2 if scanned else 1), alpha=False
+                )
                 image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
                 if scanned:
+                    style_pix = page_obj.get_pixmap(matrix=fitz.Matrix(4, 4), alpha=False)
+                    style_image = Image.frombytes(
+                        "RGB", [style_pix.width, style_pix.height], style_pix.samples
+                    )
                     page_blocks, preprocessing, regions, page_warnings = _analyze_image(
-                        image, ocr, number, work, float(page_obj.rect.width), float(page_obj.rect.height), options)
+                        image,
+                        ocr,
+                        number,
+                        work,
+                        float(page_obj.rect.width),
+                        float(page_obj.rect.height),
+                        options,
+                        style_image=style_image,
+                    )
                     warnings.extend(page_warnings)
-                    warnings.extend([
-                        _warn("OCR_LIMITATION", "OCR local: exactitude non validée sans transcription humaine.",page=number),
-                        _warn("NON_TEXTUAL_UNIDENTIFIED", "Régions visuelles candidates non exhaustives; revue requise.",page=number),
-                        _warn("SIGNATURE_AUTHENTICITY_NOT_VERIFIED", "Aucune authentification des signatures/cachets.",page=number)])
+                    warnings.extend(
+                        [
+                            _warn(
+                                "OCR_LIMITATION",
+                                "OCR local: exactitude non validée sans transcription humaine.",
+                                page=number,
+                            ),
+                            _warn(
+                                "NON_TEXTUAL_UNIDENTIFIED",
+                                "Régions visuelles candidates non exhaustives; revue requise.",
+                                page=number,
+                            ),
+                            _warn(
+                                "SIGNATURE_AUTHENTICITY_NOT_VERIFIED",
+                                "Aucune authentification des signatures/cachets.",
+                                page=number,
+                            ),
+                        ]
+                    )
                 if not scanned:
                     import numpy as np
 
-                    regions = protected_candidates(np.asarray(image),number)
-                    sx,sy = float(page_obj.rect.width)/image.width,float(page_obj.rect.height)/image.height
+                    regions = protected_candidates(np.asarray(image), number)
+                    sx, sy = (
+                        float(page_obj.rect.width) / image.width,
+                        float(page_obj.rect.height) / image.height,
+                    )
                     for region in regions:
                         b = region["bbox"]
-                        region["bbox"] = [b[0]*sx,b[1]*sy,b[2]*sx,b[3]*sy]
+                        region["bbox"] = [b[0] * sx, b[1] * sy, b[2] * sx, b[3] * sy]
                         region["coordinates_kind"] = "source"
                 if not page_blocks:
-                    warnings.append(_warn("BLANK_OR_UNREADABLE_PAGE", "Page conservée sans texte exploitable.",page=number))
+                    warnings.append(
+                        _warn(
+                            "BLANK_OR_UNREADABLE_PAGE",
+                            "Page conservée sans texte exploitable.",
+                            page=number,
+                        )
+                    )
                 try:
                     if list(page_obj.widgets() or []):
-                        warnings.append(_warn("PDF_SIGNATURE_WIDGET_REQUIRES_REVIEW", "Widget PDF: aucune validation cryptographique du dérivé.",page=number))
+                        warnings.append(
+                            _warn(
+                                "PDF_SIGNATURE_WIDGET_REQUIRES_REVIEW",
+                                "Widget PDF: aucune validation cryptographique du dérivé.",
+                                page=number,
+                            )
+                        )
                 except Exception:
                     pass
                 # Layout stays on ORIGINAL raster and source-coordinate OCR boxes.
-                page_tables, layout = _tables(page_obj,number,page_blocks,image if scanned else None)
+                page_tables, layout = _tables(
+                    page_obj, number, page_blocks, image if scanned else None
+                )
                 if not scanned:
                     # Native PDF: vector table art is handled by the P2 renderer;
                     # a raster candidate equal to a detected table is not a stamp.
                     regions = _exclude_table_art(regions, page_tables, warnings, number)
-                pages.append({"number":number,"width":float(page_obj.rect.width),"height":float(page_obj.rect.height),
-                              "scanned":scanned,"blocks":page_blocks,"layout":layout,
-                              "preprocessing":preprocessing,"processing_image_path": preprocessing.get("processing_image_path") if preprocessing else None,"protected_visual_regions":regions})
+                pages.append(
+                    {
+                        "number": number,
+                        "width": float(page_obj.rect.width),
+                        "height": float(page_obj.rect.height),
+                        "scanned": scanned,
+                        "blocks": page_blocks,
+                        "layout": layout,
+                        "preprocessing": preprocessing,
+                        "processing_image_path": preprocessing.get("processing_image_path")
+                        if preprocessing
+                        else None,
+                        "protected_visual_regions": regions,
+                    }
+                )
                 protected.extend(regions)
                 tables.extend(page_tables)
                 all_text.extend(b["text"] for b in page_blocks)
-                _render_pix(page_obj,work / "previews" / f"original-{number:03d}.png")
+                _render_pix(page_obj, work / "previews" / f"original-{number:03d}.png")
         finally:
             doc.close()
         fmt = "pdf"
     else:
         with Image.open(path) as source_image:
-            if getattr(source_image,"n_frames",1) > max_pages:
+            if getattr(source_image, "n_frames", 1) > max_pages:
                 raise ValueError("PAGE_LIMIT")
-            for number, frame in enumerate(ImageSequence.Iterator(source_image),1):
+            for number, frame in enumerate(ImageSequence.Iterator(source_image), 1):
                 if frame.width * frame.height > 24_000_000:
                     raise ValueError("PREPROCESSING_PIXEL_LIMIT")
                 image = frame.convert("RGB")
-                width,height = image.size
-                page_blocks, preprocessing, regions, page_warnings = _analyze_image(image,ocr,number,work,width,height,options)
+                width, height = image.size
+                page_blocks, preprocessing, regions, page_warnings = _analyze_image(
+                    image, ocr, number, work, width, height, options
+                )
                 warnings.extend(page_warnings)
-                layout = detect_layout(image,blocks=page_blocks,page_number=number,width=float(width),height=float(height))
-                tables.extend(layout.get("tables",[]))
-                pages.append({"number":number,"width":float(width),"height":float(height),"scanned":True,
-                              "blocks":page_blocks,"layout":layout,"preprocessing":preprocessing,"processing_image_path": preprocessing.get("processing_image_path") if preprocessing else None,"protected_visual_regions":regions})
+                layout = detect_layout(
+                    image,
+                    blocks=page_blocks,
+                    page_number=number,
+                    width=float(width),
+                    height=float(height),
+                )
+                tables.extend(layout.get("tables", []))
+                pages.append(
+                    {
+                        "number": number,
+                        "width": float(width),
+                        "height": float(height),
+                        "scanned": True,
+                        "blocks": page_blocks,
+                        "layout": layout,
+                        "preprocessing": preprocessing,
+                        "processing_image_path": preprocessing.get("processing_image_path")
+                        if preprocessing
+                        else None,
+                        "protected_visual_regions": regions,
+                    }
+                )
                 protected.extend(regions)
                 all_text.extend(b["text"] for b in page_blocks)
                 image.save(work / "previews" / f"original-{number:03d}.png")
-        warnings.append(_warn("OCR_LIMITATION","OCR local: exactitude non validée sans transcription humaine."))
+        warnings.append(
+            _warn("OCR_LIMITATION", "OCR local: exactitude non validée sans transcription humaine.")
+        )
         fmt = path.suffix.lower().lstrip(".")
     _apply_protection(pages, [*(options.get("protected_regions") or []), *protected])
     text = "\n".join(all_text)
-    lang,languages,confidence = detect_language(text)
-    cls = classify_document(text,languages)
+    lang, languages, confidence = detect_language(text)
+    cls = classify_document(text, languages)
     warnings.extend(cls["warnings"])
-    if len(languages)>1:
-        warnings.append(_warn("MIXED_LANGUAGES","Distribution heuristique des langues à vérifier."))
-    ir = {"schema_version":"1.0","source_path":str(path),"format":fmt,"language":lang,"languages":languages,
-          "language_confidence":confidence,"document_type":cls["document_type"],
-          "document_type_confidence":cls["confidence"],"domain":cls["domain"],"pages":pages,"tables":tables,
-          "protected_visual_regions":_clip_candidate_regions(protected, pages, warnings),"warnings":warnings,
-          "versions":{"analysis":"local-ocr-native-v3","source_sha256":source_sha,"preprocessing":VERSION},
-          "source_metadata":{"name":path.name,"format":fmt,"size":path.stat().st_size,"pages":len(pages),"metadata":metadata,"version":1},
-          "timings":{"ocr_seconds":sum((p.get("preprocessing") or {}).get("duration_seconds",0) for p in pages)},
-          "classifier":cls}
+    if len(languages) > 1:
+        warnings.append(
+            _warn("MIXED_LANGUAGES", "Distribution heuristique des langues à vérifier.")
+        )
+    ir = {
+        "schema_version": "1.0",
+        "source_path": str(path),
+        "format": fmt,
+        "language": lang,
+        "languages": languages,
+        "language_confidence": confidence,
+        "document_type": cls["document_type"],
+        "document_type_confidence": cls["confidence"],
+        "domain": cls["domain"],
+        "pages": pages,
+        "tables": tables,
+        "protected_visual_regions": _clip_candidate_regions(protected, pages, warnings),
+        "warnings": warnings,
+        "versions": {
+            "analysis": "local-ocr-native-v3",
+            "source_sha256": source_sha,
+            "preprocessing": VERSION,
+        },
+        "source_metadata": {
+            "name": path.name,
+            "format": fmt,
+            "size": path.stat().st_size,
+            "pages": len(pages),
+            "metadata": metadata,
+            "version": 1,
+        },
+        "timings": {
+            "ocr_seconds": sum(
+                (p.get("preprocessing") or {}).get("duration_seconds", 0) for p in pages
+            )
+        },
+        "classifier": cls,
+    }
     # P2 merges P1 automatic candidates, PDF source visuals and user annotations.
     from .protected_visuals import protect_ir
+
     protect_ir(ir, options.get("protected_visual_regions") or options.get("protected_regions"))
-    if hashlib.sha256(path.read_bytes()).hexdigest() != source_sha or ir["versions"]["source_sha256"] != source_sha:
+    if options.get("ocr_segmentation", True):
+        # Physical OCR lines -> logical translation units (paragraphs, list
+        # items, multi-line titles, cell contents), with line-level traceability.
+        from .segmentation import segment_ir
+
+        segment_ir(ir, detect_language=_language_for)
+    if options.get("line_verification", True) and any(p.get("scanned") for p in ir["pages"]):
+        run_line_verification(ir, path)
+    if (
+        hashlib.sha256(path.read_bytes()).hexdigest() != source_sha
+        or ir["versions"]["source_sha256"] != source_sha
+    ):
         raise RuntimeError("ORIGINAL_INTEGRITY_MISMATCH")
-    _save_json(work / "analysis.json",ir)
+    _save_json(work / "analysis.json", ir)
     return ir
+
+
+def run_line_verification(ir, source):
+    """Highlight evidence + critical-entity double reading on the original raster.
+
+    A failure never passes silently: the IR records NOT_EXECUTED and a review
+    warning, so the missing safety net is visible downstream."""
+    from .line_verification import verify_lines
+
+    try:
+        return verify_lines(ir, source)
+    except Exception as exc:  # noqa: BLE001 - recorded, never hidden
+        ir["line_verification"] = {"status": "NOT_EXECUTED", "error": type(exc).__name__}
+        ir.setdefault("warnings", []).append(
+            {
+                "code": "LINE_VERIFICATION_NOT_EXECUTED",
+                "severity": "warning",
+                "message": "Double lecture des entités et mesure du surlignage non exécutées: revue humaine requise.",
+            }
+        )
+        return ir["line_verification"]
 
 
 def _all_blocks(ir):
@@ -719,6 +972,7 @@ def _docx_text_nodes(element):
 
 def _replace_docx_text(element, target):
     from .docx_fidelity import redistribute_text
+
     result = redistribute_text(element, target)
     return result["node_count"] if result["applied"] else False
 
@@ -746,7 +1000,9 @@ def _with_render_proof(ir, translations, output, result, protected_regions):
     if ir.get("format") in {"tif", "tiff"}:
         from .raster_adapter import raster_pdf_copy
 
-        render_source = str(raster_pdf_copy(render_source, output.parent / "source-raster-copy.pdf"))
+        render_source = str(
+            raster_pdf_copy(render_source, output.parent / "source-raster-copy.pdf")
+        )
     pages = {page["number"]: page for page in ir.get("pages", [])}
     regions = [
         {
@@ -781,10 +1037,18 @@ def _reconstruct_docx(ir, translations, source, out, protected_regions, issues):
         if target == block.get("text", ""):
             continue
         if _protected_for(block, protected_regions):
-            issues.append(_warn("PROTECTED_TRANSLATION_NOT_APPLIED",
-                                "Zone originale protégée: traduction non appliquée.", "error", block_id=block["id"]))
+            issues.append(
+                _warn(
+                    "PROTECTED_TRANSLATION_NOT_APPLIED",
+                    "Zone originale protégée: traduction non appliquée.",
+                    "error",
+                    block_id=block["id"],
+                )
+            )
             continue
-        replacements.append({"id": block["id"], "source_ref": block.get("source_ref", {}), "target": target})
+        replacements.append(
+            {"id": block["id"], "source_ref": block.get("source_ref", {}), "target": target}
+        )
     package = edit_docx_package(source, out, replacements)
     issues.extend(package["issues"])
     changed = package["changed_blocks"]
@@ -810,8 +1074,13 @@ def _reconstruct_docx(ir, translations, source, out, protected_regions, issues):
         "renderer_version": "docx-package-fidelity-v3",
         "redistribution_trace": package["redistribution_trace"],
         "table_structure": [
-            {"id": f"candidate-table-{t['index']}", "rows": t["rows"], "columns": t["columns"],
-             "cell_count": len(t["cells"]), "provenance": "candidate_ooxml"}
+            {
+                "id": f"candidate-table-{t['index']}",
+                "rows": t["rows"],
+                "columns": t["columns"],
+                "cell_count": len(t["cells"]),
+                "provenance": "candidate_ooxml",
+            }
             for t in candidate_structure.get("tables", [])
         ],
     }
@@ -823,20 +1092,27 @@ def reconstruct_document(
     output_path: str,
     protected_regions: list[dict] | None = None,
 ) -> dict:
-    if not isinstance(translations, dict) or any(not isinstance(k, str) or not isinstance(v, str) for k, v in translations.items()):
+    if not isinstance(translations, dict) or any(
+        not isinstance(k, str) or not isinstance(v, str) for k, v in translations.items()
+    ):
         raise ValueError("Translation candidates must be a mapping of text ids to text, never null")
     out = Path(output_path).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     source = Path(ir["source_path"])
     if source.resolve() == out.resolve() or (out.exists() and os.path.samefile(source, out)):
         raise ValueError("Original/source must not be overwritten by reconstruction")
-    expected_sha = ir.get("versions", {}).get("source_sha256") or ir.get("versions", {}).get("source_xml_sha256")
+    expected_sha = ir.get("versions", {}).get("source_sha256") or ir.get("versions", {}).get(
+        "source_xml_sha256"
+    )
     if expected_sha and hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha:
         raise ValueError("Original immutable SHA256 mismatch")
     from .protected_visuals import normalize_regions
+
     protected_regions = normalize_regions(
         list(ir.get("protected_visual_regions") or []) + list(protected_regions or []),
-        ir.get("pages", []), expected_sha or hashlib.sha256(source.read_bytes()).hexdigest())
+        ir.get("pages", []),
+        expected_sha or hashlib.sha256(source.read_bytes()).hexdigest(),
+    )
     issues = []
     if ir.get("format") == "pdf":
         issues.append(
@@ -849,6 +1125,7 @@ def reconstruct_document(
         result = _reconstruct_docx(ir, translations, source, out, protected_regions, issues)
         return _with_render_proof(ir, translations, out, result, protected_regions)
     from .pdf_fidelity import render_pdf
+
     render_source = source
     if ir.get("format") in {"tif", "tiff"}:
         from .raster_adapter import raster_pdf_copy
@@ -922,7 +1199,8 @@ def evaluate_document(
             continue
         target = translations[block["id"]]
         protected = _protected_for(block, protected_regions)
-        if target == source and source.strip():
+        # D27: a typography-only variant of the source is not a translation.
+        if source.strip() and (target == source or typography_equivalent(target, source)):
             if protected:
                 issues.append(
                     _warn(
@@ -1138,7 +1416,9 @@ async def translate_document(ir: dict, work_dir: str, options: dict | None = Non
     if not original_previews and ir.get("format") in {"tif", "tiff"}:
         from .raster_adapter import raster_pdf_copy
 
-        original_previews = _preview_pdf(raster_pdf_copy(source, work / "source-raster-copy.pdf"), work, "original")
+        original_previews = _preview_pdf(
+            raster_pdf_copy(source, work / "source-raster-copy.pdf"), work, "original"
+        )
     candidate = work / ("candidate.docx" if ir.get("format") == "docx" else "candidate.pdf")
     render = reconstruct_document(
         ir, translations, str(candidate), options.get("protected_regions")
@@ -1188,8 +1468,13 @@ async def translate_document(ir: dict, work_dir: str, options: dict | None = Non
     evaluation = evaluate_document(ir, translations, render, options.get("reference"), options)
     issues.extend(evaluation["issues"])
     from .fidelity_report import write_visual_artifacts
+
     fidelity = write_visual_artifacts(work, render, evaluation)
-    versions = {"pipeline": "local-v2", "candidate": str(candidate), "renderer": render.get("renderer_version")}
+    versions = {
+        "pipeline": "local-v2",
+        "candidate": str(candidate),
+        "renderer": render.get("renderer_version"),
+    }
     service_versions = result.get("versions") or {}
     if isinstance(service_versions, dict):
         versions.update(service_versions)

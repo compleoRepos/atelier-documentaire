@@ -27,6 +27,13 @@ def is_user_region(region):
     return provenance.startswith(("user", "human")) or bool(region.get("annotation"))
 
 
+def carves_only(region):
+    """Automatic check-box glyphs never protect their whole block: the text
+    beside the box stays translatable, the renderer keeps the box pixels out
+    of masks and text frames (run18: yes/no option labels of a form)."""
+    return str(region.get("subtype")) == "checkbox_glyph" and not is_user_region(region)
+
+
 def significant_overlap(block_box, region_box):
     """Overlap large enough to make the block part of the protected visual.
 
@@ -520,9 +527,12 @@ def protect_ir(ir, annotations=None):
             protecting = [
                 region
                 for region in hits
-                if not scanned
-                or is_user_region(region)
-                or significant_overlap(block.get("bbox"), region["bbox"])
+                if not carves_only(region)
+                and (
+                    not scanned
+                    or is_user_region(region)
+                    or significant_overlap(block.get("bbox"), region["bbox"])
+                )
             ]
             near = [region for region in hits if region not in protecting]
             # Recomputed from the final region list (strict on native PDFs and

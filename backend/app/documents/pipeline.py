@@ -957,8 +957,15 @@ def _preview_pdf(path, work, prefix):
 
 
 def _protected_for(block, protected_regions):
+    # Run18 (F15): an automatic check-box glyph never protects its block (the
+    # renderer carves it out of masks). Counting it here classified a block
+    # returned unchanged by the model as "protected, kept" (warning) instead
+    # of UNTRANSLATED (error), hiding an untranslated label.
+    from .protected_visuals import carves_only
+
     return block.get("protected") or any(
         int(zone.get("page", 0)) == block.get("page")
+        and not carves_only(zone)
         and _intersects(block.get("bbox", []), zone.get("bbox", []))
         for zone in protected_regions
     )
@@ -1481,9 +1488,12 @@ async def translate_document(ir: dict, work_dir: str, options: dict | None = Non
     for key in ("model", "prompt", "glossary", "translation_memory"):
         if key in result:
             versions[key] = result[key]
+    from .block_status import classify_blocks
+
     output = {
         "translations": translations,
         "issues": issues,
+        "block_status": classify_blocks(ir, translations, issues),
         "quality": evaluation,
         "document_fidelity": fidelity,
         "versions": versions,

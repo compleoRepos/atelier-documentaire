@@ -7,6 +7,7 @@ scores OCR restent des signaux de confiance et non une exactitude validée.
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -149,10 +150,30 @@ LINE_SPLIT_GAP_FACTOR = 2.0
 LINE_SPLIT_TALL_WORD_FACTOR = 2.2
 
 
+LINE_SPLIT_RULE_DARK = 110
+LINE_SPLIT_RULE_FILL = 0.92
+_RULE_GLYPHS = re.compile(r"^[|¦\[\]]+$")
+
+
+def vertical_rule_between(gray: Any, left: int, right: int, top: int, bottom: int) -> bool:
+    """A cell rule: one pixel column strictly between two words that is dark on
+    >= 92 % of the line band (letters never fill a column between words)."""
+    if gray is None or right - left < 1 or bottom - top < 4:
+        return False
+    height, width = gray.shape[:2]
+    x0, x1 = max(0, int(left)), min(width, int(right))
+    y0, y1 = max(0, int(top)), min(height, int(bottom))
+    if x1 <= x0 or y1 - y0 < 4:
+        return False
+    window = gray[y0:y1, x0:x1] < LINE_SPLIT_RULE_DARK
+    return bool((window.mean(axis=0) >= LINE_SPLIT_RULE_FILL).any())
+
+
 def split_line_at_gaps(
     item: dict[str, list[Any]],
     factor: float = LINE_SPLIT_GAP_FACTOR,
     tall_factor: float = LINE_SPLIT_TALL_WORD_FACTOR,
+    gray: Any = None,
 ) -> list[dict[str, Any]]:
     """Split one Tesseract line where two consecutive words (left to right) are
     separated by a blank >= ``factor`` x the median word height.
@@ -167,9 +188,19 @@ def split_line_at_gaps(
     box and mean confidence; its text keeps the OCR reading order (RTL safe).
 
     In lines of >= 3 words, a "word" >= ``tall_factor`` x the median word height
-    is isolated as its own segment: it is a graphic read as a glyph (a crest
-    fragment read as "2" made a 7 pt line box 22.5 pt tall: font 12.7 pt and a
-    mask erasing the line above). Ascender/descender variation stays < 2 x.
+    (a crest fragment read as "2" made a 7 pt line box 22.5 pt tall: font
+    12.7 pt and a mask erasing the line above) keeps its place in the text but
+    its box is clamped to the band of the other words for the segment box.
+    Run18 audit: isolating such words as separate segments (run10) tore REAL
+    words out of their line when Tesseract gave them a box spanning two printed
+    lines ("en calidad de (2)" lost "de" and "(2)", "trabajo ubicado en" lost
+    "en"); the orphans became tiny blocks straddling two lines, shrank both
+    neighbours' masks and the source-ink guard then dropped both translations.
+    Ascender/descender variation stays < 2 x, so normal words are untouched.
+    With the page image (``gray``), a line is also split where a vertical cell
+    rule runs between two words (run18: "label | value" of two form cells read
+    as one line was blocked as a whole by the form-structure guard), and words
+    that are only the rule read as glyphs ("|", "]") are dropped.
     """
     words = [
         {
@@ -191,32 +222,69 @@ def split_line_at_gaps(
         if len(words) >= 3
         else set()
     )
+    normal = [w for w in words if w["order"] not in tall] or words
+    band_top = sorted(w["top"] for w in normal)[len(normal) // 2]
+    band_bottom = sorted(w["bottom"] for w in normal)[len(normal) // 2]
     by_x = sorted(words, key=lambda w: (w["left"], w["order"]))
+    rule_words = set()
+    if gray is not None and len(words) >= 2:
+        rule_words = {
+            w["order"]
+            for w in words
+            if _RULE_GLYPHS.match(str(w["text"]))
+            and vertical_rule_between(gray, w["left"], w["right"] + 1, band_top, band_bottom)
+        }
     segments: list[list[dict[str, Any]]] = [[by_x[0]]]
     right = by_x[0]["right"]
+    split_at_rule = False
     for previous, word in zip(by_x, by_x[1:], strict=False):
-        isolate = word["order"] in tall or previous["order"] in tall
-        if isolate or word["left"] - right >= threshold:
+        ruled = previous["order"] in rule_words or word["order"] in rule_words
+        if not ruled and gray is not None:
+            ruled = vertical_rule_between(gray, right, word["left"], band_top, band_bottom)
+        if ruled or word["left"] - right >= threshold:
+            split_at_rule = split_at_rule or ruled
             segments.append([word])
         else:
             segments[-1].append(word)
         right = max(right, word["right"])
+    segments = [
+        kept
+        for segment in segments
+        if (kept := [w for w in segment if w["order"] not in rule_words])
+    ] or segments
     out = []
     for segment in segments:
         ordered = sorted(segment, key=lambda w: w["order"])
+        boxed = [w for w in segment if w["order"] not in tall]
+        clamped = len(boxed) < len(segment)
+        tops = [w["top"] for w in boxed] or [band_top]
+        bottoms = [w["bottom"] for w in boxed] or [band_bottom]
         out.append(
             {
                 "text": " ".join(w["text"] for w in ordered),
                 "bbox": [
                     min(w["left"] for w in segment),
-                    min(w["top"] for w in segment),
+                    min(tops),
                     max(w["right"] for w in segment),
-                    max(w["bottom"] for w in segment),
+                    max(bottoms),
                 ],
                 "confidence": sum(w["confidence"] for w in segment) / len(segment),
+                **({"tall_words_clamped": len(segment) - len(boxed)} if clamped else {}),
+                **({"split_at_rule": True} if split_at_rule and len(segments) > 1 else {}),
             }
         )
     return out
+
+
+def _gray_array(image: Any) -> Any:
+    """8-bit grey copy of the analysed image for the rule test (None if the
+    object is not an image, e.g. a path handed to Tesseract)."""
+    try:
+        import numpy as np
+
+        return np.asarray(image.convert("L"))
+    except Exception:
+        return None
 
 
 class TesseractOCR:
@@ -303,8 +371,9 @@ class TesseractOCR:
             item["confidence"].append(confidence)
         blocks = []
         split_lines = 0
+        gray = _gray_array(image)
         for item in groups.values():
-            segments = split_line_at_gaps(item)
+            segments = split_line_at_gaps(item, gray=gray)
             split_lines += len(segments) > 1
             for segment in segments:
                 blocks.append({**segment, "provenance": "ocr:tesseract-local"})

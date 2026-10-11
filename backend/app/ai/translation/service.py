@@ -670,13 +670,28 @@ def _retry_candidate(block: Mapping[str, Any], returned: str, document_language:
 
     Conservative: the detected language must be known and non-French, and the
     source must contain at least two alphabetic words of four letters or more,
-    so proper names, codes and identifiers are not retried.
+    so proper names, codes and identifiers are not retried. Exception: any word
+    in a non-Latin script (it cannot be the French text).
     """
     source = str(block.get("text", ""))
     if returned.split() != source.split():
         return False
+    # Run18: a French translation is written in Latin script, so a source with
+    # a word in another script (Arabic, Cyrillic, Greek, Hebrew...) returned
+    # verbatim is never a valid translation, even a one-word cell label
+    # (DOC-004: 18 short Arabic labels returned unchanged, never retried).
+    if re.search(r"(?:(?![A-Za-z\u00c0-\u024f])[^\W\d_]){2,}", source, flags=re.UNICODE):
+        return True
     language = block.get("language") or document_language
-    if not language or str(language).lower() in {"unknown", "und", "none"} or _is_french(language):
+    if _is_french(language):
+        return False
+    # Run18: short labels ("Name:", "Datum") carry lexical proof of a foreign
+    # word even when the detector says "unknown" (offline lexicon, optional).
+    from app.documents.language_evidence import foreign_word_evidence
+
+    if foreign_word_evidence(source, [language, document_language]):
+        return True
+    if not language or str(language).lower() in {"unknown", "und", "none"}:
         return False
     return len(re.findall(r"[^\W\d_]{4,}", source, flags=re.UNICODE)) >= 2
 
@@ -1313,6 +1328,24 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                             "message": "Bloc traversant des filets de formulaire ou de tableau: non réécrit (structure et valeurs d'origine conservées), revue humaine requise.",
                             "block_id": str(block.get("id")),
                             "reasons": list(detail.get("reasons") or []),
+                        }
+                    )
+            # Blocks without a single two-letter word ("|", "5 €", "i") are
+            # symbols or OCR fragments: nothing to translate (run18).
+            symbols = [
+                block
+                for block in active_blocks
+                if block_by_id.get(str(block.get("id")), {}).get("no_linguistic_content")
+            ]
+            if symbols:
+                active_blocks = [block for block in active_blocks if block not in symbols]
+                for block in symbols:
+                    issues.append(
+                        {
+                            "code": "NO_LINGUISTIC_CONTENT_KEPT",
+                            "severity": "info",
+                            "message": "Bloc sans mot (symbole, nombre ou fragment OCR): conservé à l'identique (pixels d'origine).",
+                            "block_id": str(block.get("id")),
                         }
                     )
             # Lines made only of identifiers/numbers carry nothing translatable.

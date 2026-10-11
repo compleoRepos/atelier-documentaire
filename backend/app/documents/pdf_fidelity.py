@@ -467,6 +467,34 @@ def _font_kwargs(size: float, style: dict[str, Any], align: int) -> dict[str, An
     }
 
 
+_FONT_CACHE: dict[str, Any] = {}
+
+
+def _longest_word_fits(text: str, width: float, size: float, kwargs: dict[str, Any]) -> bool:
+    """True when every word fits on one line of ``width`` at ``size``.
+    insert_textbox breaks a word that is wider than the frame mid-word
+    (run18 audit: a translated label rendered as two fragments in a narrow
+    table cell); such a fit is refused so a wider frame or a smaller font is
+    tried, and otherwise the block is reported as an overflow."""
+    words = [w for w in re.split(r"\s+", text) if w]
+    if not words:
+        return True
+    key = str(kwargs.get("fontfile") or kwargs.get("fontname") or "helv")
+    font = _FONT_CACHE.get(key)
+    if font is None:
+        try:
+            font = (
+                fitz.Font(fontfile=kwargs["fontfile"])
+                if kwargs.get("fontfile")
+                else fitz.Font("helv")
+            )
+        except Exception:
+            font = fitz.Font("helv")
+        _FONT_CACHE[key] = font
+    usable = width - 2.0  # insert_textbox keeps a small inner margin
+    return max(font.text_length(word, fontsize=size) for word in words) <= usable
+
+
 def _fit_on_scratch(
     source_bytes: bytes,
     page_number: int,
@@ -491,8 +519,10 @@ def _fit_on_scratch(
             kwargs = _font_kwargs(current, style, align)
             kwargs = {key: value for key, value in kwargs.items() if value is not None}
             result = scratch[page_number - 1].insert_textbox(rect, text, **kwargs)
-            if result >= 0:
+            if result >= 0 and _longest_word_fits(text, rect.width, current, kwargs):
                 return True, result, current
+            if result >= 0:
+                result = -1.0  # a word would be cut mid-word (run18, DOC-004)
             if current * step < minimum - 1e-6:
                 break
             current *= step
@@ -657,7 +687,11 @@ def _walk(
 
 
 def _ink_obstacles(
-    page: Any, box: list[float], right_limit: float, reach: float
+    page: Any,
+    box: list[float],
+    right_limit: float,
+    reach: float,
+    left_limit: float | None = None,
 ) -> tuple[list[float], list[list[float]]]:
     """(box extended over its own contiguous ink, synthetic obstacles at the
     nearest separate ink above/below over its width and to its right over its
@@ -693,6 +727,16 @@ def _ink_obstacles(
     ext[2] = max(box[2], to_pt_x(edge))
     if hit is not None:
         found.append([to_pt_x(hit) - 0.5, box[1], to_pt_x(hit) + 0.5, box[3]])
+    if left_limit is not None:
+        # Run18: right-aligned cells (Arabic labels) have their free space on
+        # the LEFT; walk leftwards the same way.
+        stop = max(-1, _px(page, left_limit, 0) - 1)
+        edge, hit = _walk(
+            cols, x0 - 1, -1, min(x0 - 1, stop), int(0.5 * line_px), _GROWTH_COL_SHARE
+        )
+        ext[0] = min(box[0], to_pt_x(edge))
+        if hit is not None:
+            found.append([to_pt_x(hit) - 0.5, box[1], to_pt_x(hit) + 0.5, box[3]])
     return ext, found
 
 
@@ -710,6 +754,8 @@ def _growth_is_blank(page: Any, rect: list[float], box: list[float]) -> bool:
         strips.append([rect[0], box[3] + _GROWTH_GAP, rect[2], rect[3]])
     if rect[2] > box[2] + _GROWTH_GAP:
         strips.append([box[2] + _GROWTH_GAP, rect[1], rect[2], rect[3]])
+    if rect[0] < box[0] - _GROWTH_GAP:
+        strips.append([rect[0], rect[1], box[0] - _GROWTH_GAP, rect[3]])
     for strip in strips:
         sx0, sx1 = max(0, _px(page, strip[0], 0)), min(width, _px(page, strip[2], 0))
         sy0, sy1 = max(0, _px(page, strip[1], 1)), min(height, _px(page, strip[3], 1))
@@ -982,6 +1028,36 @@ def _shrink_away(box: list[float], others: list[list[float]]) -> list[float] | N
     return shrunk
 
 
+def _neighbour_obstacle(other: list[float], box: list[float]) -> list[float] | None:
+    """F19 (run18 final audit): obstacle left by a neighbouring block.
+
+    OCR boxes of consecutive lines overlap by a point or two (ascenders,
+    descenders). Such a neighbour used to be dropped from the obstacles, so a
+    longer translation grew over the neighbour's line, itself redrawn: two
+    lines printed on top of each other. The neighbour is now kept, clipped to
+    its part outside the box. A neighbour largely overlapping the box (grouping
+    artefact, container) is still not an obstacle, as before."""
+    if not _strict_overlap(other, box):
+        return other
+    ox0, oy0, ox1, oy1 = other
+    bx0, by0, bx1, by1 = box
+    inter_h = min(oy1, by1) - max(oy0, by0)
+    inter_w = min(ox1, bx1) - max(ox0, bx0)
+    vertical = inter_h < 0.5 * min(oy1 - oy0, by1 - by0)
+    horizontal = inter_w < 0.5 * min(ox1 - ox0, bx1 - bx0)
+    if not vertical and not horizontal:
+        return None
+    if vertical:
+        above = (oy0 + oy1) / 2 < (by0 + by1) / 2
+        clipped = [ox0, oy0, ox1, by0] if above else [ox0, by1, ox1, oy1]
+    else:
+        left = (ox0 + ox1) / 2 < (bx0 + bx1) / 2
+        clipped = [ox0, oy0, bx0, oy1] if left else [bx1, oy0, ox1, oy1]
+    if clipped[2] - clipped[0] < 1 or clipped[3] - clipped[1] < 1:
+        return None
+    return clipped
+
+
 def _grow_vertical(
     box: list[float], need: float, obstacles: list[list[float]], page_rect: Any
 ) -> list[float]:
@@ -997,6 +1073,13 @@ def _grow_vertical(
             y0 -= 1
         else:
             break
+    return [x0, y0, x1, y1]
+
+
+def _grow_left(box: list[float], limit: float, obstacles: list[list[float]]) -> list[float]:
+    x0, y0, x1, y1 = box
+    while x0 - 2 >= limit and not any(_strict_overlap([x0 - 2, y0, x0, y1], o) for o in obstacles):
+        x0 -= 2
     return [x0, y0, x1, y1]
 
 
@@ -1024,7 +1107,19 @@ def _scan_style(block: dict[str, Any]) -> tuple[dict[str, Any], int]:
     color = style.get("color")
     if isinstance(color, (list, tuple)) and len(color) == 3:
         out["color"] = [float(c) for c in color]
-    return out, _ALIGN.get(str(style.get("align") or "left"), 0)
+    align = _ALIGN.get(str(style.get("align") or "left"), 0)
+    if align in (0, 3) and _rtl_dominant(str(block.get("text") or "")):
+        # Run18: the alignment measure is left-edge based; a right-to-left
+        # label is anchored on its right edge, so is its French replacement
+        # (it can then grow left into the free part of the cell).
+        align = 2
+    return out, align
+
+
+def _rtl_dominant(text: str) -> bool:
+    letters = [c for c in text if c.isalpha()]
+    rtl = sum("\u0590" <= c <= "\u08ff" or "\ufb1d" <= c <= "\ufefc" for c in letters)
+    return bool(letters) and rtl >= 0.6 * len(letters)
 
 
 def _line_boxes(block: dict[str, Any]) -> list[list[float]]:
@@ -1078,10 +1173,10 @@ def _scan_covers(
 
 
 def _scan_region_protects(block: dict[str, Any], region: dict[str, Any]) -> bool:
-    from .protected_visuals import is_user_region, significant_overlap
+    from .protected_visuals import carves_only, is_user_region, significant_overlap
 
     box, rbox = _rect(block.get("bbox")), _rect(region.get("bbox"))
-    if not box or not rbox or not _intersects(box, rbox):
+    if not box or not rbox or not _intersects(box, rbox) or carves_only(region):
         return False
     return is_user_region(region) or significant_overlap(box, rbox)
 
@@ -1172,7 +1267,7 @@ def _plan_scan_block(
         return None, issues, False
     size = _scan_font_size(block, body_size)
     style, align = _scan_style(block)
-    obstacles = [o for o in others if not _strict_overlap(o, box)] + region_boxes
+    obstacles = [clipped for o in others if (clipped := _neighbour_obstacle(o, box))] + region_boxes
     inner = list(box)
     if bound:
         inner = [
@@ -1207,12 +1302,40 @@ def _plan_scan_block(
         inner = shrunk
     lines = int(block.get("line_count") or _line_count(block.get("text", "")))
     right_limit = bound[2] if bound else (body_right or page.rect.width - 36)
+    # Run18: text aligned right (or centred) keeps its anchor only if the box
+    # grows to the left (right-aligned Arabic cell labels, DOC-004).
+    grow_left = align in (1, 2)
+    left_limit = None
+    if grow_left:
+        lefts = [
+            r[0]
+            for b in ir_blocks
+            if (r := _rect(b.get("bbox"))) and len(str(b.get("text", "")).strip()) >= 8
+        ]
+        left_limit = bound[0] if bound else min(lefts or [page.rect.x0 + 36])
     # Growth stops at the nearest original ink (rules, labels, graphics, text
     # that OCR did not box) and every candidate is re-checked below.
-    ink_box, ink_obstacles = _ink_obstacles(page, box, right_limit, size * 1.25 * lines * 2)
+    ink_box, ink_obstacles = _ink_obstacles(
+        page, box, right_limit, size * 1.25 * lines * 2, left_limit=left_limit
+    )
     obstacles = obstacles + ink_obstacles
     candidates = [_grow_vertical(inner, size * 1.25 * lines, obstacles, page.rect)]
-    candidates.append(_grow_right(candidates[0], right_limit, obstacles))
+    if align == 2:
+        candidates.append(_grow_left(candidates[0], left_limit, obstacles))
+    elif align == 1:
+        wide_l = _grow_left(candidates[0], left_limit, obstacles)
+        wide_r = _grow_right(candidates[0], right_limit, obstacles)
+        extra = min(candidates[0][0] - wide_l[0], wide_r[2] - candidates[0][2])
+        candidates.append(
+            [
+                candidates[0][0] - extra,
+                candidates[0][1],
+                candidates[0][2] + extra,
+                candidates[0][3],
+            ]
+        )
+    else:
+        candidates.append(_grow_right(candidates[0], right_limit, obstacles))
     candidates.append(
         _grow_vertical(
             candidates[1], (candidates[1][3] - candidates[1][1]) * 1.6, obstacles, page.rect

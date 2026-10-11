@@ -1,7 +1,8 @@
 """Inflated OCR line boxes (prompt final, run9 visual audit, synthetic only).
 
 1. A crest fragment read as a tall "word" made a 7 pt line box 22.5 pt tall:
-   font 12.7 pt and a mask erasing the line above. It is now isolated by OCR.
+   font 12.7 pt and a mask erasing the line above. Its height is now clamped
+   to the line band (run18: it is no longer torn out of the line text).
 2. A one-line section heading whose box was taller than its print wrapped its
    translation onto the table row below. One source line now stays one line:
    reduced (>= 72 %), extended right, or LAYOUT_OVERFLOW — never wrapped.
@@ -15,7 +16,7 @@ from test_scan_render_plan_final import _plan
 from app.ai.ocr.tesseract import split_line_at_gaps
 
 
-def test_tall_graphic_word_is_isolated_from_the_line_it_inflates():
+def test_tall_graphic_word_no_longer_inflates_the_line_box():
     item = _item(
         [
             ("2", 68, 80, 79, 102, 0.6),  # crest fragment, 23 px tall
@@ -25,8 +26,27 @@ def test_tall_graphic_word_is_isolated_from_the_line_it_inflates():
         ]
     )
     segments = split_line_at_gaps(item)
-    assert [s["text"] for s in segments] == ["2", "Y ASUNTOS GENERAL"]
-    assert segments[1]["bbox"] == [84, 92, 190, 100]  # true print height restored
+    assert [s["text"] for s in segments] == ["2 Y ASUNTOS GENERAL"]
+    assert segments[0]["bbox"] == [68, 92, 190, 100]  # true print height kept
+    assert segments[0]["tall_words_clamped"] == 1
+
+
+def test_real_word_with_a_two_line_box_stays_in_its_line_run18():
+    """Run18 regression: Tesseract gave "de" and "(2)." boxes spanning two
+    printed lines; isolating them removed them from the sentence and created
+    orphan blocks that shrank both neighbours' masks."""
+    item = _item(
+        [
+            ("en", 66, 74, 471, 476, 0.95),
+            ("calidad", 76, 104, 471, 476, 0.95),
+            ("de", 106, 113, 466, 480, 0.95),  # box spans two printed lines
+            ("(2).", 115, 127, 466, 480, 0.83),
+            ("Firma", 129, 150, 471, 476, 0.95),
+        ]
+    )
+    segments = split_line_at_gaps(item)
+    assert [s["text"] for s in segments] == ["en calidad de (2). Firma"]
+    assert segments[0]["bbox"] == [66, 471, 150, 476]
 
 
 def test_ascenders_and_descenders_never_isolate_a_word():

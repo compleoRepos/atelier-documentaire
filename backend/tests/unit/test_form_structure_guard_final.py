@@ -135,13 +135,19 @@ def test_verify_lines_marks_structure_risk_and_identifier_only_with_counts():
     stats = verify_lines(
         ir, "unused.pdf", reader=lambda _i: None, rasters={1: _page(rules_h=[(262, 150, 1700)])}
     )
-    assert ruled_block["form_structure_risk"]["reasons"] == ["horizontal_rule_between_lines"]
+    # run18: lines separated by a rule are split into their own blocks instead
+    # of keeping the whole block in the source language.
+    blocks = ir["pages"][0]["blocks"]
+    assert [b["id"] for b in blocks[:2]] == ["p001-b0000-r1", "p001-b0000-r2"]
+    assert all("form_structure_risk" not in b for b in blocks[:2])
+    assert stats["blocks_split_at_rules"] == 1 and stats["blocks_from_rule_splits"] == 2
     assert footer.get("identifier_only") is True
     assert "form_structure_risk" not in clean and "identifier_only" not in clean
-    assert stats["blocks_form_structure_risk"] == 1 and stats["blocks_identifier_only"] == 1
-    # idempotent: a second pass on a clean raster removes stale flags
-    verify_lines(ir, "unused.pdf", reader=lambda _i: None, rasters={1: _page()})
-    assert "form_structure_risk" not in ruled_block
+    assert stats["blocks_form_structure_risk"] == 0 and stats["blocks_identifier_only"] == 1
+    # idempotent: a second pass neither re-splits nor re-merges the parts
+    again = verify_lines(ir, "unused.pdf", reader=lambda _i: None, rasters={1: _page()})
+    assert again["blocks_split_at_rules"] == 0
+    assert [b["id"] for b in ir["pages"][0]["blocks"][:2]] == ["p001-b0000-r1", "p001-b0000-r2"]
 
 
 @pytest.mark.asyncio

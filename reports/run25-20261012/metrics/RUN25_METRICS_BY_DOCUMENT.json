@@ -1,0 +1,6010 @@
+{
+ "budget_limit_total_tokens": 32768,
+ "definitions": {
+  "altered_regions_run25[].explained_by_written_translation": "the region overlaps a block whose translation is written (necessary, not sufficient, for an intended change)",
+  "attempted_chars": "expected characters for which the run produced a target",
+  "coverage_attempted": "attempted_chars / expected_chars",
+  "coverage_written": "written_chars / expected_chars (written coverage)",
+  "expected_chars": "source characters of blocks in translation scope, recomputed with ONE rule for every run (language evidence, not the run's own label)",
+  "mask_spill": "original dark pixels (gray < 140, zoom 3) no longer dark in the candidate, OUTSIDE the boxes of the run's TRANSLATED blocks, grouped in 8-connected clusters of >= 12 px: erased rules, underlines, neighbour glyphs (lower is better; run24 vs run25 only, same output format)",
+  "ocr_unreliable_sub_reasons": "breakdown of UNCERTAIN:ocr_unreliable blocks by engine sub-reason (low_confidence_ocr = historical is_unreliable_ocr rule, low OCR confidence + text heuristics; bidi_number_order_unreliable = multi-group number read in a right-to-left context, kept as original image; checkbox_* = check-box readings)",
+  "partial_chars / absent_chars": "attempted characters found PARTIAL / ABSENT in the rendered PDF",
+  "render.words_colliding": "inserted words overlapping another inserted word",
+  "strict_coverage_model": "historical 09/10 definition (translated / need, every untranslated non-French block counted missing whatever the reason) corresponds here to coverage_attempted; written strict coverage corresponds to coverage_written. Denominator rule differs from the 09/10 tool: 09/10 values are NOT comparable",
+  "untranslated_classification": "every block not TRANSLATED in run25, mapped from its engine status:reason to the five categories of the run25 brief",
+  "visual_regions.altered": "candidate graphic regions whose pixel change share vs original > 2 %",
+  "written_chars": "expected characters whose target is found WRITTEN in the rendered PDF (independent text extraction)"
+ },
+ "document_ids": [
+  "DOC-001",
+  "DOC-002",
+  "DOC-003",
+  "DOC-004",
+  "DOC-005",
+  "DOC-006",
+  "DOC-007",
+  "DOC-008"
+ ],
+ "documents": {
+  "DOC-001": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      123.0,
+      232.5,
+      141.0,
+      245.5
+     ],
+     "changed_share": 0.582,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      142.0,
+      233.0,
+      212.9,
+      247.0
+     ],
+     "changed_share": 0.458,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      222.9,
+      232.5,
+      243.9,
+      245.0
+     ],
+     "changed_share": 0.492,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      262.4,
+      235.0,
+      277.9,
+      245.0
+     ],
+     "changed_share": 0.639,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      274.9,
+      235.0,
+      288.9,
+      245.0
+     ],
+     "changed_share": 0.548,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 3,
+     "PAGE_LEVEL": 5,
+     "SOURCE_RESIDUAL": 7,
+     "TARGET_MISSING": 1
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "OUT_OF_SCOPE_REWRITTEN": 2,
+     "PAGE_LEVEL": 4,
+     "SOURCE_RESIDUAL": 6,
+     "TARGET_MISSING": 1
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 4,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 4,
+     "TARGET_MISSING": 1
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 4,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 4,
+     "TARGET_MISSING": 1
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 4,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 4,
+     "TARGET_MISSING": 1
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 3,
+     "lost_px": 73
+    },
+    "run25": {
+     "clusters": 3,
+     "lost_px": 73
+    }
+   },
+   "ocr_unreliable_sub_reasons": {},
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 0,
+     "blocks_reused": 47,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 22,
+     "attempted_chars": 397,
+     "blocks": 41,
+     "changed_outside_expected_chars": 77,
+     "coverage_attempted": 0.6332,
+     "coverage_written": 0.5981,
+     "critical_codes": {
+      "CRITICAL_ENTITY_EXTRA": 2,
+      "HALLUCINATION_ENTITY_ADDED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 627,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "CRITICAL_ENTITY_EXTRA": 2,
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ENTITY_ADDED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 3,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 5,
+      "UNTRANSLATED": 15,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 230,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 230
+     },
+     "out_of_scope_chars": {
+      "already_french": 549,
+      "identical_in_french": 4,
+      "no_linguistic_content": 25,
+      "proper_name_or_reference": 134
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 22
+     },
+     "render": {
+      "blocks_absent": 3,
+      "blocks_written": 8,
+      "inserted_words": 72,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 8,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 6,
+      "PRESERVED_INTENTIONALLY": 19,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 261,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 25,
+      "PRESERVED_INTENTIONALLY": 636,
+      "TRANSLATED": 417,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 7,
+      "FAILED:render_mask_unsafe": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 6,
+      "PRESERVED_INTENTIONALLY:already_french": 12,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 3,
+      "TRANSLATED:translated_and_placed": 8
+     },
+     "written_chars": 375
+    },
+    "run17": {
+     "absent_chars": 18,
+     "attempted_chars": 328,
+     "blocks": 47,
+     "changed_outside_expected_chars": 35,
+     "coverage_attempted": 0.5868,
+     "coverage_written": 0.5546,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 1,
+      "PDF_TABLE_STRUCTURE_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 559,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 3,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 4,
+      "LAYOUT_OVERFLOW": 1,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PDF_TABLE_STRUCTURE_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 1,
+      "SCAN_REDACTION_SHRUNK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 4,
+      "UNTRANSLATED": 20,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_STRUCTURE_CHANGED": 1
+     },
+     "not_attempted_chars": 231,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 91,
+      "UNCERTAIN:form_structure_ambiguous": 140
+     },
+     "out_of_scope_chars": {
+      "already_french": 594,
+      "identical_in_french": 6,
+      "no_linguistic_content": 43,
+      "proper_name_or_reference": 131
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_overflow": 18
+     },
+     "render": {
+      "blocks_absent": 3,
+      "blocks_written": 6,
+      "inserted_words": 56,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 13,
+      "PRESERVED_INTENTIONALLY": 20,
+      "TRANSLATED": 6,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 140,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 43,
+      "PRESERVED_INTENTIONALLY": 700,
+      "TRANSLATED": 310,
+      "UNCERTAIN": 140
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 5,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 13,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 8,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 2,
+      "TRANSLATED:translated_and_placed": 6,
+      "UNCERTAIN:form_structure_ambiguous": 1
+     },
+     "written_chars": 310
+    },
+    "run24": {
+     "absent_chars": 93,
+     "attempted_chars": 442,
+     "blocks": 47,
+     "changed_outside_expected_chars": 56,
+     "coverage_attempted": 0.7294,
+     "coverage_written": 0.5759,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 606,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 9,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 1,
+      "SCAN_REDACTION_SHRUNK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 3,
+      "UNTRANSLATED": 17,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 164,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 24,
+      "UNCERTAIN:form_structure_ambiguous": 140
+     },
+     "out_of_scope_chars": {
+      "already_french": 500,
+      "identical_in_french": 6,
+      "identifier_or_number": 23,
+      "no_linguistic_content": 29,
+      "proper_name_or_reference": 159
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 93
+     },
+     "render": {
+      "blocks_absent": 5,
+      "blocks_written": 8,
+      "inserted_words": 64,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 10,
+      "PRESERVED_INTENTIONALLY": 21,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 169,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 29,
+      "PRESERVED_INTENTIONALLY": 636,
+      "TRANSLATED": 349,
+      "UNCERTAIN": 140
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 3,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 10,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 8,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 2,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:form_structure_ambiguous": 1
+     },
+     "written_chars": 349
+    },
+    "run25": {
+     "absent_chars": 93,
+     "attempted_chars": 442,
+     "blocks": 47,
+     "changed_outside_expected_chars": 56,
+     "coverage_attempted": 0.7294,
+     "coverage_written": 0.5759,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 606,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 9,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 1,
+      "SCAN_REDACTION_SHRUNK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 3,
+      "UNTRANSLATED": 17,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 164,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 24,
+      "UNCERTAIN:form_structure_ambiguous": 140
+     },
+     "out_of_scope_chars": {
+      "already_french": 500,
+      "identical_in_french": 6,
+      "identifier_or_number": 23,
+      "no_linguistic_content": 29,
+      "proper_name_or_reference": 159
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 93
+     },
+     "render": {
+      "blocks_absent": 5,
+      "blocks_written": 8,
+      "inserted_words": 64,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 10,
+      "PRESERVED_INTENTIONALLY": 21,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 169,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 29,
+      "PRESERVED_INTENTIONALLY": 636,
+      "TRANSLATED": 349,
+      "UNCERTAIN": 140
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 3,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 10,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 8,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 2,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:form_structure_ambiguous": 1
+     },
+     "written_chars": 349
+    },
+    "run25a": {
+     "absent_chars": 93,
+     "attempted_chars": 442,
+     "blocks": 47,
+     "changed_outside_expected_chars": 56,
+     "coverage_attempted": 0.7294,
+     "coverage_written": 0.5759,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 606,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 9,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 1,
+      "SCAN_REDACTION_SHRUNK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 3,
+      "UNTRANSLATED": 17,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 164,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 24,
+      "UNCERTAIN:form_structure_ambiguous": 140
+     },
+     "out_of_scope_chars": {
+      "already_french": 500,
+      "identical_in_french": 6,
+      "identifier_or_number": 23,
+      "no_linguistic_content": 29,
+      "proper_name_or_reference": 159
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 93
+     },
+     "render": {
+      "blocks_absent": 5,
+      "blocks_written": 8,
+      "inserted_words": 64,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 10,
+      "PRESERVED_INTENTIONALLY": 21,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 169,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 29,
+      "PRESERVED_INTENTIONALLY": 636,
+      "TRANSLATED": 349,
+      "UNCERTAIN": 140
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 3,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 10,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 8,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 2,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:form_structure_ambiguous": 1
+     },
+     "written_chars": 349
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 10,
+     "chars": 502
+    },
+    "human_review_required": {
+     "blocks": 8,
+     "chars": 309
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 21,
+     "chars": 163
+    },
+    "illegible_text": {
+     "blocks": 0,
+     "chars": 0
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 0,
+     "run17": 5,
+     "run24": 5,
+     "run25": 5
+    },
+    "by_subtype": {
+     "stamp_or_logo_candidate": 10
+    },
+    "total": 10
+   }
+  },
+  "DOC-002": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      0.0,
+      107.0,
+      593.4,
+      114.8
+     ],
+     "changed_share": 0.218,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      206.5,
+      593.4,
+      214.3
+     ],
+     "changed_share": 0.058,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      214.2,
+      593.4,
+      222.0
+     ],
+     "changed_share": 0.108,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      221.9,
+      593.4,
+      229.7
+     ],
+     "changed_share": 0.089,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      275.4,
+      593.4,
+      283.2
+     ],
+     "changed_share": 0.131,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      283.1,
+      593.4,
+      290.9
+     ],
+     "changed_share": 0.023,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      313.7,
+      593.4,
+      321.5
+     ],
+     "changed_share": 0.114,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      321.4,
+      593.4,
+      329.2
+     ],
+     "changed_share": 0.389,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      328.9,
+      593.4,
+      336.7
+     ],
+     "changed_share": 0.044,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      413.2,
+      593.4,
+      421.0
+     ],
+     "changed_share": 0.076,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      420.8,
+      593.4,
+      428.6
+     ],
+     "changed_share": 0.353,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      443.8,
+      593.4,
+      451.6
+     ],
+     "changed_share": 0.195,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      466.7,
+      593.4,
+      474.5
+     ],
+     "changed_share": 0.023,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      474.4,
+      593.4,
+      482.2
+     ],
+     "changed_share": 0.107,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 2,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 9,
+     "TARGET_MISSING": 1,
+     "TEXT_CUT": 1
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 2,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 10,
+     "TARGET_MISSING": 5
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 8,
+     "TARGET_MISSING": 1
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 8,
+     "TARGET_MISSING": 1
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 8,
+     "TARGET_MISSING": 1
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 1,
+     "lost_px": 14
+    },
+    "run25": {
+     "clusters": 1,
+     "lost_px": 14
+    }
+   },
+   "ocr_unreliable_sub_reasons": {
+    "low_confidence_ocr": 2
+   },
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 0,
+     "blocks_reused": 24,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 133,
+     "attempted_chars": 519,
+     "blocks": 19,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.607,
+     "coverage_written": 0.4339,
+     "critical_codes": {
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 855,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNTRANSLATED": 9,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 336,
+     "not_attempted_chars_by_status_reason": {
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 336
+     },
+     "out_of_scope_chars": {
+      "identical_in_french": 2
+     },
+     "pages": 1,
+     "partial_chars": 15,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 133,
+      "PARTIAL:PRESERVED_INTENTIONALLY:protected_visual_element": 15
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_partial": 1,
+      "blocks_written": 7,
+      "inserted_words": 72,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 19,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 857,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 19
+     },
+     "written_chars": 371
+    },
+    "run17": {
+     "absent_chars": 134,
+     "attempted_chars": 342,
+     "blocks": 35,
+     "changed_outside_expected_chars": 15,
+     "coverage_attempted": 0.4488,
+     "coverage_written": 0.273,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 1,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 762,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 2,
+      "LAYOUT_OVERFLOW": 1,
+      "NATIVE_REDACTION_OVERLAP": 3,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 2,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 4,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 2,
+      "UNTRANSLATED": 15,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 420,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 206,
+      "FAILED:model_returned_source": 214
+     },
+     "out_of_scope_chars": {
+      "already_french": 37,
+      "identical_in_french": 38,
+      "no_linguistic_content": 30,
+      "proper_name_or_reference": 5
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 28,
+      "ABSENT:FAILED:render_residual_source_ink": 91,
+      "ABSENT:TRANSLATED:translated_and_placed": 15
+     },
+     "render": {
+      "blocks_absent": 6,
+      "blocks_written": 7,
+      "inserted_words": 42,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 15,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 5,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 2
+     },
+     "status_chars": {
+      "FAILED": 546,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 30,
+      "PRESERVED_INTENTIONALLY": 59,
+      "TRANSLATED": 231,
+      "UNCERTAIN": 6
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 9,
+      "FAILED:render_mask_unsafe": 3,
+      "FAILED:render_overflow": 1,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 5,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 2,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 208
+    },
+    "run24": {
+     "absent_chars": 133,
+     "attempted_chars": 455,
+     "blocks": 24,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.5549,
+     "coverage_written": 0.3927,
+     "critical_codes": {
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 820,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 2,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 2,
+      "UNTRANSLATED": 11,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 365,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 206,
+      "FAILED:model_returned_source": 159
+     },
+     "out_of_scope_chars": {
+      "already_french": 37,
+      "identical_in_french": 16,
+      "no_linguistic_content": 5,
+      "proper_name_or_reference": 5
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 133
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_written": 8,
+      "inserted_words": 56,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 9,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 2,
+      "PRESERVED_INTENTIONALLY": 3,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 2
+     },
+     "status_chars": {
+      "FAILED": 498,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 52,
+      "TRANSLATED": 322,
+      "UNCERTAIN": 6
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 7,
+      "FAILED:render_mask_unsafe": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 2,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 322
+    },
+    "run25": {
+     "absent_chars": 133,
+     "attempted_chars": 455,
+     "blocks": 24,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.5549,
+     "coverage_written": 0.3927,
+     "critical_codes": {
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 820,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 2,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 3,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 2,
+      "UNTRANSLATED": 11,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 365,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 206,
+      "FAILED:model_returned_source": 159
+     },
+     "out_of_scope_chars": {
+      "already_french": 37,
+      "identical_in_french": 16,
+      "no_linguistic_content": 5,
+      "proper_name_or_reference": 5
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_residual_source_ink": 133
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_written": 8,
+      "inserted_words": 56,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 9,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 2,
+      "PRESERVED_INTENTIONALLY": 3,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 2
+     },
+     "status_chars": {
+      "FAILED": 498,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 52,
+      "TRANSLATED": 322,
+      "UNCERTAIN": 6
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 7,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 2,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 322
+    },
+    "run25a": {
+     "absent_chars": 133,
+     "attempted_chars": 455,
+     "blocks": 24,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.5549,
+     "coverage_written": 0.3927,
+     "critical_codes": {
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 820,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 2,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 3,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 2,
+      "UNTRANSLATED": 11,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 365,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 206,
+      "FAILED:model_returned_source": 159
+     },
+     "out_of_scope_chars": {
+      "already_french": 37,
+      "identical_in_french": 16,
+      "no_linguistic_content": 5,
+      "proper_name_or_reference": 5
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_residual_source_ink": 133
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_written": 8,
+      "inserted_words": 56,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 9,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 2,
+      "PRESERVED_INTENTIONALLY": 3,
+      "TRANSLATED": 8,
+      "UNCERTAIN": 2
+     },
+     "status_chars": {
+      "FAILED": 498,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 52,
+      "TRANSLATED": 322,
+      "UNCERTAIN": 6
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 7,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 2,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 8,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 322
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 1,
+     "chars": 37
+    },
+    "human_review_required": {
+     "blocks": 9,
+     "chars": 498
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 4,
+     "chars": 20
+    },
+    "illegible_text": {
+     "blocks": 2,
+     "chars": 6
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 19,
+     "run17": 12,
+     "run24": 15,
+     "run25": 14
+    },
+    "by_subtype": {
+     "image_candidate": 110,
+     "monochrome_visual_candidate": 4,
+     "vector_graphic_candidate": 109
+    },
+    "total": 223
+   }
+  },
+  "DOC-003": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      0.0,
+      61.3,
+      593.8,
+      69.1
+     ],
+     "changed_share": 0.277,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      69.0,
+      593.8,
+      76.8
+     ],
+     "changed_share": 0.168,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "SOURCE_RESIDUAL": 1
+    },
+    "run17": {
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "SOURCE_RESIDUAL": 1
+    },
+    "run24": {
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "SOURCE_RESIDUAL": 1
+    },
+    "run25": {
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "SOURCE_RESIDUAL": 1
+    },
+    "run25a": {
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "SOURCE_RESIDUAL": 1
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 0,
+     "lost_px": 0
+    },
+    "run25": {
+     "clusters": 0,
+     "lost_px": 0
+    }
+   },
+   "ocr_unreliable_sub_reasons": {},
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 0,
+     "blocks_reused": 13,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 0,
+     "attempted_chars": 0,
+     "blocks": 11,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.0,
+     "coverage_written": 0.0,
+     "critical_codes": {},
+     "expected_chars": 36,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNTRANSLATED": 3
+     },
+     "not_attempted_chars": 36,
+     "not_attempted_chars_by_status_reason": {
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 36
+     },
+     "out_of_scope_chars": {
+      "already_french": 613,
+      "identical_in_french": 18
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {},
+     "render": {},
+     "status_blocks": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 11,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 667,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 11
+     },
+     "written_chars": 0
+    },
+    "run17": {
+     "absent_chars": 0,
+     "attempted_chars": 60,
+     "blocks": 13,
+     "changed_outside_expected_chars": 11,
+     "coverage_attempted": 0.7407,
+     "coverage_written": 0.7407,
+     "critical_codes": {},
+     "expected_chars": 81,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 1,
+      "UNTRANSLATED": 3,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 21,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 21
+     },
+     "out_of_scope_chars": {
+      "already_french": 555,
+      "identical_in_french": 18,
+      "proper_name_or_reference": 11
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {},
+     "render": {
+      "blocks_written": 2,
+      "inserted_words": 10,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 1,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 2,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 21,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 573,
+      "TRANSLATED": 71,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 1,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "TRANSLATED:translated_and_placed": 2
+     },
+     "written_chars": 60
+    },
+    "run24": {
+     "absent_chars": 0,
+     "attempted_chars": 60,
+     "blocks": 13,
+     "changed_outside_expected_chars": 11,
+     "coverage_attempted": 0.7407,
+     "coverage_written": 0.7407,
+     "critical_codes": {},
+     "expected_chars": 81,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 1,
+      "UNTRANSLATED": 2,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 21,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 21
+     },
+     "out_of_scope_chars": {
+      "already_french": 555,
+      "identical_in_french": 18,
+      "proper_name_or_reference": 11
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {},
+     "render": {
+      "blocks_written": 2,
+      "inserted_words": 10,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 1,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 2,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 21,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 573,
+      "TRANSLATED": 71,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 1,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "TRANSLATED:translated_and_placed": 2
+     },
+     "written_chars": 60
+    },
+    "run25": {
+     "absent_chars": 0,
+     "attempted_chars": 60,
+     "blocks": 13,
+     "changed_outside_expected_chars": 11,
+     "coverage_attempted": 0.7407,
+     "coverage_written": 0.7407,
+     "critical_codes": {},
+     "expected_chars": 81,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 1,
+      "UNTRANSLATED": 2,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 21,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 21
+     },
+     "out_of_scope_chars": {
+      "already_french": 555,
+      "identical_in_french": 18,
+      "proper_name_or_reference": 11
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {},
+     "render": {
+      "blocks_written": 2,
+      "inserted_words": 10,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 1,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 2,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 21,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 573,
+      "TRANSLATED": 71,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 1,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "TRANSLATED:translated_and_placed": 2
+     },
+     "written_chars": 60
+    },
+    "run25a": {
+     "absent_chars": 0,
+     "attempted_chars": 60,
+     "blocks": 13,
+     "changed_outside_expected_chars": 11,
+     "coverage_attempted": 0.7407,
+     "coverage_written": 0.7407,
+     "critical_codes": {},
+     "expected_chars": 81,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 1,
+      "UNTRANSLATED": 2,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 21,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 21
+     },
+     "out_of_scope_chars": {
+      "already_french": 555,
+      "identical_in_french": 18,
+      "proper_name_or_reference": 11
+     },
+     "pages": 1,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {},
+     "render": {
+      "blocks_written": 2,
+      "inserted_words": 10,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 1,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 2,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 21,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 0,
+      "PRESERVED_INTENTIONALLY": 573,
+      "TRANSLATED": 71,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 1,
+      "PRESERVED_INTENTIONALLY:already_french": 9,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "TRANSLATED:translated_and_placed": 2
+     },
+     "written_chars": 60
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 10,
+     "chars": 573
+    },
+    "human_review_required": {
+     "blocks": 1,
+     "chars": 21
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 0,
+     "chars": 0
+    },
+    "illegible_text": {
+     "blocks": 0,
+     "chars": 0
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 0,
+     "run17": 2,
+     "run24": 2,
+     "run25": 2
+    },
+    "by_subtype": {
+     "image_candidate": 110,
+     "monochrome_visual_candidate": 1,
+     "vector_graphic_candidate": 109
+    },
+    "total": 220
+   }
+  },
+  "DOC-004": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      47.5,
+      637.9,
+      362.4,
+      694.9
+     ],
+     "changed_share": 0.056,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "monochrome_visual_candidate",
+     "written_blocks_overlapping": 4
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "CRITICAL_ENTITY_REVIEW": 4,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 18,
+     "OUT_OF_SCOPE_REWRITTEN": 4,
+     "PAGE_LEVEL": 5,
+     "SOURCE_RESIDUAL": 35,
+     "TARGET_MISSING": 13
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 15,
+     "OUT_OF_SCOPE_REWRITTEN": 2,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 69,
+     "TARGET_MISSING": 31,
+     "TEXT_CUT": 3,
+     "TEXT_OVER_INK": 1
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 19,
+     "OUT_OF_SCOPE_REWRITTEN": 3,
+     "PAGE_LEVEL": 13,
+     "SOURCE_RESIDUAL": 51,
+     "TARGET_MISSING": 29,
+     "TEXT_CUT": 1,
+     "TEXT_OVER_INK": 1
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 20,
+     "OUT_OF_SCOPE_REWRITTEN": 3,
+     "PAGE_LEVEL": 13,
+     "SOURCE_RESIDUAL": 52,
+     "TARGET_MISSING": 24,
+     "TEXT_CUT": 1,
+     "TEXT_OVER_INK": 1
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 20,
+     "OUT_OF_SCOPE_REWRITTEN": 3,
+     "PAGE_LEVEL": 13,
+     "SOURCE_RESIDUAL": 51,
+     "TARGET_MISSING": 24,
+     "TEXT_CUT": 1,
+     "TEXT_OVER_INK": 1
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 51,
+     "lost_px": 4383
+    },
+    "run25": {
+     "clusters": 41,
+     "lost_px": 1743
+    }
+   },
+   "ocr_unreliable_sub_reasons": {
+    "bidi_number_order_unreliable": 2,
+    "checkbox_glyph_fused": 7,
+    "checkbox_line_mixed_script_noise": 2,
+    "low_confidence_ocr": 34
+   },
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 2,
+     "blocks_reused": 227,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 554,
+     "attempted_chars": 3164,
+     "blocks": 155,
+     "changed_outside_expected_chars": 78,
+     "coverage_attempted": 0.869,
+     "coverage_written": 0.7168,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 4,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "expected_chars": 3641,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 4,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 9,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_REDACTION_SHRUNK": 33,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 6,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 9,
+      "UNTRANSLATED": 41,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "not_attempted_chars": 477,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 460,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17
+     },
+     "out_of_scope_chars": {
+      "already_french": 27,
+      "identical_in_french": 60,
+      "identifier_or_number": 19,
+      "no_linguistic_content": 60,
+      "proper_name_or_reference": 93
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 111,
+      "ABSENT:FAILED:render_overflow": 176,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 66,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 201
+     },
+     "render": {
+      "blocks_absent": 14,
+      "blocks_written": 81,
+      "inserted_words": 561,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 41,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 12,
+      "PRESERVED_INTENTIONALLY": 21,
+      "TRANSLATED": 81,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 813,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 60,
+      "PRESERVED_INTENTIONALLY": 358,
+      "TRANSLATED": 2669,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 34,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 4,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 12,
+      "PRESERVED_INTENTIONALLY:already_french": 3,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 5,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 3,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 9,
+      "TRANSLATED:translated_and_placed": 81
+     },
+     "written_chars": 2610
+    },
+    "run17": {
+     "absent_chars": 1155,
+     "attempted_chars": 2527,
+     "blocks": 225,
+     "changed_outside_expected_chars": 40,
+     "coverage_attempted": 0.7295,
+     "coverage_written": 0.3609,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 17,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 6
+     },
+     "expected_chars": 3464,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 14,
+      "FORM_STRUCTURE_PRESERVED": 5,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 7,
+      "LAYOUT_OVERFLOW": 17,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 2,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 43,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 2,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 3,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 4,
+      "SCAN_REDACTION_SHRUNK": 22,
+      "SCAN_TEXT_OVER_SOURCE_INK": 6,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 5,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 5,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 6,
+      "UNTRANSLATED": 99,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 937,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 438,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17,
+      "UNCERTAIN:form_structure_ambiguous": 393,
+      "UNCERTAIN:ocr_script_inconsistent": 5,
+      "UNCERTAIN:ocr_unreliable": 84
+     },
+     "out_of_scope_chars": {
+      "already_french": 6,
+      "identical_in_french": 100,
+      "identifier_or_number": 19,
+      "no_linguistic_content": 120,
+      "proper_name_or_reference": 121
+     },
+     "pages": 2,
+     "partial_chars": 122,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 111,
+      "ABSENT:FAILED:render_overflow": 664,
+      "ABSENT:FAILED:render_residual_source_ink": 272,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 63,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 11,
+      "ABSENT:TRANSLATED:translated_and_placed": 34,
+      "PARTIAL:TRANSLATED:translated_and_placed": 122
+     },
+     "render": {
+      "blocks_absent": 32,
+      "blocks_over_ink": 1,
+      "blocks_partial": 3,
+      "blocks_written": 48,
+      "inserted_words": 285,
+      "words_colliding": 5,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 68,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 43,
+      "PRESERVED_INTENTIONALLY": 19,
+      "TRANSLATED": 54,
+      "UNCERTAIN": 41
+     },
+     "status_chars": {
+      "FAILED": 1548,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 120,
+      "PRESERVED_INTENTIONALLY": 184,
+      "TRANSLATED": 1427,
+      "UNCERTAIN": 551
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 41,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 17,
+      "FAILED:render_residual_source_ink": 6,
+      "FAILED:render_rtl_shaping_unsupported": 2,
+      "NOT_TRANSLATABLE:no_linguistic_content": 43,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 7,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 5,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "TRANSLATED:translated_and_placed": 54,
+      "UNCERTAIN:form_structure_ambiguous": 4,
+      "UNCERTAIN:ocr_script_inconsistent": 1,
+      "UNCERTAIN:ocr_unreliable": 36
+     },
+     "written_chars": 1250
+    },
+    "run24": {
+     "absent_chars": 1014,
+     "attempted_chars": 2962,
+     "blocks": 229,
+     "changed_outside_expected_chars": 60,
+     "coverage_attempted": 0.8618,
+     "coverage_written": 0.538,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 13,
+      "PROTECTED_REGION_CHANGED": 8,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 8,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "expected_chars": 3437,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 17,
+      "FORM_STRUCTURE_PRESERVED": 2,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 13,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 33,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 49,
+      "PROTECTED_REGION_CHANGED": 8,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 6,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 4,
+      "SCAN_REDACTION_SHRUNK": 30,
+      "SCAN_TEXT_OVER_SOURCE_INK": 8,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 6,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 3,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 10,
+      "UNTRANSLATED": 80,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "not_attempted_chars": 475,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 264,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17,
+      "UNCERTAIN:form_structure_ambiguous": 35,
+      "UNCERTAIN:ocr_script_inconsistent": 5,
+      "UNCERTAIN:ocr_unreliable": 154
+     },
+     "out_of_scope_chars": {
+      "already_french": 6,
+      "identical_in_french": 97,
+      "identifier_or_number": 19,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 121
+     },
+     "pages": 2,
+     "partial_chars": 99,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 111,
+      "ABSENT:FAILED:render_overflow": 455,
+      "ABSENT:FAILED:render_residual_source_ink": 345,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 47,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 11,
+      "ABSENT:TRANSLATED:translated_and_placed": 45,
+      "PARTIAL:TRANSLATED:translated_and_placed": 99
+     },
+     "render": {
+      "blocks_absent": 30,
+      "blocks_over_ink": 1,
+      "blocks_partial": 1,
+      "blocks_written": 77,
+      "inserted_words": 422,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 46,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 41,
+      "PRESERVED_INTENTIONALLY": 15,
+      "TRANSLATED": 82,
+      "UNCERTAIN": 45
+     },
+     "status_chars": {
+      "FAILED": 1222,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 157,
+      "TRANSLATED": 2034,
+      "UNCERTAIN": 267
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 22,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 13,
+      "FAILED:render_residual_source_ink": 8,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 41,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 4,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "TRANSLATED:translated_and_placed": 82,
+      "UNCERTAIN:form_structure_ambiguous": 1,
+      "UNCERTAIN:ocr_script_inconsistent": 1,
+      "UNCERTAIN:ocr_unreliable": 43
+     },
+     "written_chars": 1849
+    },
+    "run25": {
+     "absent_chars": 804,
+     "attempted_chars": 2927,
+     "blocks": 229,
+     "changed_outside_expected_chars": 60,
+     "coverage_attempted": 0.8516,
+     "coverage_written": 0.5889,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 14,
+      "PROTECTED_REGION_CHANGED": 8,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "expected_chars": 3437,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 18,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 14,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 33,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 51,
+      "PROTECTED_REGION_CHANGED": 8,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 10,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 3,
+      "SCAN_REDACTION_SHRUNK": 27,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 6,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 3,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 10,
+      "UNTRANSLATED": 81,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "not_attempted_chars": 510,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 264,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17,
+      "UNCERTAIN:ocr_script_inconsistent": 5,
+      "UNCERTAIN:ocr_unreliable": 224
+     },
+     "out_of_scope_chars": {
+      "already_french": 6,
+      "identical_in_french": 97,
+      "identifier_or_number": 19,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 121
+     },
+     "pages": 2,
+     "partial_chars": 99,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 49,
+      "ABSENT:FAILED:render_overflow": 517,
+      "ABSENT:FAILED:render_residual_source_ink": 135,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 47,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 11,
+      "ABSENT:TRANSLATED:translated_and_placed": 45,
+      "PARTIAL:TRANSLATED:translated_and_placed": 99
+     },
+     "render": {
+      "blocks_absent": 25,
+      "blocks_over_ink": 1,
+      "blocks_partial": 1,
+      "blocks_written": 81,
+      "inserted_words": 461,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 41,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 41,
+      "PRESERVED_INTENTIONALLY": 15,
+      "TRANSLATED": 86,
+      "UNCERTAIN": 46
+     },
+     "status_chars": {
+      "FAILED": 1012,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 157,
+      "TRANSLATED": 2209,
+      "UNCERTAIN": 302
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 22,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 14,
+      "FAILED:render_residual_source_ink": 3,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 41,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 4,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "TRANSLATED:translated_and_placed": 86,
+      "UNCERTAIN:ocr_script_inconsistent": 1,
+      "UNCERTAIN:ocr_unreliable": 45
+     },
+     "written_chars": 2024
+    },
+    "run25a": {
+     "absent_chars": 804,
+     "attempted_chars": 2962,
+     "blocks": 229,
+     "changed_outside_expected_chars": 60,
+     "coverage_attempted": 0.8618,
+     "coverage_written": 0.5991,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 14,
+      "PROTECTED_REGION_CHANGED": 8,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "expected_chars": 3437,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 18,
+      "FORM_STRUCTURE_PRESERVED": 2,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 14,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 33,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 49,
+      "PROTECTED_REGION_CHANGED": 8,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 10,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 3,
+      "SCAN_REDACTION_SHRUNK": 27,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 6,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 3,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 10,
+      "UNTRANSLATED": 80,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 1
+     },
+     "not_attempted_chars": 475,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 264,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17,
+      "UNCERTAIN:form_structure_ambiguous": 35,
+      "UNCERTAIN:ocr_script_inconsistent": 5,
+      "UNCERTAIN:ocr_unreliable": 154
+     },
+     "out_of_scope_chars": {
+      "already_french": 6,
+      "identical_in_french": 97,
+      "identifier_or_number": 19,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 121
+     },
+     "pages": 2,
+     "partial_chars": 99,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 49,
+      "ABSENT:FAILED:render_overflow": 517,
+      "ABSENT:FAILED:render_residual_source_ink": 135,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 47,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 11,
+      "ABSENT:TRANSLATED:translated_and_placed": 45,
+      "PARTIAL:TRANSLATED:translated_and_placed": 99
+     },
+     "render": {
+      "blocks_absent": 25,
+      "blocks_over_ink": 1,
+      "blocks_partial": 1,
+      "blocks_written": 82,
+      "inserted_words": 470,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 41,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 41,
+      "PRESERVED_INTENTIONALLY": 15,
+      "TRANSLATED": 87,
+      "UNCERTAIN": 45
+     },
+     "status_chars": {
+      "FAILED": 1012,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 157,
+      "TRANSLATED": 2244,
+      "UNCERTAIN": 267
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 22,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 14,
+      "FAILED:render_residual_source_ink": 3,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 41,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 4,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "TRANSLATED:translated_and_placed": 87,
+      "UNCERTAIN:form_structure_ambiguous": 1,
+      "UNCERTAIN:ocr_script_inconsistent": 1,
+      "UNCERTAIN:ocr_unreliable": 43
+     },
+     "written_chars": 2059
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 6,
+     "chars": 25
+    },
+    "human_review_required": {
+     "blocks": 41,
+     "chars": 1012
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 50,
+     "chars": 247
+    },
+    "illegible_text": {
+     "blocks": 46,
+     "chars": 302
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 7,
+     "run17": 10,
+     "run24": 1,
+     "run25": 1
+    },
+    "by_subtype": {
+     "checkbox_glyph": 27,
+     "monochrome_visual_candidate": 3,
+     "vector_graphic_candidate": 216
+    },
+    "total": 246
+   }
+  },
+  "DOC-005": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      0.0,
+      759.1,
+      593.8,
+      766.9
+     ],
+     "changed_share": 0.095,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      766.8,
+      593.8,
+      774.6
+     ],
+     "changed_share": 0.193,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      774.5,
+      593.8,
+      782.3
+     ],
+     "changed_share": 0.171,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      759.1,
+      593.3,
+      766.9
+     ],
+     "changed_share": 0.097,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      766.8,
+      593.3,
+      774.6
+     ],
+     "changed_share": 0.038,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 5,
+     "TARGET_MISSING": 2
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 1,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "SOURCE_RESIDUAL": 11
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 10,
+     "TARGET_MISSING": 1
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 10,
+     "TARGET_MISSING": 1
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 2,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 10,
+     "TARGET_MISSING": 1
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 4,
+     "lost_px": 165
+    },
+    "run25": {
+     "clusters": 3,
+     "lost_px": 87
+    }
+   },
+   "ocr_unreliable_sub_reasons": {
+    "low_confidence_ocr": 2
+   },
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 0,
+     "blocks_reused": 89,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 176,
+     "attempted_chars": 188,
+     "blocks": 66,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.6963,
+     "coverage_written": 0.0444,
+     "critical_codes": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 270,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 16,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 2,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNTRANSLATED": 4,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 82,
+     "not_attempted_chars_by_status_reason": {
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 82
+     },
+     "out_of_scope_chars": {
+      "already_french": 1790,
+      "identical_in_french": 21,
+      "identifier_or_number": 111,
+      "no_linguistic_content": 10
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 176
+     },
+     "render": {
+      "blocks_absent": 2,
+      "blocks_written": 1,
+      "inserted_words": 14,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 8,
+      "PRESERVED_INTENTIONALLY": 58,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 10,
+      "PRESERVED_INTENTIONALLY": 2192,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "NOT_TRANSLATABLE:no_linguistic_content": 8,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 58
+     },
+     "written_chars": 12
+    },
+    "run17": {
+     "absent_chars": 0,
+     "attempted_chars": 36,
+     "blocks": 96,
+     "changed_outside_expected_chars": 6,
+     "coverage_attempted": 0.1552,
+     "coverage_written": 0.1552,
+     "critical_codes": {},
+     "expected_chars": 232,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 5,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 4,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 3,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 2,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 2,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 3,
+      "UNTRANSLATED": 30
+     },
+     "not_attempted_chars": 196,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 185,
+      "UNCERTAIN:ocr_unreliable": 11
+     },
+     "out_of_scope_chars": {
+      "already_french": 1758,
+      "identical_in_french": 41,
+      "identifier_or_number": 105,
+      "no_linguistic_content": 30,
+      "proper_name_or_reference": 6
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {},
+     "render": {
+      "blocks_written": 2,
+      "inserted_words": 8,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 8,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 27,
+      "PRESERVED_INTENTIONALLY": 56,
+      "TRANSLATED": 2,
+      "UNCERTAIN": 3
+     },
+     "status_chars": {
+      "FAILED": 185,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 30,
+      "PRESERVED_INTENTIONALLY": 1904,
+      "TRANSLATED": 42,
+      "UNCERTAIN": 11
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 8,
+      "NOT_TRANSLATABLE:no_linguistic_content": 27,
+      "PRESERVED_INTENTIONALLY:already_french": 51,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 3,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "TRANSLATED:translated_and_placed": 2,
+      "UNCERTAIN:ocr_unreliable": 3
+     },
+     "written_chars": 36
+    },
+    "run24": {
+     "absent_chars": 88,
+     "attempted_chars": 254,
+     "blocks": 89,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.694,
+     "coverage_written": 0.4536,
+     "critical_codes": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 366,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 3,
+      "FORM_STRUCTURE_PRESERVED": 6,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 20,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 3,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 3,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 2,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 2,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 4,
+      "UNTRANSLATED": 22,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 112,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 93,
+      "UNCERTAIN:form_structure_ambiguous": 14,
+      "UNCERTAIN:ocr_unreliable": 5
+     },
+     "out_of_scope_chars": {
+      "already_french": 1657,
+      "identical_in_french": 21,
+      "identifier_or_number": 105,
+      "no_linguistic_content": 28
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_residual_source_ink": 88
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_written": 3,
+      "inserted_words": 34,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 25,
+      "PRESERVED_INTENTIONALLY": 50,
+      "TRANSLATED": 3,
+      "UNCERTAIN": 4
+     },
+     "status_chars": {
+      "FAILED": 181,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 28,
+      "PRESERVED_INTENTIONALLY": 1783,
+      "TRANSLATED": 166,
+      "UNCERTAIN": 19
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 6,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 25,
+      "PRESERVED_INTENTIONALLY:already_french": 47,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "TRANSLATED:translated_and_placed": 3,
+      "UNCERTAIN:form_structure_ambiguous": 2,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 166
+    },
+    "run25": {
+     "absent_chars": 88,
+     "attempted_chars": 254,
+     "blocks": 89,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.694,
+     "coverage_written": 0.4536,
+     "critical_codes": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 366,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 3,
+      "FORM_STRUCTURE_PRESERVED": 6,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 20,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 3,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 3,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 2,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 2,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 4,
+      "UNTRANSLATED": 22,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 112,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 93,
+      "UNCERTAIN:form_structure_ambiguous": 14,
+      "UNCERTAIN:ocr_unreliable": 5
+     },
+     "out_of_scope_chars": {
+      "already_french": 1657,
+      "identical_in_french": 21,
+      "identifier_or_number": 105,
+      "no_linguistic_content": 28
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_residual_source_ink": 88
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_written": 3,
+      "inserted_words": 34,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 25,
+      "PRESERVED_INTENTIONALLY": 50,
+      "TRANSLATED": 3,
+      "UNCERTAIN": 4
+     },
+     "status_chars": {
+      "FAILED": 181,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 28,
+      "PRESERVED_INTENTIONALLY": 1783,
+      "TRANSLATED": 166,
+      "UNCERTAIN": 19
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 6,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 25,
+      "PRESERVED_INTENTIONALLY:already_french": 47,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "TRANSLATED:translated_and_placed": 3,
+      "UNCERTAIN:form_structure_ambiguous": 2,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 166
+    },
+    "run25a": {
+     "absent_chars": 88,
+     "attempted_chars": 254,
+     "blocks": 89,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.694,
+     "coverage_written": 0.4536,
+     "critical_codes": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 366,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 3,
+      "FORM_STRUCTURE_PRESERVED": 6,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 20,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 3,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 3,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 2,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 2,
+      "UNCHANGED_TRANSLATION_RETRY": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 4,
+      "UNTRANSLATED": 22,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 112,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 93,
+      "UNCERTAIN:form_structure_ambiguous": 14,
+      "UNCERTAIN:ocr_unreliable": 5
+     },
+     "out_of_scope_chars": {
+      "already_french": 1657,
+      "identical_in_french": 21,
+      "identifier_or_number": 105,
+      "no_linguistic_content": 28
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_residual_source_ink": 88
+     },
+     "render": {
+      "blocks_absent": 1,
+      "blocks_written": 3,
+      "inserted_words": 34,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 7,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 25,
+      "PRESERVED_INTENTIONALLY": 50,
+      "TRANSLATED": 3,
+      "UNCERTAIN": 4
+     },
+     "status_chars": {
+      "FAILED": 181,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 28,
+      "PRESERVED_INTENTIONALLY": 1783,
+      "TRANSLATED": 166,
+      "UNCERTAIN": 19
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 6,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 25,
+      "PRESERVED_INTENTIONALLY:already_french": 47,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "TRANSLATED:translated_and_placed": 3,
+      "UNCERTAIN:form_structure_ambiguous": 2,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 166
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 48,
+     "chars": 1678
+    },
+    "human_review_required": {
+     "blocks": 9,
+     "chars": 195
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 27,
+     "chars": 133
+    },
+    "illegible_text": {
+     "blocks": 2,
+     "chars": 5
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 4,
+     "run17": 3,
+     "run24": 5,
+     "run25": 5
+    },
+    "by_subtype": {
+     "image_candidate": 220,
+     "monochrome_visual_candidate": 3,
+     "vector_graphic_candidate": 218
+    },
+    "total": 441
+   }
+  },
+  "DOC-006": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      152.0,
+      234.5,
+      264.4,
+      250.5
+     ],
+     "changed_share": 0.449,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      154.0,
+      290.5,
+      220.4,
+      306.0
+     ],
+     "changed_share": 0.507,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      401.9,
+      440.0,
+      416.4,
+      448.5
+     ],
+     "changed_share": 0.34,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      200.4,
+      633.9,
+      212.4,
+      642.4
+     ],
+     "changed_share": 0.492,
+     "explained_by_written_translation": true,
+     "page": 14,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      356.4,
+      507.0,
+      369.9,
+      515.5
+     ],
+     "changed_share": 0.556,
+     "explained_by_written_translation": true,
+     "page": 14,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      201.4,
+      186.0,
+      215.4,
+      194.0
+     ],
+     "changed_share": 0.657,
+     "explained_by_written_translation": true,
+     "page": 16,
+     "subtype": "stamp_or_logo_candidate",
+     "written_blocks_overlapping": 1
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "CRITICAL_ENTITY_REVIEW": 100,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 8,
+     "OUT_OF_SCOPE_REWRITTEN": 8,
+     "PAGE_LEVEL": 15,
+     "SOURCE_RESIDUAL": 77,
+     "TARGET_MISSING": 12,
+     "TEXT_CUT": 2
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 105,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 3,
+     "OUT_OF_SCOPE_REWRITTEN": 6,
+     "PAGE_LEVEL": 28,
+     "SOURCE_RESIDUAL": 84,
+     "TARGET_MISSING": 9,
+     "TEXT_CUT": 2
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 97,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 2,
+     "OUT_OF_SCOPE_REWRITTEN": 7,
+     "PAGE_LEVEL": 30,
+     "SOURCE_RESIDUAL": 80,
+     "TARGET_MISSING": 10,
+     "TEXT_CUT": 2
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 97,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 3,
+     "OUT_OF_SCOPE_REWRITTEN": 7,
+     "PAGE_LEVEL": 30,
+     "SOURCE_RESIDUAL": 80,
+     "TARGET_MISSING": 9,
+     "TEXT_CUT": 2
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 97,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 3,
+     "OUT_OF_SCOPE_REWRITTEN": 7,
+     "PAGE_LEVEL": 30,
+     "SOURCE_RESIDUAL": 80,
+     "TARGET_MISSING": 9,
+     "TEXT_CUT": 2
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 58,
+     "lost_px": 5460
+    },
+    "run25": {
+     "clusters": 54,
+     "lost_px": 3330
+    }
+   },
+   "ocr_unreliable_sub_reasons": {
+    "low_confidence_ocr": 20
+   },
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 0,
+     "blocks_reused": 418,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 564,
+     "attempted_chars": 24994,
+     "blocks": 538,
+     "changed_outside_expected_chars": 128,
+     "coverage_attempted": 0.9358,
+     "coverage_written": 0.913,
+     "critical_codes": {
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 6,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "VISUAL_MASK_TOO_LARGE": 6
+     },
+     "expected_chars": 26710,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "INTERIM_CHUNK_SPLIT_RETRY": 3,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 17,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 6,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_REDACTION_SHRUNK": 25,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 13,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 257,
+      "UNTRANSLATED": 93,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 6
+     },
+     "not_attempted_chars": 1716,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 57,
+      "FAILED:model_returned_source": 1502,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 157
+     },
+     "out_of_scope_chars": {
+      "already_french": 102,
+      "identical_in_french": 238,
+      "identifier_or_number": 14,
+      "no_linguistic_content": 88,
+      "proper_name_or_reference": 28
+     },
+     "pages": 16,
+     "partial_chars": 44,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 96,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 30,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 438,
+      "PARTIAL:TRANSLATED:translated_and_placed": 44
+     },
+     "render": {
+      "blocks_absent": 12,
+      "blocks_partial": 2,
+      "blocks_written": 396,
+      "inserted_words": 4665,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 74,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 22,
+      "PRESERVED_INTENTIONALLY": 45,
+      "TRANSLATED": 397,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 1685,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 88,
+      "PRESERVED_INTENTIONALLY": 857,
+      "TRANSLATED": 24550,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 70,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 22,
+      "PRESERVED_INTENTIONALLY:already_french": 6,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 17,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 3,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17,
+      "TRANSLATED:translated_and_placed": 397
+     },
+     "written_chars": 24386
+    },
+    "run17": {
+     "absent_chars": 174,
+     "attempted_chars": 25856,
+     "blocks": 434,
+     "changed_outside_expected_chars": 113,
+     "coverage_attempted": 0.9606,
+     "coverage_written": 0.9531,
+     "critical_codes": {
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "LAYOUT_OVERFLOW": 3,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "expected_chars": 26916,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 11,
+      "FORM_STRUCTURE_PRESERVED": 8,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "HIGHLIGHT_SPAN_APPROXIMATED": 2,
+      "IDENTIFIER_ONLY_KEPT": 3,
+      "LAYOUT_OVERFLOW": 3,
+      "OCR_CRITICAL_ENTITY_DISAGREEMENT": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 28,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 6,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 10,
+      "SCAN_REDACTION_SHRUNK": 6,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 13,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 2,
+      "UNCHANGED_TRANSLATION_RETRY": 11,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 293,
+      "UNTRANSLATED": 120,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "not_attempted_chars": 1060,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 55,
+      "FAILED:model_returned_source": 517,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 49,
+      "UNCERTAIN:form_structure_ambiguous": 367,
+      "UNCERTAIN:ocr_unreliable": 72
+     },
+     "out_of_scope_chars": {
+      "already_french": 28,
+      "identical_in_french": 238,
+      "identifier_or_number": 14,
+      "no_linguistic_content": 113,
+      "proper_name_or_reference": 6
+     },
+     "pages": 16,
+     "partial_chars": 29,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_overflow": 28,
+      "ABSENT:FAILED:render_residual_source_ink": 67,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 30,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 8,
+      "ABSENT:TRANSLATED:translated_and_placed": 41,
+      "PARTIAL:TRANSLATED:translated_and_placed": 29
+     },
+     "render": {
+      "blocks_absent": 9,
+      "blocks_partial": 2,
+      "blocks_written": 269,
+      "inserted_words": 4770,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 61,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 41,
+      "PRESERVED_INTENTIONALLY": 28,
+      "TRANSLATED": 273,
+      "UNCERTAIN": 31
+     },
+     "status_chars": {
+      "FAILED": 697,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 113,
+      "PRESERVED_INTENTIONALLY": 223,
+      "TRANSLATED": 25828,
+      "UNCERTAIN": 454
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 55,
+      "FAILED:render_overflow": 3,
+      "FAILED:render_residual_source_ink": 1,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 41,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 18,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 5,
+      "TRANSLATED:translated_and_placed": 273,
+      "UNCERTAIN:form_structure_ambiguous": 6,
+      "UNCERTAIN:ocr_unreliable": 25
+     },
+     "written_chars": 25653
+    },
+    "run24": {
+     "absent_chars": 168,
+     "attempted_chars": 25448,
+     "blocks": 418,
+     "changed_outside_expected_chars": 99,
+     "coverage_attempted": 0.9445,
+     "coverage_written": 0.9366,
+     "critical_codes": {
+      "CRITICAL_ENTITY_MODIFIED": 2,
+      "HALLUCINATION_ENTITY_MODIFIED": 1,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "LAYOUT_OVERFLOW": 3,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 2,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "expected_chars": 26942,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "CRITICAL_ENTITY_MODIFIED": 2,
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 9,
+      "FORM_STRUCTURE_PRESERVED": 8,
+      "HALLUCINATION_ENTITY_MODIFIED": 1,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "HIGHLIGHT_SPAN_APPROXIMATED": 2,
+      "LAYOUT_OVERFLOW": 3,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 30,
+      "OCR_CRITICAL_ENTITY_DISAGREEMENT": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 22,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 6,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 10,
+      "SCAN_REDACTION_SHRUNK": 6,
+      "SCAN_TEXT_OVER_SOURCE_INK": 2,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 13,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 4,
+      "UNCHANGED_TRANSLATION_RETRY": 14,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 280,
+      "UNTRANSLATED": 112,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "not_attempted_chars": 1494,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 55,
+      "FAILED:model_returned_source": 970,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 31,
+      "UNCERTAIN:form_structure_ambiguous": 367,
+      "UNCERTAIN:ocr_unreliable": 71
+     },
+     "out_of_scope_chars": {
+      "already_french": 28,
+      "identical_in_french": 231,
+      "identifier_or_number": 14,
+      "no_linguistic_content": 110,
+      "proper_name_or_reference": 6
+     },
+     "pages": 16,
+     "partial_chars": 45,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 4,
+      "ABSENT:FAILED:render_overflow": 66,
+      "ABSENT:FAILED:render_residual_source_ink": 14,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 30,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 26,
+      "ABSENT:TRANSLATED:translated_and_placed": 28,
+      "PARTIAL:TRANSLATED:translated_and_placed": 45
+     },
+     "render": {
+      "blocks_absent": 12,
+      "blocks_partial": 2,
+      "blocks_written": 263,
+      "inserted_words": 4690,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 64,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 36,
+      "PRESERVED_INTENTIONALLY": 26,
+      "TRANSLATED": 266,
+      "UNCERTAIN": 26
+     },
+     "status_chars": {
+      "FAILED": 1150,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 110,
+      "PRESERVED_INTENTIONALLY": 235,
+      "TRANSLATED": 25388,
+      "UNCERTAIN": 448
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 55,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 3,
+      "FAILED:render_residual_source_ink": 2,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 36,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 16,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 5,
+      "TRANSLATED:translated_and_placed": 266,
+      "UNCERTAIN:form_structure_ambiguous": 6,
+      "UNCERTAIN:ocr_unreliable": 20
+     },
+     "written_chars": 25235
+    },
+    "run25": {
+     "absent_chars": 161,
+     "attempted_chars": 25448,
+     "blocks": 418,
+     "changed_outside_expected_chars": 99,
+     "coverage_attempted": 0.9445,
+     "coverage_written": 0.9369,
+     "critical_codes": {
+      "CRITICAL_ENTITY_MODIFIED": 2,
+      "HALLUCINATION_ENTITY_MODIFIED": 1,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "LAYOUT_OVERFLOW": 3,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "expected_chars": 26942,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "CRITICAL_ENTITY_MODIFIED": 2,
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 9,
+      "FORM_STRUCTURE_PRESERVED": 8,
+      "HALLUCINATION_ENTITY_MODIFIED": 1,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "HIGHLIGHT_SPAN_APPROXIMATED": 2,
+      "LAYOUT_OVERFLOW": 3,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 30,
+      "OCR_CRITICAL_ENTITY_DISAGREEMENT": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 22,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 6,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 10,
+      "SCAN_REDACTION_SHRUNK": 6,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 13,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 4,
+      "UNCHANGED_TRANSLATION_RETRY": 14,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 280,
+      "UNTRANSLATED": 112,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "not_attempted_chars": 1494,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 55,
+      "FAILED:model_returned_source": 970,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 31,
+      "UNCERTAIN:form_structure_ambiguous": 367,
+      "UNCERTAIN:ocr_unreliable": 71
+     },
+     "out_of_scope_chars": {
+      "already_french": 28,
+      "identical_in_french": 231,
+      "identifier_or_number": 14,
+      "no_linguistic_content": 110,
+      "proper_name_or_reference": 6
+     },
+     "pages": 16,
+     "partial_chars": 45,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 4,
+      "ABSENT:FAILED:render_overflow": 66,
+      "ABSENT:FAILED:render_residual_source_ink": 7,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 30,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 26,
+      "ABSENT:TRANSLATED:translated_and_placed": 28,
+      "PARTIAL:TRANSLATED:translated_and_placed": 45
+     },
+     "render": {
+      "blocks_absent": 11,
+      "blocks_partial": 2,
+      "blocks_written": 264,
+      "inserted_words": 4692,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 63,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 36,
+      "PRESERVED_INTENTIONALLY": 26,
+      "TRANSLATED": 267,
+      "UNCERTAIN": 26
+     },
+     "status_chars": {
+      "FAILED": 1143,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 110,
+      "PRESERVED_INTENTIONALLY": 235,
+      "TRANSLATED": 25395,
+      "UNCERTAIN": 448
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 55,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 3,
+      "FAILED:render_residual_source_ink": 1,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 36,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 16,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 5,
+      "TRANSLATED:translated_and_placed": 267,
+      "UNCERTAIN:form_structure_ambiguous": 6,
+      "UNCERTAIN:ocr_unreliable": 20
+     },
+     "written_chars": 25242
+    },
+    "run25a": {
+     "absent_chars": 161,
+     "attempted_chars": 25448,
+     "blocks": 418,
+     "changed_outside_expected_chars": 99,
+     "coverage_attempted": 0.9445,
+     "coverage_written": 0.9369,
+     "critical_codes": {
+      "CRITICAL_ENTITY_MODIFIED": 2,
+      "HALLUCINATION_ENTITY_MODIFIED": 1,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "LAYOUT_OVERFLOW": 3,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "expected_chars": 26942,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "CRITICAL_ENTITY_MODIFIED": 2,
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 9,
+      "FORM_STRUCTURE_PRESERVED": 8,
+      "HALLUCINATION_ENTITY_MODIFIED": 1,
+      "HALLUCINATION_UNIT_CHANGED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "HIGHLIGHT_SPAN_APPROXIMATED": 2,
+      "LAYOUT_OVERFLOW": 3,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 30,
+      "OCR_CRITICAL_ENTITY_DISAGREEMENT": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 22,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 6,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 12,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "RTL_SHAPING_UNSUPPORTED": 1,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 10,
+      "SCAN_REDACTION_SHRUNK": 6,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 13,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 4,
+      "UNCHANGED_TRANSLATION_RETRY": 14,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 280,
+      "UNTRANSLATED": 112,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 12
+     },
+     "not_attempted_chars": 1494,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 55,
+      "FAILED:model_returned_source": 970,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 31,
+      "UNCERTAIN:form_structure_ambiguous": 367,
+      "UNCERTAIN:ocr_unreliable": 71
+     },
+     "out_of_scope_chars": {
+      "already_french": 28,
+      "identical_in_french": 231,
+      "identifier_or_number": 14,
+      "no_linguistic_content": 110,
+      "proper_name_or_reference": 6
+     },
+     "pages": 16,
+     "partial_chars": 45,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 4,
+      "ABSENT:FAILED:render_overflow": 66,
+      "ABSENT:FAILED:render_residual_source_ink": 7,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 30,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 26,
+      "ABSENT:TRANSLATED:translated_and_placed": 28,
+      "PARTIAL:TRANSLATED:translated_and_placed": 45
+     },
+     "render": {
+      "blocks_absent": 11,
+      "blocks_partial": 2,
+      "blocks_written": 264,
+      "inserted_words": 4692,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 63,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 36,
+      "PRESERVED_INTENTIONALLY": 26,
+      "TRANSLATED": 267,
+      "UNCERTAIN": 26
+     },
+     "status_chars": {
+      "FAILED": 1143,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 110,
+      "PRESERVED_INTENTIONALLY": 235,
+      "TRANSLATED": 25395,
+      "UNCERTAIN": 448
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 55,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 3,
+      "FAILED:render_residual_source_ink": 1,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 36,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 16,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 5,
+      "TRANSLATED:translated_and_placed": 267,
+      "UNCERTAIN:form_structure_ambiguous": 6,
+      "UNCERTAIN:ocr_unreliable": 20
+     },
+     "written_chars": 25242
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 18,
+     "chars": 155
+    },
+    "human_review_required": {
+     "blocks": 69,
+     "chars": 1510
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 44,
+     "chars": 190
+    },
+    "illegible_text": {
+     "blocks": 20,
+     "chars": 81
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 0,
+     "run17": 5,
+     "run24": 6,
+     "run25": 6
+    },
+    "by_subtype": {
+     "monochrome_visual_candidate": 1,
+     "stamp_or_logo_candidate": 18
+    },
+    "total": 19
+   }
+  },
+  "DOC-007": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      56.5,
+      294.0,
+      547.3,
+      328.0
+     ],
+     "changed_share": 0.044,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "monochrome_visual_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      57.0,
+      377.5,
+      547.3,
+      455.5
+     ],
+     "changed_share": 0.046,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "monochrome_visual_candidate",
+     "written_blocks_overlapping": 6
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "CRITICAL_ENTITY_REVIEW": 42,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 17,
+     "PAGE_LEVEL": 10,
+     "SOURCE_RESIDUAL": 24,
+     "TARGET_MISSING": 18,
+     "TEXT_CUT": 3
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 38,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 24,
+     "OUT_OF_SCOPE_REWRITTEN": 5,
+     "PAGE_LEVEL": 8,
+     "SOURCE_RESIDUAL": 46,
+     "TARGET_MISSING": 35,
+     "TEXT_CUT": 3,
+     "TEXT_OVER_INK": 1
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 39,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 21,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 8,
+     "SOURCE_RESIDUAL": 41,
+     "TARGET_MISSING": 18,
+     "TEXT_CUT": 2,
+     "TEXT_OVER_INK": 1
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 39,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 23,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 8,
+     "SOURCE_RESIDUAL": 42,
+     "TARGET_MISSING": 12,
+     "TEXT_CUT": 2
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 39,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 23,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 8,
+     "SOURCE_RESIDUAL": 42,
+     "TARGET_MISSING": 12,
+     "TEXT_CUT": 2
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 13,
+     "lost_px": 791
+    },
+    "run25": {
+     "clusters": 13,
+     "lost_px": 517
+    }
+   },
+   "ocr_unreliable_sub_reasons": {
+    "checkbox_misread_undetected": 1,
+    "low_confidence_ocr": 5
+   },
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 1,
+     "blocks_reused": 177,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 819,
+     "attempted_chars": 8309,
+     "blocks": 136,
+     "changed_outside_expected_chars": 0,
+     "coverage_attempted": 0.9026,
+     "coverage_written": 0.7965,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "PROTECTED_ENTITY_CHANGED": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 3,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 3
+     },
+     "expected_chars": 9206,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "INTERIM_CHUNK_SPLIT_RETRY": 1,
+      "NATIVE_REDACTION_OVERLAP": 4,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_ENTITY_CHANGED": 2,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 23,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 3,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 52,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 8,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 116,
+      "UNTRANSLATED": 17,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 3
+     },
+     "not_attempted_chars": 897,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 289,
+      "FAILED:model_returned_source": 348,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 260
+     },
+     "out_of_scope_chars": {
+      "identical_in_french": 7,
+      "no_linguistic_content": 17
+     },
+     "pages": 5,
+     "partial_chars": 157,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 119,
+      "ABSENT:FAILED:render_overflow": 263,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 437,
+      "PARTIAL:TRANSLATED:translated_and_placed": 157
+     },
+     "render": {
+      "blocks_absent": 18,
+      "blocks_partial": 3,
+      "blocks_written": 87,
+      "inserted_words": 1222,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 21,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 2,
+      "PRESERVED_INTENTIONALLY": 23,
+      "TRANSLATED": 90,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 1019,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 17,
+      "PRESERVED_INTENTIONALLY": 704,
+      "TRANSLATED": 7490,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 2,
+      "FAILED:model_returned_source": 13,
+      "FAILED:render_mask_unsafe": 4,
+      "FAILED:render_overflow": 2,
+      "NOT_TRANSLATABLE:no_linguistic_content": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 2,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 21,
+      "TRANSLATED:translated_and_placed": 90
+     },
+     "written_chars": 7333
+    },
+    "run17": {
+     "absent_chars": 1643,
+     "attempted_chars": 8062,
+     "blocks": 222,
+     "changed_outside_expected_chars": 17,
+     "coverage_attempted": 0.9058,
+     "coverage_written": 0.7097,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 11,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 16,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "expected_chars": 8900,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 10,
+      "FORM_STRUCTURE_PRESERVED": 12,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 6,
+      "LAYOUT_OVERFLOW": 11,
+      "NATIVE_REDACTION_OVERLAP": 7,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 4,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 9,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 29,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 2,
+      "SCAN_REDACTION_SHRUNK": 57,
+      "SCAN_TEXT_OVER_SOURCE_INK": 16,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 4,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 10,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 3,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 114,
+      "UNTRANSLATED": 71,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "not_attempted_chars": 838,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 5,
+      "FAILED:model_returned_source": 564,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:form_structure_ambiguous": 223,
+      "UNCERTAIN:ocr_script_inconsistent": 23,
+      "UNCERTAIN:ocr_unreliable": 19
+     },
+     "out_of_scope_chars": {
+      "already_french": 18,
+      "identical_in_french": 43,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 68
+     },
+     "pages": 5,
+     "partial_chars": 103,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 69,
+      "ABSENT:FAILED:render_overflow": 408,
+      "ABSENT:FAILED:render_residual_source_ink": 1146,
+      "ABSENT:TRANSLATED:translated_and_placed": 20,
+      "PARTIAL:TRANSLATED:translated_and_placed": 103
+     },
+     "render": {
+      "blocks_absent": 37,
+      "blocks_no_tokens": 2,
+      "blocks_over_ink": 1,
+      "blocks_partial": 3,
+      "blocks_written": 85,
+      "inserted_words": 1003,
+      "words_colliding": 29,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 64,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 28,
+      "PRESERVED_INTENTIONALLY": 24,
+      "TRANSLATED": 91,
+      "UNCERTAIN": 15
+     },
+     "status_chars": {
+      "FAILED": 2192,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 114,
+      "TRANSLATED": 6452,
+      "UNCERTAIN": 271
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 31,
+      "FAILED:render_mask_unsafe": 6,
+      "FAILED:render_overflow": 10,
+      "FAILED:render_residual_source_ink": 16,
+      "NOT_TRANSLATABLE:no_linguistic_content": 28,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 16,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 5,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 91,
+      "UNCERTAIN:form_structure_ambiguous": 5,
+      "UNCERTAIN:ocr_script_inconsistent": 3,
+      "UNCERTAIN:ocr_unreliable": 7
+     },
+     "written_chars": 6316
+    },
+    "run24": {
+     "absent_chars": 1118,
+     "attempted_chars": 8044,
+     "blocks": 178,
+     "changed_outside_expected_chars": 18,
+     "coverage_attempted": 0.8964,
+     "coverage_written": 0.7626,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 9,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 8,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "expected_chars": 8974,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 11,
+      "FORM_STRUCTURE_PRESERVED": 11,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 9,
+      "NATIVE_REDACTION_OVERLAP": 2,
+      "NO_LINGUISTIC_CONTENT_KEPT": 12,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 3,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 7,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 25,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 2,
+      "SCAN_REDACTION_SHRUNK": 45,
+      "SCAN_TEXT_OVER_SOURCE_INK": 8,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 9,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 4,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 111,
+      "UNTRANSLATED": 56,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "not_attempted_chars": 930,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 159,
+      "FAILED:model_returned_source": 537,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:form_structure_ambiguous": 188,
+      "UNCERTAIN:ocr_script_inconsistent": 23,
+      "UNCERTAIN:ocr_unreliable": 19
+     },
+     "out_of_scope_chars": {
+      "already_french": 16,
+      "identical_in_french": 16,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 61
+     },
+     "pages": 5,
+     "partial_chars": 82,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 32,
+      "ABSENT:FAILED:render_overflow": 354,
+      "ABSENT:FAILED:render_residual_source_ink": 732,
+      "PARTIAL:TRANSLATED:translated_and_placed": 82
+     },
+     "render": {
+      "blocks_absent": 19,
+      "blocks_over_ink": 1,
+      "blocks_partial": 2,
+      "blocks_written": 85,
+      "inserted_words": 1073,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 48,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 22,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 87,
+      "UNCERTAIN": 11
+     },
+     "status_chars": {
+      "FAILED": 1832,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 79,
+      "TRANSLATED": 6926,
+      "UNCERTAIN": 230
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 28,
+      "FAILED:render_mask_unsafe": 2,
+      "FAILED:render_overflow": 9,
+      "FAILED:render_residual_source_ink": 8,
+      "NOT_TRANSLATABLE:no_linguistic_content": 22,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 4,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 87,
+      "UNCERTAIN:form_structure_ambiguous": 3,
+      "UNCERTAIN:ocr_script_inconsistent": 3,
+      "UNCERTAIN:ocr_unreliable": 5
+     },
+     "written_chars": 6844
+    },
+    "run25": {
+     "absent_chars": 867,
+     "attempted_chars": 7930,
+     "blocks": 178,
+     "changed_outside_expected_chars": 18,
+     "coverage_attempted": 0.8837,
+     "coverage_written": 0.7779,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 8,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "expected_chars": 8974,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 11,
+      "FORM_STRUCTURE_PRESERVED": 11,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 8,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 12,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 3,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 8,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 28,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 1,
+      "SCAN_REDACTION_SHRUNK": 36,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 9,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 4,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 111,
+      "UNTRANSLATED": 57,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "not_attempted_chars": 1044,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 159,
+      "FAILED:model_returned_source": 537,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:form_structure_ambiguous": 188,
+      "UNCERTAIN:ocr_script_inconsistent": 23,
+      "UNCERTAIN:ocr_unreliable": 133
+     },
+     "out_of_scope_chars": {
+      "already_french": 16,
+      "identical_in_french": 16,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 61
+     },
+     "pages": 5,
+     "partial_chars": 82,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 16,
+      "ABSENT:FAILED:render_overflow": 354,
+      "ABSENT:FAILED:render_residual_source_ink": 497,
+      "PARTIAL:TRANSLATED:translated_and_placed": 82
+     },
+     "render": {
+      "blocks_absent": 12,
+      "blocks_partial": 2,
+      "blocks_written": 91,
+      "inserted_words": 1093,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 41,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 22,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 93,
+      "UNCERTAIN": 12
+     },
+     "status_chars": {
+      "FAILED": 1563,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 79,
+      "TRANSLATED": 7081,
+      "UNCERTAIN": 344
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 28,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 8,
+      "FAILED:render_residual_source_ink": 3,
+      "NOT_TRANSLATABLE:no_linguistic_content": 22,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 4,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 93,
+      "UNCERTAIN:form_structure_ambiguous": 3,
+      "UNCERTAIN:ocr_script_inconsistent": 3,
+      "UNCERTAIN:ocr_unreliable": 6
+     },
+     "written_chars": 6981
+    },
+    "run25a": {
+     "absent_chars": 867,
+     "attempted_chars": 7930,
+     "blocks": 178,
+     "changed_outside_expected_chars": 18,
+     "coverage_attempted": 0.8837,
+     "coverage_written": 0.7779,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 8,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "expected_chars": 8974,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 11,
+      "FORM_STRUCTURE_PRESERVED": 11,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 8,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 12,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 3,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 8,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 2,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_COVER_EXTENDED_OVER_REPLACED_NEIGHBOUR": 28,
+      "SCAN_FRAME_GROWTH_INK_REJECTED": 1,
+      "SCAN_REDACTION_SHRUNK": 36,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "SINGLE_LINE_WRAPPED_INTO_BLANK": 2,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 9,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "TYPOGRAPHY_ONLY_OUTPUT_DISCARDED": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 4,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 111,
+      "UNTRANSLATED": 57,
+      "VISUAL_GEOMETRY_REGRESSION": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+     },
+     "not_attempted_chars": 1044,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:entity_guard_rejected": 159,
+      "FAILED:model_returned_source": 537,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:form_structure_ambiguous": 188,
+      "UNCERTAIN:ocr_script_inconsistent": 23,
+      "UNCERTAIN:ocr_unreliable": 133
+     },
+     "out_of_scope_chars": {
+      "already_french": 16,
+      "identical_in_french": 16,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 61
+     },
+     "pages": 5,
+     "partial_chars": 82,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 16,
+      "ABSENT:FAILED:render_overflow": 354,
+      "ABSENT:FAILED:render_residual_source_ink": 497,
+      "PARTIAL:TRANSLATED:translated_and_placed": 82
+     },
+     "render": {
+      "blocks_absent": 12,
+      "blocks_partial": 2,
+      "blocks_written": 91,
+      "inserted_words": 1093,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 41,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 22,
+      "PRESERVED_INTENTIONALLY": 10,
+      "TRANSLATED": 93,
+      "UNCERTAIN": 12
+     },
+     "status_chars": {
+      "FAILED": 1563,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 115,
+      "PRESERVED_INTENTIONALLY": 79,
+      "TRANSLATED": 7081,
+      "UNCERTAIN": 344
+     },
+     "status_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 28,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 8,
+      "FAILED:render_residual_source_ink": 3,
+      "NOT_TRANSLATABLE:no_linguistic_content": 22,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 4,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 93,
+      "UNCERTAIN:form_structure_ambiguous": 3,
+      "UNCERTAIN:ocr_script_inconsistent": 3,
+      "UNCERTAIN:ocr_unreliable": 6
+     },
+     "written_chars": 6981
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 5,
+     "chars": 32
+    },
+    "human_review_required": {
+     "blocks": 44,
+     "chars": 1751
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 27,
+     "chars": 162
+    },
+    "illegible_text": {
+     "blocks": 9,
+     "chars": 156
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 0,
+     "run17": 2,
+     "run24": 1,
+     "run25": 2
+    },
+    "by_subtype": {
+     "monochrome_visual_candidate": 7,
+     "vector_graphic_candidate": 541
+    },
+    "total": 548
+   }
+  },
+  "DOC-008": {
+   "altered_regions_run25": [
+    {
+     "bbox": [
+      0.0,
+      15.2,
+      594.8,
+      23.0
+     ],
+     "changed_share": 0.056,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      22.8,
+      594.8,
+      30.6
+     ],
+     "changed_share": 0.066,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      30.5,
+      594.8,
+      38.3
+     ],
+     "changed_share": 0.09,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      38.0,
+      594.8,
+      45.8
+     ],
+     "changed_share": 0.209,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      45.7,
+      594.8,
+      53.5
+     ],
+     "changed_share": 0.09,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 4
+    },
+    {
+     "bbox": [
+      0.0,
+      53.4,
+      594.8,
+      61.2
+     ],
+     "changed_share": 0.214,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      61.0,
+      594.8,
+      68.8
+     ],
+     "changed_share": 0.035,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      76.2,
+      594.8,
+      84.0
+     ],
+     "changed_share": 0.119,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      83.9,
+      594.8,
+      91.7
+     ],
+     "changed_share": 0.088,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      91.4,
+      594.8,
+      99.2
+     ],
+     "changed_share": 0.026,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      167.8,
+      594.8,
+      175.6
+     ],
+     "changed_share": 0.053,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      175.4,
+      594.8,
+      183.2
+     ],
+     "changed_share": 0.119,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      183.0,
+      594.8,
+      190.8
+     ],
+     "changed_share": 0.04,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      778.2,
+      594.8,
+      786.0
+     ],
+     "changed_share": 0.034,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      785.9,
+      594.8,
+      793.7
+     ],
+     "changed_share": 0.277,
+     "explained_by_written_translation": true,
+     "page": 1,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      61.1,
+      594.7,
+      68.9
+     ],
+     "changed_share": 0.05,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      68.8,
+      594.7,
+      76.6
+     ],
+     "changed_share": 0.054,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      76.4,
+      594.7,
+      84.2
+     ],
+     "changed_share": 0.06,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      84.1,
+      594.7,
+      91.9
+     ],
+     "changed_share": 0.075,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      91.7,
+      594.7,
+      99.5
+     ],
+     "changed_share": 0.077,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      183.5,
+      594.7,
+      191.3
+     ],
+     "changed_share": 0.037,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      191.2,
+      594.7,
+      199.0
+     ],
+     "changed_share": 0.033,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      198.7,
+      594.7,
+      206.5
+     ],
+     "changed_share": 0.056,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      206.4,
+      594.7,
+      214.2
+     ],
+     "changed_share": 0.04,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      221.8,
+      594.7,
+      229.6
+     ],
+     "changed_share": 0.058,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      282.8,
+      594.7,
+      290.6
+     ],
+     "changed_share": 0.073,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      313.4,
+      594.7,
+      321.2
+     ],
+     "changed_share": 0.089,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      321.1,
+      594.7,
+      328.9
+     ],
+     "changed_share": 0.302,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      328.8,
+      594.7,
+      336.6
+     ],
+     "changed_share": 0.347,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      336.5,
+      594.7,
+      344.3
+     ],
+     "changed_share": 0.269,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      344.0,
+      594.7,
+      351.8
+     ],
+     "changed_share": 0.286,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      351.7,
+      594.7,
+      359.5
+     ],
+     "changed_share": 0.083,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      359.4,
+      594.7,
+      367.2
+     ],
+     "changed_share": 0.054,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      374.6,
+      594.7,
+      382.4
+     ],
+     "changed_share": 0.051,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      382.3,
+      594.7,
+      390.1
+     ],
+     "changed_share": 0.105,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      412.9,
+      594.7,
+      420.7
+     ],
+     "changed_share": 0.055,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      420.6,
+      594.7,
+      428.4
+     ],
+     "changed_share": 0.035,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      512.3,
+      594.7,
+      520.1
+     ],
+     "changed_share": 0.049,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      741.7,
+      594.7,
+      749.5
+     ],
+     "changed_share": 0.139,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      749.4,
+      594.7,
+      757.2
+     ],
+     "changed_share": 0.081,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 3
+    },
+    {
+     "bbox": [
+      0.0,
+      757.1,
+      594.7,
+      764.9
+     ],
+     "changed_share": 0.098,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      764.6,
+      594.7,
+      772.4
+     ],
+     "changed_share": 0.156,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      772.3,
+      594.7,
+      780.1
+     ],
+     "changed_share": 0.109,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      780.0,
+      594.7,
+      787.8
+     ],
+     "changed_share": 0.056,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 2
+    },
+    {
+     "bbox": [
+      0.0,
+      787.6,
+      594.7,
+      795.4
+     ],
+     "changed_share": 0.081,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    },
+    {
+     "bbox": [
+      0.0,
+      795.2,
+      594.7,
+      803.0
+     ],
+     "changed_share": 0.107,
+     "explained_by_written_translation": true,
+     "page": 2,
+     "subtype": "image_candidate",
+     "written_blocks_overlapping": 1
+    }
+   ],
+   "anomaly_register_counts": {
+    "baseline": {
+     "CRITICAL_ENTITY_REVIEW": 8,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 2,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 24,
+     "TARGET_MISSING": 2
+    },
+    "run17": {
+     "CRITICAL_ENTITY_REVIEW": 10,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 2,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 16,
+     "TARGET_MISSING": 4,
+     "TEXT_CUT": 1
+    },
+    "run24": {
+     "CRITICAL_ENTITY_REVIEW": 9,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 17,
+     "TARGET_MISSING": 3
+    },
+    "run25": {
+     "CRITICAL_ENTITY_REVIEW": 9,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 18,
+     "TARGET_MISSING": 3
+    },
+    "run25a": {
+     "CRITICAL_ENTITY_REVIEW": 9,
+     "LOW_OCR_CONFIDENCE_TRANSLATED": 1,
+     "OUT_OF_SCOPE_REWRITTEN": 1,
+     "PAGE_LEVEL": 3,
+     "SOURCE_RESIDUAL": 17,
+     "TARGET_MISSING": 3
+    }
+   },
+   "mask_spill": {
+    "run24": {
+     "clusters": 11,
+     "lost_px": 2231
+    },
+    "run25": {
+     "clusters": 14,
+     "lost_px": 809
+    }
+   },
+   "ocr_unreliable_sub_reasons": {
+    "bidi_number_order_unreliable": 1,
+    "low_confidence_ocr": 1
+   },
+   "run25_execution": {
+    "budget": {
+     "chunks": 0,
+     "max_completion_tokens": null,
+     "max_reserved_total_tokens": null,
+     "max_usage_total_tokens": null,
+     "violations": 0
+    },
+    "engine": "Interim (temporary engine) via translation memory; NOT a Qwen validation",
+    "human_reference_validated": false,
+    "original_sha256_unchanged": true,
+    "quality_status": "REVIEW_REQUIRED",
+    "requests_sent": 0,
+    "translation_memory": {
+     "blocks_processed_now": 1,
+     "blocks_reused": 73,
+     "cache_run": "run24"
+    }
+   },
+   "runs": {
+    "baseline": {
+     "absent_chars": 74,
+     "attempted_chars": 1026,
+     "blocks": 75,
+     "changed_outside_expected_chars": 21,
+     "coverage_attempted": 0.5897,
+     "coverage_written": 0.5471,
+     "critical_codes": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 1740,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 13,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 4,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 3,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 20,
+      "UNTRANSLATED": 25,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 714,
+     "not_attempted_chars_by_status_reason": {
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 714
+     },
+     "out_of_scope_chars": {
+      "already_french": 987,
+      "identical_in_french": 21,
+      "no_linguistic_content": 7,
+      "proper_name_or_reference": 31
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 74
+     },
+     "render": {
+      "blocks_absent": 2,
+      "blocks_written": 21,
+      "inserted_words": 169,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 1,
+      "PRESERVED_INTENTIONALLY": 74,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_chars": {
+      "FAILED": 0,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 7,
+      "PRESERVED_INTENTIONALLY": 2779,
+      "TRANSLATED": 0,
+      "UNCERTAIN": 0
+     },
+     "status_reasons": {
+      "NOT_TRANSLATABLE:no_linguistic_content": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 74
+     },
+     "written_chars": 952
+    },
+    "run17": {
+     "absent_chars": 217,
+     "attempted_chars": 1377,
+     "blocks": 76,
+     "changed_outside_expected_chars": 21,
+     "coverage_attempted": 0.7923,
+     "coverage_written": 0.6456,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+     },
+     "expected_chars": 1738,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 2,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "IDENTIFIER_ONLY_KEPT": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 4,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 2,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 28,
+      "UNTRANSLATED": 18,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 361,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 350,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:ocr_unreliable": 7
+     },
+     "out_of_scope_chars": {
+      "already_french": 968,
+      "identical_in_french": 45,
+      "no_linguistic_content": 19,
+      "proper_name_or_reference": 16
+     },
+     "pages": 2,
+     "partial_chars": 38,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 35,
+      "ABSENT:FAILED:render_overflow": 97,
+      "ABSENT:FAILED:render_residual_source_ink": 85,
+      "PARTIAL:TRANSLATED:translated_and_placed": 38
+     },
+     "render": {
+      "blocks_absent": 4,
+      "blocks_no_tokens": 1,
+      "blocks_partial": 1,
+      "blocks_written": 23,
+      "inserted_words": 198,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 18,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 6,
+      "PRESERVED_INTENTIONALLY": 27,
+      "TRANSLATED": 24,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 567,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 19,
+      "PRESERVED_INTENTIONALLY": 1014,
+      "TRANSLATED": 1179,
+      "UNCERTAIN": 7
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 14,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 6,
+      "PRESERVED_INTENTIONALLY:already_french": 22,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 3,
+      "TRANSLATED:translated_and_placed": 24,
+      "UNCERTAIN:ocr_unreliable": 1
+     },
+     "written_chars": 1122
+    },
+    "run24": {
+     "absent_chars": 228,
+     "attempted_chars": 1342,
+     "blocks": 74,
+     "changed_outside_expected_chars": 21,
+     "coverage_attempted": 0.7708,
+     "coverage_written": 0.6399,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 1741,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 4,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 3,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 2,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 25,
+      "UNTRANSLATED": 19,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 399,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 388,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:ocr_unreliable": 7
+     },
+     "out_of_scope_chars": {
+      "already_french": 968,
+      "identical_in_french": 45,
+      "no_linguistic_content": 18,
+      "proper_name_or_reference": 16
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 35,
+      "ABSENT:FAILED:render_overflow": 193
+     },
+     "render": {
+      "blocks_absent": 3,
+      "blocks_no_tokens": 1,
+      "blocks_written": 23,
+      "inserted_words": 188,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 18,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 27,
+      "TRANSLATED": 23,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 616,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 18,
+      "PRESERVED_INTENTIONALLY": 1014,
+      "TRANSLATED": 1133,
+      "UNCERTAIN": 7
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 15,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "NOT_TRANSLATABLE:no_linguistic_content": 5,
+      "PRESERVED_INTENTIONALLY:already_french": 22,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 3,
+      "TRANSLATED:translated_and_placed": 23,
+      "UNCERTAIN:ocr_unreliable": 1
+     },
+     "written_chars": 1114
+    },
+    "run25": {
+     "absent_chars": 228,
+     "attempted_chars": 1257,
+     "blocks": 74,
+     "changed_outside_expected_chars": 21,
+     "coverage_attempted": 0.722,
+     "coverage_written": 0.591,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 1741,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 4,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 2,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 2,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 25,
+      "UNTRANSLATED": 20,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 484,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 388,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:ocr_unreliable": 92
+     },
+     "out_of_scope_chars": {
+      "already_french": 968,
+      "identical_in_french": 45,
+      "no_linguistic_content": 18,
+      "proper_name_or_reference": 16
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 35,
+      "ABSENT:FAILED:render_overflow": 193
+     },
+     "render": {
+      "blocks_absent": 3,
+      "blocks_no_tokens": 1,
+      "blocks_written": 22,
+      "inserted_words": 169,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 18,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 27,
+      "TRANSLATED": 22,
+      "UNCERTAIN": 2
+     },
+     "status_chars": {
+      "FAILED": 616,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 18,
+      "PRESERVED_INTENTIONALLY": 1014,
+      "TRANSLATED": 1048,
+      "UNCERTAIN": 92
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 15,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "NOT_TRANSLATABLE:no_linguistic_content": 5,
+      "PRESERVED_INTENTIONALLY:already_french": 22,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 3,
+      "TRANSLATED:translated_and_placed": 22,
+      "UNCERTAIN:ocr_unreliable": 2
+     },
+     "written_chars": 1029
+    },
+    "run25a": {
+     "absent_chars": 228,
+     "attempted_chars": 1342,
+     "blocks": 74,
+     "changed_outside_expected_chars": 21,
+     "coverage_attempted": 0.7708,
+     "coverage_written": 0.6399,
+     "critical_codes": {
+      "LAYOUT_OVERFLOW": 2,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1
+     },
+     "expected_chars": 1741,
+     "french_rewritten_blocks": 0,
+     "french_rewritten_chars": 0,
+     "issue_codes": {
+      "ENTITY_EXTRACTION_LIMITED": 1,
+      "FONT_REDUCED": 1,
+      "FORM_STRUCTURE_PRESERVED": 1,
+      "HALLUCINATION_ZERO_NOT_PROVEN": 1,
+      "LAYOUT_OVERFLOW": 2,
+      "NATIVE_REDACTION_OVERLAP": 1,
+      "NO_LINGUISTIC_CONTENT_KEPT": 4,
+      "OCR_EVIDENCE_MISSING": 1,
+      "OCR_SCRIPT_INCONSISTENT_NOT_TRANSLATED": 1,
+      "OCR_UNRELIABLE_NOT_TRANSLATED": 1,
+      "PROTECTED_TRANSLATION_NOT_APPLIED": 4,
+      "REFERENCE_NOT_VALIDATED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_REDACTION_SHRUNK": 2,
+      "SEMANTIC_REFERENCE_MISSING": 1,
+      "SIGNATURE_AUTHENTICITY_NOT_VERIFIED": 1,
+      "TABLE_CELL_FALLBACK_TO_BLOCKS": 4,
+      "TRANSLATION_EVIDENCE_MISSING": 1,
+      "UNCHANGED_TRANSLATION_RETRY": 2,
+      "UNPROTECTED_ENTITY_REQUIRES_REVIEW": 25,
+      "UNTRANSLATED": 19,
+      "VISUAL_GEOMETRY_REGRESSION": 1
+     },
+     "not_attempted_chars": 399,
+     "not_attempted_chars_by_status_reason": {
+      "FAILED:model_returned_source": 388,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:ocr_unreliable": 7
+     },
+     "out_of_scope_chars": {
+      "already_french": 968,
+      "identical_in_french": 45,
+      "no_linguistic_content": 18,
+      "proper_name_or_reference": 16
+     },
+     "pages": 2,
+     "partial_chars": 0,
+     "partial_or_absent_chars_by_status_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 35,
+      "ABSENT:FAILED:render_overflow": 193
+     },
+     "render": {
+      "blocks_absent": 3,
+      "blocks_no_tokens": 1,
+      "blocks_written": 23,
+      "inserted_words": 188,
+      "words_colliding": 0,
+      "words_out_of_page": 0
+     },
+     "status_blocks": {
+      "FAILED": 18,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 5,
+      "PRESERVED_INTENTIONALLY": 27,
+      "TRANSLATED": 23,
+      "UNCERTAIN": 1
+     },
+     "status_chars": {
+      "FAILED": 616,
+      "NOT_PROCESSED": 0,
+      "NOT_TRANSLATABLE": 18,
+      "PRESERVED_INTENTIONALLY": 1014,
+      "TRANSLATED": 1133,
+      "UNCERTAIN": 7
+     },
+     "status_reasons": {
+      "FAILED:model_returned_source": 15,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 2,
+      "NOT_TRANSLATABLE:no_linguistic_content": 5,
+      "PRESERVED_INTENTIONALLY:already_french": 22,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 1,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 3,
+      "TRANSLATED:translated_and_placed": 23,
+      "UNCERTAIN:ocr_unreliable": 1
+     },
+     "written_chars": 1114
+    }
+   },
+   "untranslated_classification": {
+    "already_french": {
+     "blocks": 23,
+     "chars": 980
+    },
+    "human_review_required": {
+     "blocks": 18,
+     "chars": 616
+    },
+    "identifier_or_data_to_preserve": {
+     "blocks": 9,
+     "chars": 52
+    },
+    "illegible_text": {
+     "blocks": 2,
+     "chars": 92
+    },
+    "really_forgotten": {
+     "blocks": 0,
+     "chars": 0
+    }
+   },
+   "visual_regions": {
+    "altered": {
+     "baseline": 33,
+     "run17": 50,
+     "run24": 48,
+     "run25": 46
+    },
+    "by_subtype": {
+     "image_candidate": 221,
+     "monochrome_visual_candidate": 8,
+     "vector_graphic_candidate": 218
+    },
+    "total": 447
+   }
+  }
+ },
+ "lexicon": {
+  "available": true,
+  "version": "language-evidence-1"
+ },
+ "measurement_method": "measure-v2.1-run18",
+ "runs": {
+  "baseline": "baseline (08/10, immutable)",
+  "run17": "run17 (previous reference)",
+  "run24": "run24 (last available run before run25 = run18 verdict)",
+  "run25": "run25 final (F20, F20b, F21, F22, F22b, F23, F24)",
+  "run25a": "run25 intermediate (F20, F20b, F21; before F22/F22b)"
+ },
+ "schema": "run25-metrics-by-document/1",
+ "totals_by_run": {
+  "baseline": {
+   "absent_chars": 2342,
+   "attempted_chars": 38597,
+   "coverage_written": 0.8365,
+   "expected_chars": 43085,
+   "partial_chars": 216,
+   "written_chars": 36039
+  },
+  "run17": {
+   "absent_chars": 3341,
+   "attempted_chars": 38588,
+   "coverage_written": 0.8195,
+   "expected_chars": 42652,
+   "partial_chars": 292,
+   "written_chars": 34955
+  },
+  "run24": {
+   "absent_chars": 2842,
+   "attempted_chars": 39007,
+   "coverage_written": 0.8364,
+   "expected_chars": 42967,
+   "partial_chars": 226,
+   "written_chars": 35939
+  },
+  "run25": {
+   "absent_chars": 2374,
+   "attempted_chars": 38773,
+   "coverage_written": 0.8419,
+   "expected_chars": 42967,
+   "partial_chars": 226,
+   "written_chars": 36173
+  },
+  "run25a": {
+   "absent_chars": 2374,
+   "attempted_chars": 38893,
+   "coverage_written": 0.8447,
+   "expected_chars": 42967,
+   "partial_chars": 226,
+   "written_chars": 36293
+  }
+ },
+ "verdict_pass": false
+}

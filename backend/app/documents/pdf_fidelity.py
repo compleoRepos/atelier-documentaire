@@ -1127,20 +1127,275 @@ def _line_boxes(block: dict[str, Any]) -> list[list[float]]:
     return [box for line in lines if (box := _rect(line.get("bbox")))]
 
 
+_SPLIT_ZOOM = 3.0
+
+
+def _vertical_ink_split(page: Any, box: list[float], other: list[float]) -> float | None:
+    """Ordinate that separates the glyphs of ``box`` from those of a vertically
+    stacked neighbour line whose OCR box overlaps it, or None.
+
+    run25 (F20): OCR line boxes are taller than their glyphs, so the boxes of
+    two tightly spaced lines overlap. The cover of a line was shrunk to the
+    neighbour's box edge, which cuts through the line's own glyphs when the
+    neighbour is kept: the translation was then drawn over the source and
+    refused (SCAN_TEXT_OVER_SOURCE_INK), and the refusal cascaded to the next
+    line. The dark pixels of the overlap band are assigned to a line through
+    connected components rooted in each line's exclusive rows. A split is only
+    returned when ownership is unambiguous: no component touches both lines and
+    no floating mark (dot, accent, stray ink) lies in the band without an owner.
+    """
+    import cv2
+    import numpy as np
+
+    ix0, ix1 = max(box[0], other[0]), min(box[2], other[2])
+    if ix1 - ix0 < 0.3 * min(box[2] - box[0], other[2] - other[0]):
+        return None
+    below = (other[1] + other[3]) / 2 > (box[1] + box[3]) / 2
+    if below:
+        band, own_core, their_core = (other[1], box[3]), (box[1], other[1]), (box[3], other[3])
+    else:
+        band, own_core, their_core = (box[1], other[3]), (other[3], box[3]), (other[1], box[1])
+    if band[1] <= band[0] or own_core[1] - own_core[0] < 1 or their_core[1] - their_core[0] < 1:
+        return None
+    try:
+        clip = fitz.Rect(ix0, min(box[1], other[1]), ix1, max(box[3], other[3])) & page.rect
+        if clip.is_empty or clip.width < 1 or clip.height < 1:
+            return None
+        pix = page.get_pixmap(
+            matrix=fitz.Matrix(_SPLIT_ZOOM, _SPLIT_ZOOM), clip=clip, colorspace=fitz.csGRAY
+        )
+    except Exception:
+        return None
+    if not pix.samples or pix.width < 2 or pix.height < 3:
+        return None
+    arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, -1)[:, : pix.width]
+    dark = arr < _SOURCE_INK_DARK
+    dark[dark.mean(axis=1) >= _RULE_RUN_SHARE, :] = False
+    dark[:, dark.mean(axis=0) >= _RULE_RUN_SHARE] = False
+    _count, labels = cv2.connectedComponents(dark.astype(np.uint8), connectivity=8)
+
+    def rows(span: tuple[float, float]) -> slice:
+        y0 = max(0, math.floor((span[0] - clip.y0) * _SPLIT_ZOOM))
+        y1 = min(pix.height, math.ceil((span[1] - clip.y0) * _SPLIT_ZOOM))
+        return slice(y0, max(y0, y1))
+
+    own = set(np.unique(labels[rows(own_core)]).tolist()) - {0}
+    theirs = set(np.unique(labels[rows(their_core)]).tolist()) - {0}
+    in_band = set(np.unique(labels[rows(band)]).tolist()) - {0}
+    if own & theirs or not own:
+        return None
+
+    def extent(ids: set[int]) -> np.ndarray:
+        return np.nonzero(np.isin(labels, list(ids)).any(axis=1))[0] if ids else np.array([])
+
+    own_rows, their_rows = extent(own), extent(theirs)
+    # Floating marks of the band (dots, accents, diacritics, specks) belong to
+    # the line they are clearly nearer to; an ambiguous one blocks the split.
+    for comp in in_band - own - theirs:
+        comp_rows = extent({comp})
+        if below:
+            d_own = comp_rows.min() - own_rows.max()
+            d_their = (their_rows.min() if their_rows.size else pix.height) - comp_rows.max()
+        else:
+            d_own = own_rows.min() - comp_rows.max()
+            d_their = comp_rows.min() - (their_rows.max() if their_rows.size else 0)
+        if d_own + 1 < d_their:
+            own.add(comp)
+        elif d_their + 1 < d_own:
+            theirs.add(comp)
+        else:
+            return None
+    if not in_band & own:
+        return None  # nothing of this line in the band: the usual shrink is exact
+    own_rows, their_rows = extent(own), extent(theirs)
+    if below:
+        edge = own_rows.max() + 1
+        limit = their_rows.min() if their_rows.size else pix.height
+        if edge > limit:
+            return None
+        return clip.y0 + (edge + limit) / 2 / _SPLIT_ZOOM
+    edge = own_rows.min()
+    limit = their_rows.max() + 1 if their_rows.size else 0
+    if edge < limit:
+        return None
+    return clip.y0 + (edge + limit) / 2 / _SPLIT_ZOOM
+
+
+# run25 (F22): share of a cover's height/width, from each edge, in which a
+# table rule or frame line is excluded from the cover.
+_COVER_RULE_EDGE_BAND = 0.35
+
+
+def _longest_run(values: Any) -> int:
+    best = run = 0
+    for v in values.tolist():
+        run = run + 1 if v else 0
+        best = max(best, run)
+    return best
+
+
+def _clip_cover_off_rules(page: Any, cover: list[float]) -> list[float] | None:
+    """Pull a paper cover back from the table rules / frame lines lying in its
+    edge bands.
+
+    run25 (F22): covers are derived from padded OCR line boxes; a box touching
+    the cell border made the cover erase that border under the translation.
+    The residual-ink check could not see it (it looks for uncovered ink, not
+    for structure that was covered). A rule here is a *continuous* dark run
+    over >= 85 % of the cover width (90 % of its height for a vertical rule)
+    that also continues past the cover: a dark-share threshold alone also
+    matches dense or bold text rows inside a cover. If pulling back exposes
+    the line's own print, the residual-ink check still refuses the block.
+    Returns the clipped cover, or None when nothing changed."""
+    dark = _page_dark(page)
+    if dark is None:
+        return None
+    height, width = dark.shape
+    x0, x1 = max(0, _px(page, cover[0], 0)), min(width, _px(page, cover[2], 0))
+    y0, y1 = max(0, _px(page, cover[1], 1)), min(height, _px(page, cover[3], 1))
+    if x1 - x0 < 4 or y1 - y0 < 2:
+        return None
+    reach = 2  # pixels a rule must continue past the cover
+
+    def h_rule(row: int) -> bool:
+        if _longest_run(dark[row, x0:x1]) < 0.85 * (x1 - x0):
+            return False
+        return bool(dark[row, max(0, x0 - reach) : x0].all() and x0 >= reach) or bool(
+            dark[row, x1 : x1 + reach].all() and x1 + reach <= width
+        )
+
+    def v_rule(col: int) -> bool:
+        if _longest_run(dark[y0:y1, col]) < 0.9 * (y1 - y0):
+            return False
+        return bool(dark[max(0, y0 - reach) : y0, col].all() and y0 >= reach) or bool(
+            dark[y1 : y1 + reach, col].all() and y1 + reach <= height
+        )
+
+    band_y = max(1, int(_COVER_RULE_EDGE_BAND * (y1 - y0)))
+    band_x = max(1, int(_COVER_RULE_EDGE_BAND * (x1 - x0)))
+    top = max((r - y0 + 1 for r in range(y0, y0 + band_y) if h_rule(r)), default=0)
+    bottom = min((r - y0 for r in range(y1 - band_y, y1) if h_rule(r)), default=y1 - y0)
+    left = max((c - x0 + 1 for c in range(x0, x0 + band_x) if v_rule(c)), default=0)
+    right = min((c - x0 for c in range(x1 - band_x, x1) if v_rule(c)), default=x1 - x0)
+    if (top, bottom, left, right) == (0, y1 - y0, 0, x1 - x0):
+        return None
+    if bottom - top < 2 or right - left < 4:
+        return None
+    to_pt_y = lambda row: page.rect.y0 + row / _INK_ZOOM  # noqa: E731
+    to_pt_x = lambda col: page.rect.x0 + col / _INK_ZOOM  # noqa: E731
+    return [
+        max(cover[0], to_pt_x(x0 + left)),
+        max(cover[1], to_pt_y(y0 + top)),
+        min(cover[2], to_pt_x(x0 + right)),
+        min(cover[3], to_pt_y(y0 + bottom)),
+    ]
+
+
+def _pull_padding_off_foreign_ink(
+    page: Any, box: list[float], padded: list[float]
+) -> list[float] | None:
+    """Keep a cover's padding off ink that is not the line's own print.
+    run25 (F24): covers are the OCR line box plus a padding meant to swallow
+    accents and anti-aliasing. A rule or underline lying in that padding just
+    outside the box (row border, form line, underlined heading) and a
+    neighbour's glyph hanging out of its own OCR box were erased under the
+    translation; F22 only sees rules over >= 85 % of the cover that also
+    continue past it. Only the padding bands are examined, never the box:
+    - top/bottom band: a row holding a long continuous dark run (structure,
+      not an accent) stops the cover before that row;
+    - left/right band: after a blank column (or a blank inner margin at the
+      box edge), further ink belongs to another mark, so the cover stops there.
+    Returns the pulled-back cover, or None when nothing changed."""
+    dark = _page_dark(page)
+    if dark is None:
+        return None
+    height, width = dark.shape
+    bx0, bx1 = max(0, _px(page, box[0], 0)), min(width, _px(page, box[2], 0))
+    by0, by1 = max(0, _px(page, box[1], 1)), min(height, _px(page, box[3], 1))
+    px0, px1 = max(0, _px(page, padded[0], 0)), min(width, _px(page, padded[2], 0))
+    py0, py1 = max(0, _px(page, padded[1], 1)), min(height, _px(page, padded[3], 1))
+    if bx1 - bx0 < 4 or by1 - by0 < 2:
+        return None
+    w_px, h_px = bx1 - bx0, by1 - by0
+    long_run = max(4.0, min(max(0.3 * w_px, 2.5 * h_px), 0.9 * w_px))
+    to_pt_y = lambda row: page.rect.y0 + row / _INK_ZOOM  # noqa: E731
+    to_pt_x = lambda col: page.rect.x0 + col / _INK_ZOOM  # noqa: E731
+    out = list(padded)
+    for row in range(by0 - 1, py0 - 1, -1):
+        if _longest_run(dark[row, bx0:bx1]) >= long_run:
+            out[1] = max(out[1], min(box[1], to_pt_y(row + 1)))
+            break
+    for row in range(by1, py1):
+        if _longest_run(dark[row, bx0:bx1]) >= long_run:
+            out[3] = min(out[3], max(box[3], to_pt_y(row)))
+            break
+    # a blank inner margin at the box edge already separates the line's print
+    # from anything beyond the box (OCR box ending on a separator)
+    # columns lying fully inside the box (rounding of the edge would pull a
+    # separator printed on the edge into the margin)
+    in_x1 = math.floor((box[2] - page.rect.x0) * _INK_ZOOM)
+    in_x0 = math.ceil((box[0] - page.rect.x0) * _INK_ZOOM)
+    seen_blank = not dark[by0:by1, max(bx0, in_x1 - 2) : in_x1].any()
+    for col in range(bx1, px1):
+        if not dark[by0:by1, col].any():
+            seen_blank = True
+        elif seen_blank:
+            out[2] = min(out[2], max(box[2], to_pt_x(col)))
+            break
+    seen_blank = not dark[by0:by1, in_x0 : min(bx1, in_x0 + 2)].any()
+    for col in range(bx0 - 1, px0 - 1, -1):
+        if not dark[by0:by1, col].any():
+            seen_blank = True
+        elif seen_blank:
+            out[0] = max(out[0], min(box[0], to_pt_x(col + 1)))
+            break
+    if all(abs(a - b) < 1e-6 for a, b in zip(out, padded, strict=True)):
+        return None
+    return out
+
+
 def _scan_covers(
     block: dict[str, Any],
     others: list[list[float]],
     regions: list[list[float]],
     page_rect: Any,
+    page: Any = None,
 ) -> tuple[list[list[float]] | None, list[str]]:
     """Paper covers for every OCR source line, padded to swallow accents and
     anti-aliasing (bounded), never reaching another block or a protected
-    region. Returns (None, reasons) when a line cannot be covered safely."""
+    region. Returns (None, reasons) when a line cannot be covered safely.
+
+    With ``page`` (scan raster available), an overlap with a vertically
+    stacked neighbour line is split at the ink valley between the two lines
+    (F20) instead of shrinking the cover to the neighbour's box edge."""
     covers: list[list[float]] = []
     notes: list[str] = []
     for raw in _line_boxes(block):
         box = list(raw)
-        touching = [o for o in others + regions if _strict_overlap(box, o)]
+        resolved: list[tuple[list[float], bool, float]] = []
+        touching_regions = [o for o in regions if _strict_overlap(box, o)]
+        touching = [o for o in others if _strict_overlap(box, o)]
+        if page is not None and touching:
+            remaining = []
+            for o in touching:
+                split = _vertical_ink_split(page, box, o)
+                if split is None:
+                    remaining.append(o)
+                    continue
+                below = (o[1] + o[3]) / 2 > (box[1] + box[3]) / 2
+                resolved.append((o, below, split))
+            for _o, below, split in resolved:
+                if below:
+                    box[3] = min(box[3], split)
+                else:
+                    box[1] = max(box[1], split)
+            if box[3] - box[1] < 0.4 * (raw[3] - raw[1]):
+                box, resolved, remaining = list(raw), [], touching
+            elif resolved:
+                notes.append("line_split_at_ink_valley")
+            touching = remaining
+        exempt = [o for o, _below, _split in resolved]
+        touching = touching + touching_regions
         if touching:
             shrunk = _shrink_away(box, touching)
             if not shrunk:
@@ -1155,7 +1410,14 @@ def _scan_covers(
             min(page_rect.x1, box[2] + pad_x),
             min(page_rect.y1, box[3] + pad_y),
         ]
-        for o in others + regions:
+        for _o, below, split in resolved:
+            # the cover never crosses the valley towards the neighbour's glyphs
+            if below:
+                padded[3] = min(padded[3], split)
+            else:
+                padded[1] = max(padded[1], split)
+        checked = [o for o in others + regions if not any(o is e for e in exempt)]
+        for o in checked:
             if not _strict_overlap(padded, o):
                 continue
             if o[0] >= box[2]:
@@ -1166,10 +1428,75 @@ def _scan_covers(
                 padded[3] = min(padded[3], o[1] - 0.2)
             elif o[3] <= box[1]:
                 padded[1] = max(padded[1], o[3] + 0.2)
-        if any(_strict_overlap(padded, o) for o in others + regions):
+        if any(_strict_overlap(padded, o) for o in checked):
             padded = box
+        if page is not None:
+            pulled = _pull_padding_off_foreign_ink(page, box, padded)
+            if pulled is not None:
+                padded = pulled
+                notes.append("cover_padding_pulled_off_foreign_ink")
+            clipped = _clip_cover_off_rules(page, padded)
+            if clipped is not None:
+                padded = clipped
+                notes.append("cover_clipped_off_rule")
         covers.append(padded)
     return covers, notes
+
+
+def _glyph_band(
+    page: Any, box: list[float], others: list[list[float]]
+) -> tuple[float, float] | None:
+    """Vertical extent of the line's own print inside an OCR box taller than it.
+
+    run25 (F20b): one-line frames were anchored at the top of the OCR box; when
+    the box is inflated (2-3x the print height, often upwards over the
+    neighbour line's descenders), the translation was drawn over the
+    neighbour's ink or into the inter-line band, then refused for residual
+    source ink. Ink inside any other OCR line box (a neighbour's spill, or a
+    fragment boxed inside this one) is masked out first; the remaining rows
+    carrying ink are grouped into bands (1-row gaps bridged) and the heaviest
+    band is the line's print.
+    """
+    import numpy as np
+
+    try:
+        clip = fitz.Rect(*box) & page.rect
+        if clip.is_empty or clip.width < 1 or clip.height < 1:
+            return None
+        pix = page.get_pixmap(
+            matrix=fitz.Matrix(_SPLIT_ZOOM, _SPLIT_ZOOM), clip=clip, colorspace=fitz.csGRAY
+        )
+    except Exception:
+        return None
+    if not pix.samples or pix.width < 2 or pix.height < 3:
+        return None
+    arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, -1)[:, : pix.width]
+    dark = arr < _SOURCE_INK_DARK
+    dark[dark.mean(axis=1) >= _RULE_RUN_SHARE, :] = False
+    dark[:, dark.mean(axis=0) >= _RULE_RUN_SHARE] = False
+    for o in others:
+        part = fitz.Rect(*o) & clip
+        if part.is_empty:
+            continue
+        x0 = max(0, math.floor((part.x0 - clip.x0) * _SPLIT_ZOOM))
+        y0 = max(0, math.floor((part.y0 - clip.y0) * _SPLIT_ZOOM))
+        x1 = min(pix.width, math.ceil((part.x1 - clip.x0) * _SPLIT_ZOOM))
+        y1 = min(pix.height, math.ceil((part.y1 - clip.y0) * _SPLIT_ZOOM))
+        dark[y0:y1, x0:x1] = False
+    profile = dark.sum(axis=1)
+    bands: list[list[int]] = []
+    for row, count in enumerate(profile.tolist()):
+        if not count:
+            continue
+        if bands and row - bands[-1][1] <= 2:
+            bands[-1][1] = row
+            bands[-1][2] += count
+        else:
+            bands.append([row, row, count])
+    if not bands:
+        return None
+    start, end, _mass = max(bands, key=lambda b: b[2])
+    return clip.y0 + start / _SPLIT_ZOOM, clip.y0 + (end + 1) / _SPLIT_ZOOM
 
 
 def _scan_region_protects(block: dict[str, Any], region: dict[str, Any]) -> bool:
@@ -1234,7 +1561,7 @@ def _plan_scan_block(
         if str(o.get("id")) != block_id
         for lb in _line_boxes(o)
     ]
-    covers, notes = _scan_covers(block, others, region_boxes, page.rect)
+    covers, notes = _scan_covers(block, others, region_boxes, page.rect, page=page)
     if covers is None:
         issues.append(
             _warn(
@@ -1347,6 +1674,16 @@ def _plan_scan_block(
         # below it. Shrink (>= 72 %) or extend right first; wrapping is only a
         # fallback into space proven blank (see below), else LAYOUT_OVERFLOW.
         single = size * _SCAN_SINGLE_LINE_HEIGHT
+        top = None
+        if box[3] - box[1] > 1.15 * single:
+            # F20b: anchor the one-line frame on the line's own print, not on
+            # the top of an inflated OCR box.
+            glyphs = _glyph_band(page, box, others)
+            if glyphs:
+                centre = (glyphs[0] + glyphs[1]) / 2
+                top = min(max(box[1], centre - single / 2), box[3] - single)
+        if top is not None:
+            candidates = [[r[0], max(r[1], top), r[2], r[3]] for r in candidates]
         candidates = [[r[0], r[1], r[2], min(r[3], r[1] + single)] for r in candidates]
     best = None
     ink_rejected = 0
@@ -1470,7 +1807,8 @@ def _plan_scan_block(
     # neighbouring blocks they overlap. The final phase uses a full cover only
     # when every overlapped neighbour is itself replaced (its pixels are
     # redrawn as translation): a neighbour kept as original is never masked.
-    full, _full_notes = _scan_covers(block, [], region_boxes, page.rect)
+    # F22b: the full cover must also stay off table rules / frame lines.
+    full, _full_notes = _scan_covers(block, [], region_boxes, page.rect, page=page)
     full_overlaps: list[list[str]] | None = None
     if full is not None and len(full) == len(covers):
         full_overlaps = [
@@ -1824,7 +2162,7 @@ def render_pdf(
                         scan_covers = []
                         for member in blocks:
                             covers_m, _notes = _scan_covers(
-                                member, others_cell, region_cell, page.rect
+                                member, others_cell, region_cell, page.rect, page=page
                             )
                             if covers_m is None:
                                 scan_covers = None

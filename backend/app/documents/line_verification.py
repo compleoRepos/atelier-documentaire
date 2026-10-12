@@ -53,7 +53,7 @@ from typing import Any
 
 from app.documents.segmentation import is_unreliable_ocr, join_line_texts
 
-VERSION = "line-verification-7"
+VERSION = "line-verification-9"
 SCALE = 4.0
 HIGHLIGHT_MIN_COVERAGE = 0.10
 HIGHLIGHT_MIN_X_COVERAGE = 0.25
@@ -833,6 +833,66 @@ def strip_checkbox_tokens(
         )
 
 
+# run25 (F21): drawn check boxes that the OCR read as letters/brackets. These
+# renderings cannot be reproduced by a translation: masking the line would erase
+# the boxes (form data loss). Typed markers such as "[X]" or "[ ]" are real text
+# and are not concerned. Case-sensitive; at least one standalone occurrence.
+_MISREAD_CHECKBOX = re.compile(r"(?<![\w\[\]|])(?:LJ|L\]|\|_\||\[_\])")
+_MISREAD_CHECKBOX_ALONE = re.compile(r"(?<![\w\[\]|])(?:LJ|L\]|\|_\||\[_\])(?=[\s,.;:)]|$)")
+
+
+def flag_misread_checkbox_tokens(
+    block: dict[str, Any], line_boxes: dict[int, list[list[float]]], stats: dict[str, Any]
+) -> None:
+    """Flag ``ocr_unreliable`` a block whose line carries OCR renderings of
+    check boxes (``LJ``, ``L]``, ``|_|``, ``[_]``) that no detected check-box
+    glyph explains: the source is kept (UNCERTAIN, not sent, not rendered)
+    rather than masked with its boxes."""
+    lines = block.get("source_lines") or [block]
+    for index, line in enumerate(lines):
+        text = str(line.get("text") or "")
+        if line_boxes.get(index) or not _MISREAD_CHECKBOX_ALONE.search(text):
+            continue
+        stats["checkbox_tokens_misread_undetected"] += len(_MISREAD_CHECKBOX.findall(text))
+        if not block.get("ocr_unreliable"):
+            stats["blocks_checkbox_misread_undetected"] += 1
+            block["ocr_unreliable"] = True
+            block["ocr_unreliable_reason"] = "checkbox_misread_undetected"
+        return
+
+
+# run25 (F23): an OCR line read in a right-to-left context (Arabic/Hebrew
+# letters or bidi marks) emits a left-to-right number made of several groups
+# (phone, fax, IBAN, spaced amount) in reverse group order, e.g. "(012) 345 6789"
+# -> "6789 345 (012)". The reading order of such a run cannot be proven from the
+# text, and translating it would publish an altered number: the line is kept as
+# the original image (OCR unreliable). Single tokens (dates, amounts) and numbers
+# separated by words are not concerned.
+_RTL_CONTEXT = re.compile(
+    r"[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\uFB1D-\uFDFF\uFE70-\uFEFF\u200E\u200F\u202A-\u202E\u2066-\u2069]"
+)
+_NUMBER_GROUP = r"\(?\d(?:[\d.,/\-]*\d)?\)?"  # a group ends on a digit: "2, 1" is a list
+_MULTI_GROUP_NUMBER = re.compile(
+    rf"(?<![\w]){_NUMBER_GROUP}(?:[ \t\u00a0]+[-\u2013]?[ \t\u00a0]*{_NUMBER_GROUP})+(?![\w])"
+)
+
+
+def flag_bidi_number_runs(block: dict[str, Any], stats: dict[str, Any]) -> None:
+    """Flag ``ocr_unreliable`` a block whose OCR line mixes a right-to-left
+    context with a multi-group number: the group order is not trustworthy, so the
+    original pixels are kept (UNCERTAIN, not sent, not rendered)."""
+    for line in block.get("source_lines") or [block]:
+        text = str(line.get("text") or "")
+        if not _RTL_CONTEXT.search(text) or not _MULTI_GROUP_NUMBER.search(text):
+            continue
+        stats["bidi_number_runs"] += len(_MULTI_GROUP_NUMBER.findall(text))
+        if not block.get("ocr_unreliable"):
+            stats["blocks_bidi_number_order_unreliable"] += 1
+            block["ocr_unreliable"] = True
+            block["ocr_unreliable_reason"] = "bidi_number_order_unreliable"
+        return
+
+
 def _declare_checkbox_regions(
     ir: dict[str, Any],
     page: dict[str, Any],
@@ -954,6 +1014,10 @@ def verify_lines(
         "checkbox_tokens_stripped": 0,
         "checkbox_lines_fused_unreliable": 0,
         "blocks_checkbox_fused_unreliable": 0,
+        "checkbox_tokens_misread_undetected": 0,
+        "blocks_checkbox_misread_undetected": 0,
+        "bidi_number_runs": 0,
+        "blocks_bidi_number_order_unreliable": 0,
         "checkbox_lines_mixed_script_noise": 0,
         "bidi_brackets_normalized": 0,
     }
@@ -1012,6 +1076,8 @@ def verify_lines(
             if str(block.get("provenance") or "").startswith("ocr"):
                 line_boxes = _declare_checkbox_regions(ir, page, block, rgb, scale, stats)
                 strip_checkbox_tokens(ir, block, line_boxes, stats)
+                flag_misread_checkbox_tokens(block, line_boxes, stats)
+                flag_bidi_number_runs(block, stats)
                 _normalize_block_brackets(block, stats)
             lines = block.get("source_lines") or [block]
             line_status = []

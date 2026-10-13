@@ -7,12 +7,21 @@ returned English blocks unchanged. MockTransport only, no network.
 from __future__ import annotations
 
 import json
+import re
 
 import httpx
 import pytest
 from test_interim_owner_authorization import SHA, options
 
 from app.ai.translation.service import translate_blocks
+
+# RUN27 F29: the guard refuses any digit absent from the source, so the fake
+# translation must not copy the digits of the block id ("b1" -> "b-un").
+_DIGIT_WORDS = ("zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf")
+
+
+def _spelled(block_id: str) -> str:
+    return re.sub(r"\d", lambda m: "-" + _DIGIT_WORDS[int(m.group())], block_id)
 
 
 def _ir(blocks):
@@ -49,7 +58,7 @@ def _handler(seen, translate_on_retry: bool):
         retry = "returned unchanged by a previous request" in system
         seen.append({"ids": [b["id"] for b in blocks], "retry": retry})
         if retry and translate_on_retry:
-            return _response([(b["id"], f"Traduction {b['id']}.") for b in blocks])
+            return _response([(b["id"], f"Traduction {_spelled(b['id'])}.") for b in blocks])
         return _response([(b["id"], b["text"]) for b in blocks])  # verbatim echo
 
     return handler
@@ -70,7 +79,7 @@ async def test_verbatim_non_french_blocks_are_retried_once_and_applied(tmp_path)
     )
     assert [s["retry"] for s in seen] == [False, True]
     assert seen[1]["ids"] == ["b1", "b2"]
-    assert result["translations"] == {"b1": "Traduction b1.", "b2": "Traduction b2."}
+    assert result["translations"] == {"b1": "Traduction b-un.", "b2": "Traduction b-deux."}
     retry = [i for i in result["issues"] if i["code"] == "UNCHANGED_TRANSLATION_RETRY"]
     assert retry and retry[0]["severity"] == "info" and retry[0]["blocks"] == 2
     assert not result["untranslated_blocks"]

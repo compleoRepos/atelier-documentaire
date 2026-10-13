@@ -80,18 +80,20 @@ def _validate_masks(
         return [], [{"code": "VISUAL_MASKS_INVALID", "severity": "critical"}], None
     issues: list[dict[str, Any]] = []
     valid: list[dict[str, Any]] = []
-    total = 0.0
-    page_areas: dict[int, float] = {}
+    # F32 (run27): coverage = area of the UNION of the page masks (overlapping
+    # masks used to be summed, double counting the same pixels).
+    from app.documents.geometry import union_area
+
+    page_boxes: dict[int, list[Any]] = {}
     for index, mask in enumerate(masks):
         if not isinstance(mask, dict) or _bbox_area(mask.get("bbox")) is None:
             issues.append({"code": "VISUAL_MASK_INVALID", "severity": "critical", "index": index})
             continue
         page = int(mask.get("page", 1))
-        area = _bbox_area(mask["bbox"])
-        assert area is not None
-        page_areas[page] = page_areas.get(page, 0.0) + area
-        total += area
+        page_boxes.setdefault(page, []).append(mask["bbox"])
         valid.append(mask)
+    page_areas = {page: union_area(boxes) for page, boxes in page_boxes.items()}
+    total = sum(page_areas.values())
     for page, area in page_areas.items():
         dimensions = next(
             (p for p in _source_pages(ir, render) if int(p.get("number", 1)) == page), None

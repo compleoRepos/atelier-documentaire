@@ -827,26 +827,193 @@ def _drawn_line_rects(scratch: Any, page_rect: Any, item: dict[str, Any]) -> lis
     return rects or [list(item["inner"])]
 
 
-def _apply_full_covers(kept: list[dict[str, Any]]) -> None:
+# F31: slivers thinner than this are not worth an extra mask.
+_COVER_PIECE_MIN = 0.75
+
+
+def _subtract_box(rect: list[float], obstacle: list[float]) -> list[list[float]]:
+    """``rect`` minus ``obstacle`` as at most four disjoint rectangles."""
+    x0, y0, x1, y1 = rect
+    ix0, iy0 = max(x0, obstacle[0]), max(y0, obstacle[1])
+    ix1, iy1 = min(x1, obstacle[2]), min(y1, obstacle[3])
+    if ix0 >= ix1 or iy0 >= iy1:
+        return [list(rect)]
+    pieces = []
+    if iy0 > y0:
+        pieces.append([x0, y0, x1, iy0])
+    if iy1 < y1:
+        pieces.append([x0, iy1, x1, y1])
+    if ix0 > x0:
+        pieces.append([x0, iy0, ix0, iy1])
+    if ix1 < x1:
+        pieces.append([ix1, iy0, x1, iy1])
+    return pieces
+
+
+def _cover_pieces(
+    full: list[float], kept_boxes: list[list[float]], shrunk: list[float]
+) -> list[list[float]]:
+    """F31 (run27): parts of a line's full cover that touch no neighbour kept as
+    original (same 0.5 pt margin as ``_shrink_away``) and that the shrunk cover
+    does not already mask. A single shrunk rectangle has to give up a whole
+    strip (all the width, or all the height) to avoid a neighbour occupying only
+    a corner: the line's own glyphs were left visible next to the translation."""
+    obstacles = [[b[0] - 0.5, b[1] - 0.5, b[2] + 0.5, b[3] + 0.5] for b in kept_boxes]
+    obstacles.append(list(shrunk))
+    pieces = [list(full)]
+    for obstacle in obstacles:
+        pieces = [part for piece in pieces for part in _subtract_box(piece, obstacle)]
+    return [
+        piece
+        for piece in pieces
+        if piece[2] - piece[0] >= _COVER_PIECE_MIN and piece[3] - piece[1] >= _COVER_PIECE_MIN
+    ]
+
+
+# F31 guard: share of each touching dark component that must already lie in
+# the masked area, and the context rendered around a piece to see it whole.
+_PIECE_OWNED_SHARE = 0.9
+_PIECE_CONTEXT = 24.0
+# Coloured ink (stamp, seal, signature, annotation) in a piece: ownership of
+# the pixels cannot be established from boxes, the piece is refused.
+_PIECE_INK_GRAY = 200
+_PIECE_COLOUR_SATURATION = 40
+_PIECE_COLOUR_MIN_PIXELS = 5
+_PIECE_COLOUR_MIN_SHARE = 0.02
+
+
+def _piece_owned(
+    page: Any,
+    piece: list[float],
+    line_cover: list[float],
+    allowed: list[list[float]],
+    zoom: float = 2.0,
+) -> bool:
+    """F31 guard: a cover piece may only mask the line's OWN glyph parts cut by
+    the shrink. Every dark connected component touching the piece must lie (at
+    least 90 %) inside ``allowed`` (the line's full cover and the masks of the
+    blocks replaced on the page). A stamp, a signature stroke or rotated text
+    running beyond is foreign ink: the piece is refused, the residual-ink check
+    then keeps protecting it. When the line's full cover holds coloured ink
+    (stamp, seal or signature inside the line's box: boxes cannot tell whose
+    pixels they are), no piece of that line is accepted. Unreadable raster:
+    refused (conservative)."""
+    import cv2
+    import numpy as np
+
+    try:
+        clip = (
+            fitz.Rect(
+                min(piece[0], line_cover[0]) - _PIECE_CONTEXT,
+                min(piece[1], line_cover[1]) - _PIECE_CONTEXT,
+                max(piece[2], line_cover[2]) + _PIECE_CONTEXT,
+                max(piece[3], line_cover[3]) + _PIECE_CONTEXT,
+            )
+            & page.rect
+        )
+        if clip.is_empty or clip.width < 1 or clip.height < 1:
+            return False
+        pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), clip=clip, colorspace=fitz.csRGB)
+    except Exception:
+        return False
+    if not pix.samples or pix.width < 1 or pix.height < 1:
+        return False
+    rgb = np.ascontiguousarray(
+        np.frombuffer(pix.samples, dtype=np.uint8)
+        .reshape(pix.height, -1)[:, : pix.width * pix.n]
+        .reshape(pix.height, pix.width, pix.n)[:, :, :3]
+    )
+    arr = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    saturation = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)[:, :, 1]
+    dark = (arr < _SOURCE_INK_DARK).astype(np.uint8)
+
+    def window(rect: list[float]) -> tuple[slice, slice] | None:
+        part = fitz.Rect(*rect) & clip
+        if part.is_empty:
+            return None
+        return (
+            slice(
+                max(0, math.floor((part.y0 - clip.y0) * zoom)),
+                math.ceil((part.y1 - clip.y0) * zoom),
+            ),
+            slice(
+                max(0, math.floor((part.x0 - clip.x0) * zoom)),
+                math.ceil((part.x1 - clip.x0) * zoom),
+            ),
+        )
+
+    inside = window(piece)
+    line = window(line_cover)
+    if inside is None or line is None:
+        return False
+    ink = arr[line] < _PIECE_INK_GRAY
+    coloured = int((ink & (saturation[line] > _PIECE_COLOUR_SATURATION)).sum())
+    if coloured >= max(_PIECE_COLOUR_MIN_PIXELS, _PIECE_COLOUR_MIN_SHARE * int(ink.sum())):
+        return False
+    count, labels = cv2.connectedComponents(dark, connectivity=8)
+    touching = set(np.unique(labels[inside]).tolist()) - {0}
+    if not touching:
+        return True
+    masked = np.zeros(dark.shape, dtype=bool)
+    for rect in allowed:
+        area = window(rect)
+        if area is not None:
+            masked[area] = True
+    for label in touching:
+        component = labels == label
+        total = int(component.sum())
+        outside = int((component & ~masked).sum())
+        if outside > max(3, (1.0 - _PIECE_OWNED_SHARE) * total):
+            return False
+    return True
+
+
+def _apply_full_covers(kept: list[dict[str, Any]], doc: Any = None) -> None:
     """Per source line, use the full cover when every neighbouring block it
-    overlaps is itself replaced (redrawn), else the cover shrunk away from it.
+    overlaps is itself replaced (redrawn), else the cover shrunk away from it,
+    completed (F31) by the parts of the full cover touching no kept neighbour
+    whose ink is the line's own (``_piece_owned``; needs ``doc``).
     Recomputed at each fixed-point step: dropping an item can only shrink."""
     replaced = {(int(k["page"]), str(b)) for k in kept for b in k["block_ids"]}
+    staged: list[
+        tuple[dict[str, Any], list[list[float]], int, list[tuple[int, list[float], list[float]]]]
+    ] = []
+    page_covers: dict[int, list[list[float]]] = {}
     for item in kept:
         full, overlaps = item.get("full_source_rects"), item.get("full_overlap_ids")
         shrunk = item.get("shrunk_source_rects")
         if not full or overlaps is None or shrunk is None or len(full) != len(shrunk):
+            page_covers.setdefault(int(item["page"]), []).extend(item.get("source_rects") or [])
             continue
         page = int(item["page"])
-        chosen, extended = [], 0
+        boxes = item.get("full_overlap_boxes")
+        chosen, extended, candidates = [], 0, []
         for index, cover in enumerate(full):
             if all((page, oid) in replaced for oid in overlaps[index]):
                 chosen.append(list(cover))
                 extended += cover != shrunk[index]
             else:
                 chosen.append(list(shrunk[index]))
-        item["source_rects"] = chosen
+                if doc is not None and boxes is not None and index < len(boxes):
+                    kept_boxes = [box for oid, box in boxes[index] if (page, oid) not in replaced]
+                    for piece in _cover_pieces(cover, kept_boxes, shrunk[index]):
+                        candidates.append((index, piece, list(cover)))
+        page_covers.setdefault(page, []).extend(chosen)
+        staged.append((item, chosen, extended, candidates))
+    for item, chosen, extended, candidates in staged:
+        page = int(item["page"])
+        # Fills are indexed by source line; pieces are appended after the lines.
+        line_fills = item.setdefault("line_cover_fills", list(item.get("cover_fills") or []))
+        pieces, piece_fills = [], []
+        for index, piece, cover in candidates:
+            if not _piece_owned(doc[page - 1], piece, cover, [cover, *page_covers.get(page, [])]):
+                continue
+            pieces.append(piece)
+            piece_fills.append(line_fills[index] if index < len(line_fills) else None)
+        item["source_rects"] = chosen + pieces
+        item["cover_fills"] = (list(line_fills) + [None] * len(chosen))[: len(chosen)] + piece_fills
         item["extended_cover_lines"] = extended
+        item["cover_pieces"] = len(pieces)
 
 
 def _drop_text_over_source_ink(
@@ -867,7 +1034,7 @@ def _drop_text_over_source_ink(
     scratch.close()
     kept = list(valid)
     while True:
-        _apply_full_covers(kept)
+        _apply_full_covers(kept, doc)
         covers: dict[int, list[list[float]]] = {}
         for item in kept:
             covers.setdefault(int(item["page"]), []).extend(item["source_rects"])
@@ -888,6 +1055,17 @@ def _drop_text_over_source_ink(
                 dropped.append((item, count, share))
         if not dropped:
             for item in kept:
+                if item.get("cover_pieces"):
+                    block_ids = [str(b) for b in item.get("block_ids") or []]
+                    issues.append(
+                        _warn(
+                            "SCAN_COVER_COMPLETED_AWAY_FROM_KEPT_NEIGHBOUR",
+                            "Masque réduit complété hors des voisins conservés (F31).",
+                            "info",
+                            block_id=block_ids[0] if len(block_ids) == 1 else None,
+                            pieces=int(item["cover_pieces"]),
+                        )
+                    )
                 if item.get("extended_cover_lines"):
                     block_ids = [str(b) for b in item.get("block_ids") or []]
                     issues.append(
@@ -1004,7 +1182,13 @@ def _scan_font_size(block: dict[str, Any], body: float | None) -> float:
 
 def _shrink_away(box: list[float], others: list[list[float]]) -> list[float] | None:
     """Shrink ``box`` on the side of each overlapping neighbour (OCR line boxes
-    swollen by nearby handwriting). Refused if less than 40 % would remain."""
+    swollen by nearby handwriting). Refused if less than 40 % would remain.
+
+    F30 (run27): the side removing the LEAST area is used. The horizontal side
+    used to win whenever the neighbour's centre was left/right of the box
+    centre: a label printed just above a value (2 pt of vertical overlap) cut
+    the whole left part of the value's mask, its own ink was left uncovered
+    and the translated value was refused (residual source ink)."""
     x0, y0, x1, y1 = box
     width, height = x1 - x0, y1 - y0
     for other in others:
@@ -1012,14 +1196,21 @@ def _shrink_away(box: list[float], others: list[list[float]]) -> list[float] | N
             continue
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
         ox, oy = (other[0] + other[2]) / 2, (other[1] + other[3]) / 2
+        candidates: list[tuple[float, list[float]]] = []
         if ox > cx and other[0] > x0 + 0.4 * width:
-            x1 = min(x1, other[0] - 0.5)
+            nx1 = min(x1, other[0] - 0.5)
+            candidates.append(((x1 - nx1) * (y1 - y0), [x0, y0, nx1, y1]))
         elif ox < cx and other[2] < x1 - 0.4 * width:
-            x0 = max(x0, other[2] + 0.5)
-        elif oy > cy:
-            y1 = min(y1, other[1] - 0.5)
+            nx0 = max(x0, other[2] + 0.5)
+            candidates.append(((nx0 - x0) * (y1 - y0), [nx0, y0, x1, y1]))
+        if oy > cy:
+            ny1 = min(y1, other[1] - 0.5)
+            candidates.append(((y1 - ny1) * (x1 - x0), [x0, y0, x1, ny1]))
         else:
-            y0 = max(y0, other[3] + 0.5)
+            ny0 = max(y0, other[3] + 0.5)
+            candidates.append(((ny0 - y0) * (x1 - x0), [x0, ny0, x1, y1]))
+        # Ties keep the historical preference (horizontal side first).
+        x0, y0, x1, y1 = min(candidates, key=lambda candidate: candidate[0])[1]
     shrunk = [x0, y0, x1, y1]
     if x1 - x0 < 0.4 * width or y1 - y0 < 0.4 * height:
         return None
@@ -1810,9 +2001,14 @@ def _plan_scan_block(
     # F22b: the full cover must also stay off table rules / frame lines.
     full, _full_notes = _scan_covers(block, [], region_boxes, page.rect, page=page)
     full_overlaps: list[list[str]] | None = None
+    full_overlap_boxes: list[list[tuple[str, list[float]]]] | None = None
     if full is not None and len(full) == len(covers):
         full_overlaps = [
             sorted({oid for oid, lb in other_ids if _strict_overlap(cover, lb)}) for cover in full
+        ]
+        full_overlap_boxes = [
+            [(oid, list(lb)) for oid, lb in other_ids if _strict_overlap(cover, lb)]
+            for cover in full
         ]
     else:
         full = None
@@ -1841,6 +2037,7 @@ def _plan_scan_block(
         "shrunk_source_rects": [list(c) for c in covers],
         "full_source_rects": full,
         "full_overlap_ids": full_overlaps,
+        "full_overlap_boxes": full_overlap_boxes,
         "cover_fills": fills,
         "cover": None,
     }

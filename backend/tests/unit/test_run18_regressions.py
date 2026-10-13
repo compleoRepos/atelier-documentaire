@@ -157,7 +157,7 @@ async def test_one_word_arabic_label_returned_verbatim_is_retried(tmp_path):
     )
     assert [s["retry"] for s in seen] == [False, True]
     assert seen[1]["ids"] == ["a1", "a2"]
-    assert result["translations"]["a1"] == "Traduction a1."
+    assert result["translations"]["a1"] == "Traduction a-un."
     assert result["translations"]["n1"] == "PL 46"
 
 
@@ -837,7 +837,12 @@ async def test_translation_memory_reuses_only_unchanged_blocks_fail_closed(tmp_p
     assert merged["translations"] == {"b1": "Bonjour", "b2": "new-b2", "b3": "new-b3"}
     assert [i["block_id"] for i in merged["issues"]] == ["b1"]
     memory = merged["translation_telemetry"]["translation_memory"]
-    assert memory == {"cache_run": "run-a", "blocks_reused": 1, "blocks_processed_now": 2}
+    assert memory == {
+        "cache_run": "run-a",
+        "blocks_reused": 1,
+        "blocks_processed_now": 2,
+        "invalidated_by_current_guard": {},
+    }
 
 
 async def test_translation_memory_prunes_fully_cached_tables_but_keeps_unmapped(tmp_path):

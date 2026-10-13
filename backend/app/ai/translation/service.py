@@ -495,7 +495,17 @@ _EMAIL = re.compile(r"(?i)\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b")
 _IBAN = re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b")
 _DATE = re.compile(r"\b(?:\d{1,4}[./-]){2}\d{1,4}\b")
 _PHONE = re.compile(r"(?<!\w)(?:\+\d[\d .()/\-]{6,}\d)(?!\w)")
-_NUMBER = re.compile(r"(?<![\w])\d+(?:[.,/]\d+)*(?![\w])")
+# F29 (run27): a number glued to a FOLLOWING letter (OCR glue "12.345.00euro",
+# "7del", ordinals "1st"/"31st", units "5m") was invisible to both the
+# protection and the integrity check, while the translation separates it
+# ("31 décembre") -> false rejection of a correct translation. Protection now
+# only refuses a following digit; the integrity check compares EVERY digit run
+# on both sides (symmetric), so an identifier such as "ABC123" -> "ABC124" is
+# no longer invisible either.
+_NUMBER = re.compile(r"(?<![\w])\d+(?:[.,/]\d+)*(?!\d)")
+_DIGIT_RUN = re.compile(r"\d+(?:[.,/]\d+)*")
+# F34: a French ordinal suffix; only the number 1 may carry it (1er, 1re, 1ère).
+_FRENCH_ORDINAL = re.compile(r"(?<![\w.,])(\d+)\s?(?:er|re|ère)\b")
 _MARKER = re.compile(r"⟦BTP-P\d{6}⟧")
 
 
@@ -550,7 +560,11 @@ def _protected_text(
 
 
 def _restore_and_validate(
-    source: str, translated: str, mapping: Mapping[str, str], block_id: str
+    source: str,
+    translated: str,
+    mapping: Mapping[str, str],
+    block_id: str,
+    target_language: str = "fr",
 ) -> tuple[str, dict[str, Any] | None]:
     if mapping:
         issue: dict[str, Any] | None = None
@@ -571,9 +585,10 @@ def _restore_and_validate(
             restored = restored.replace(marker, original)
     else:
         restored = translated
-    # Numeric integrity is additionally checked after restoration.
-    source_numbers = Counter(_NUMBER.findall(source))
-    target_numbers = Counter(_NUMBER.findall(restored))
+    # Numeric integrity is additionally checked after restoration, on every
+    # digit run whatever its neighbours (F29: symmetric source/target).
+    source_numbers = Counter(_DIGIT_RUN.findall(source))
+    target_numbers = Counter(_DIGIT_RUN.findall(restored))
     if source_numbers != target_numbers:
         issue = {
             "code": "PROTECTED_ENTITY_CHANGED",
@@ -582,6 +597,19 @@ def _restore_and_validate(
             "block_id": block_id,
         }
         return source, issue
+    # F34 (run27): with the digits of "31st" protected, the model translated
+    # the bare suffix and wrote "31er". In French only 1 takes er/re/ère; any
+    # other number is an implausible target, refused like an entity change
+    # (the source is kept and the block goes to review), never "translated".
+    if _is_french(target_language) and not _FRENCH_ORDINAL.search(source):
+        for match in _FRENCH_ORDINAL.finditer(restored):
+            if int(match.group(1)) != 1:
+                return source, {
+                    "code": "IMPLAUSIBLE_TARGET_ORDINAL",
+                    "severity": "error",
+                    "message": "Ordinal français invalide dans la cible (seul 1 prend er/re/ère).",
+                    "block_id": block_id,
+                }
     return restored, None
 
 
@@ -1266,6 +1294,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                     result.translations[block_id],
                     mappings.get(block_id, {}),
                     block_id,
+                    target_language,
                 )
                 # D27: an answer that only re-spaces punctuation, swaps quote or
                 # space variants or changes case is the source, not a

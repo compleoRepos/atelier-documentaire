@@ -41,10 +41,11 @@ check-box rules are never re-read. Idempotent: an attempted line keeps its
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Callable
 from typing import Any
 
-VERSION = "ocr-recovery-1"
+VERSION = "ocr-recovery-2"
 RECOVER_BELOW = 0.60
 REVIEW_BELOW = 0.60
 ACCEPT_MIN = 0.80
@@ -60,6 +61,16 @@ LEXICAL_ZIPF = 2.5
 LEXICAL_SHARE = 0.8
 NEW_READING_KNOWN_SHARE = 0.5
 NEW_READING_TRUSTED = 0.90
+# F29 (run27): lexical plausibility of a CONFIDENT OCR reading. Tesseract can
+# report 0.7-0.9 on a deformed reading; translating it means guessing the
+# source. Calibrated on the corpus (counts only): among the 187 Latin-script
+# OCR blocks of 8+ words, the readings below 0.70 are all deformed, the next
+# ones (>= 0.75) are readable with sporadic errors, proper nouns or addresses.
+# Limited to Latin script (the lexicon lookup of other scripts is not reliable
+# here) and to blocks long enough for a share to be meaningful.
+IMPLAUSIBLE_BELOW = 0.70
+IMPLAUSIBLE_MIN_WORDS = 8
+IMPLAUSIBLE_MIN_LATIN = 0.90
 
 TESSERACT_CODES = {
     "ara": "ara",
@@ -382,3 +393,35 @@ def needs_review(block: dict[str, Any], languages: list[str]) -> bool:
     if conf is None or float(conf) >= REVIEW_BELOW or not block.get("source_lines"):
         return False
     return not lexically_supported(str(block.get("text") or ""), block.get("language"), languages)
+
+
+def latin_share(text: str) -> float:
+    letters = [ch for ch in text or "" if ch.isalpha()]
+    if not letters:
+        return 0.0
+    return sum(1 for ch in letters if "LATIN" in unicodedata.name(ch, "")) / len(letters)
+
+
+def lexically_implausible(block: dict[str, Any], languages: list[str]) -> bool:
+    """F29 (run27): a measured OCR reading whose words are mostly unknown in
+    the block and document languages is not translated (human review).
+
+    ``False`` when the lexicon is unavailable or the rule does not apply
+    (non-Latin script, fewer than 8 words, no measured confidence, block
+    language undetected or unknown to the lexicon): the other
+    OCR gates still apply; this one never marks a block reliable.
+    """
+    text = str(block.get("text") or "")
+    if not block.get("source_lines") or block.get("confidence") is None:
+        return False
+    if (
+        len(_WORD.findall(text)) < IMPLAUSIBLE_MIN_WORDS
+        or latin_share(text) < IMPLAUSIBLE_MIN_LATIN
+    ):
+        return False
+    # The block language must be detected and known to the lexicon: a correct
+    # reading in an undetected foreign language is not a deformed reading.
+    if not _isos(block.get("language"), [], widen=False):
+        return False
+    share = known_share(text, block.get("language"), languages)
+    return share is not None and share < IMPLAUSIBLE_BELOW

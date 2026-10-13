@@ -23,8 +23,13 @@ from app.ai.vision.scorer import score_visual
 _TOKEN = re.compile(r"\w+", re.UNICODE)
 _UNIT_WORDS = (
     r"kg|kgs|kilogram(?:me|mes)?|g|gram(?:me|mes)?|mg|milligram(?:me|mes)?|"
-    r"lb|lbs|livre(?:s)?|m|met(?:re|res|er|ers)?|cm|centim(?:e|è)tre(?:s)?|"
-    r"mm|millim(?:e|è)tre(?:s)?|km|kilom(?:e|è)tre(?:s)?|l|litre(?:s)?|ml|millilitre(?:s)?|"
+    # F29 (run27): accented French forms ("2 mètres") and the source-language
+    # forms of the corpus (it/es/nl/de) on BOTH sides, so that a correct
+    # translation is not reported as a lost unit and no new asymmetry appears.
+    r"lb|lbs|livre(?:s)?|m|met(?:re|res|er|ers|ro|ros|ri)?|mètres?|cm|centim(?:e|è)tre(?:s)?|"
+    r"centimet(?:er|ers|ro|ros|ri)|centímetros?|"
+    r"mm|millim(?:e|è)tre(?:s)?|km|kilom(?:e|è)tre(?:s)?|kilomet(?:er|ers|ro|ros|ri)|"
+    r"kilómetros?|chilometr[oi]|l|litre(?:s)?|liters?|litr[oi]s?|ml|millilitre(?:s)?|"
     r"m²|m2|%|pourcent(?:s)?|euros?|€|dollars?(?:\s+am(?:e|é)ricains?)?|\$|"
     r"dirhams?|dh|dhs|usd|eur|gbp|mad|aed"
 )
@@ -58,6 +63,32 @@ _UNIT_ALIASES = {
     "metres": "m",
     "meter": "m",
     "meters": "m",
+    "mètre": "m",
+    "mètres": "m",
+    "metro": "m",
+    "metros": "m",
+    "metri": "m",
+    "centimeter": "cm",
+    "centimeters": "cm",
+    "centimetro": "cm",
+    "centimetros": "cm",
+    "centimetri": "cm",
+    "centímetro": "cm",
+    "centímetros": "cm",
+    "kilometer": "km",
+    "kilometers": "km",
+    "kilometro": "km",
+    "kilometros": "km",
+    "kilometri": "km",
+    "kilómetro": "km",
+    "kilómetros": "km",
+    "chilometro": "km",
+    "chilometri": "km",
+    "liter": "l",
+    "liters": "l",
+    "litro": "l",
+    "litros": "l",
+    "litri": "l",
     "cm": "cm",
     "centimetre": "cm",
     "centimetres": "cm",

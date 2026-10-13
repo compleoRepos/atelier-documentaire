@@ -50,7 +50,10 @@ _PATTERNS: dict[str, re.Pattern[str]] = {
         r"(?i)(?<!\w)(?:\d{1,4}[./-]){2}\d{1,4}(?!\w)|"
         r"(?<!\w)(?:\d{1,2}(?:er|\.)?\s+(?:de\s+|di\s+)?)?(?:"
         + "|".join(sorted(map(re.escape, _MONTHS), key=len, reverse=True))
-        + r")\s+(?:de\s+|del\s+)?\d{4}(?!\w)",
+        # F29 (run27): "\s*" -- OCR glues the year to the month ("26
+        # July2019"); without it the token became an immutable "code" and
+        # the correct localisation of the month was a critical alert.
+        + r")\s*(?:de\s+|del\s+)?\d{4}(?!\w)",
     ),
     "amount": re.compile(
         r"(?i)(?<!\w)(?:[$€£]|USD|EUR|GBP|MAD|DHS|DH|AED|"

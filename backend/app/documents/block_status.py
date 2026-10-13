@@ -50,6 +50,7 @@ _RENDER_FAILURES = {
 _GUARD_FAILURES = {
     "PROTECTED_ENTITY_CHANGED": "entity_guard_rejected",
     "PROTECTED_ENTITY_COLLISION": "entity_guard_rejected",
+    "IMPLAUSIBLE_TARGET_ORDINAL": "implausible_target",
     "INVALID_MODEL_OUTPUT": "invalid_model_output",
     "OUTPUT_LENGTH": "engine_output_length",
     "CONTEXT_OVERFLOW": "context_budget_exceeded",

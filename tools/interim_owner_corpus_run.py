@@ -191,11 +191,53 @@ def _merge_memory_provenance(telemetry: dict, cached: dict, hits: set[str], cach
     )
 
 
+# RUN27: codes by which the guard of the cached run refused a block.
+_GUARD_REJECTION_CODES = frozenset(
+    {"PROTECTED_ENTITY_CHANGED", "PROTECTED_ENTITY_COLLISION", "IMPLAUSIBLE_TARGET_ORDINAL"}
+)
+
+
+def _issue_codes_by_block(issues: list[dict]) -> dict[str, set[str]]:
+    codes: dict[str, set[str]] = {}
+    for issue in issues:
+        if not isinstance(issue, dict) or not issue.get("code"):
+            continue
+        ids = [issue.get("block_id"), *(issue.get("block_ids") or [])]
+        for bid in ids:
+            if bid:
+                codes.setdefault(str(bid), set()).add(str(issue["code"]))
+    return codes
+
+
+def _hit_invalidation(block: dict, cached_target: str, cached_codes: set[str]) -> str | None:
+    """RUN27: why a translation-memory hit must NOT be reused, or None.
+
+    A hit used to carry its cached target AND its cached issues unchanged, so a
+    corrected guard was never applied to it: a digit invented by the model
+    stayed accepted, a correct translation wrongly refused stayed refused. The
+    hit is now re-checked with the current integrity guard of the service."""
+    from app.ai.translation import service
+
+    if cached_codes & _GUARD_REJECTION_CODES:
+        return "previous_guard_rejection"
+    source = str(block.get("text") or "")
+    target = str(cached_target or "")
+    if target and target != source:
+        _, issue = service._restore_and_validate(source, target, {}, str(block.get("id")))
+        if issue:
+            return "current_guard_rejects_cached_target"
+    return None
+
+
 def _caching_translate(work: Path, cache_dir: Path):
     """Translation memory: reuse the Interim target of a previous run for every
     block whose send signature is unchanged; send only the other blocks (real
     service, same 32K guard). Makes a re-run attributable to code changes
-    instead of model sampling variance (run18 audit)."""
+    instead of model sampling variance (run18 audit).
+
+    RUN27: a hit is reused only if the CURRENT guard accepts it (see
+    ``_hit_invalidation``); otherwise the block goes through the real service
+    again and the invalidation is recorded."""
     cached = _saved_service_result(cache_dir)
     if (cached.get("translation_telemetry") or {}).get("provider") != "interim":
         raise RuntimeError("TRANSLATION_CACHE_NOT_INTERIM")
@@ -206,20 +248,27 @@ def _caching_translate(work: Path, cache_dir: Path):
         for b in page.get("blocks", [])
     }
     cached_untranslated = set(map(str, cached.get("untranslated_blocks") or []))
+    cached_codes = _issue_codes_by_block(cached.get("issues") or [])
 
     async def wrapper(ir, options):
         import copy
 
         reduced = copy.deepcopy(ir)
         hits: set[str] = set()
+        invalidated: dict[str, str] = {}
         for page in reduced.get("pages", []):
             kept = []
             for block in page.get("blocks", []):
                 bid = str(block["id"])
                 if bid in cached["translations"] and signatures.get(bid) == _send_signature(block):
-                    hits.add(bid)
-                else:
-                    kept.append(block)
+                    reason = _hit_invalidation(
+                        block, cached["translations"][bid], cached_codes.get(bid, set())
+                    )
+                    if reason is None:
+                        hits.add(bid)
+                        continue
+                    invalidated[bid] = reason
+                kept.append(block)
             page["blocks"] = kept
         # A table fully served by the memory would otherwise become an empty
         # synthetic unit (false UNMAPPED_TABLE_CONTENT); genuinely unmapped
@@ -250,6 +299,7 @@ def _caching_translate(work: Path, cache_dir: Path):
             "cache_run": cache_dir.parent.parent.name,
             "blocks_reused": len(hits),
             "blocks_processed_now": sum(len(p.get("blocks", [])) for p in reduced.get("pages", [])),
+            "invalidated_by_current_guard": dict(sorted(invalidated.items())),
         }
         _merge_memory_provenance(telemetry, cached, hits, cache_dir.parent.parent.name)
         (work / "interim-service-result.json").write_text(json.dumps(merged, ensure_ascii=False))

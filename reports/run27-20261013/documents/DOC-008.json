@@ -1,0 +1,740 @@
+{
+ "document": "DOC-008",
+ "pages": 2,
+ "final_status": "REVIEW_REQUIRED",
+ "production_ready": false,
+ "human_reference": {
+  "state": "NOT_STARTED",
+  "rows": 74,
+  "reviewed_rows": 0
+ },
+ "score_doc_confidence_2": {
+  "ruler_run27": {
+   "baseline": {
+    "lower": 65.84950840262545,
+    "upper": 88.9976565507736,
+    "ceiling": 76.85185185185185
+   },
+   "run24": {
+    "lower": 67.32297537747758,
+    "upper": 90.47112352562574,
+    "ceiling": 76.85185185185183
+   },
+   "run25": {
+    "lower": 66.23647666206766,
+    "upper": 89.38462481021583,
+    "ceiling": 76.85185185185183
+   },
+   "run26": {
+    "lower": 66.49266368449896,
+    "upper": 89.64081183264712,
+    "ceiling": 76.85185185185185
+   },
+   "run27": {
+    "lower": 66.49266368449896,
+    "upper": 89.64081183264712,
+    "ceiling": 76.85185185185185
+   }
+  },
+  "ruler_run26": {
+   "baseline": {
+    "lower": 65.84950840262545,
+    "upper": 88.9976565507736,
+    "ceiling": 76.85185185185185
+   },
+   "run24": {
+    "lower": 67.32297537747758,
+    "upper": 90.47112352562574,
+    "ceiling": 76.85185185185183
+   },
+   "run25": {
+    "lower": 66.23647666206766,
+    "upper": 89.38462481021583,
+    "ceiling": 76.85185185185183
+   },
+   "run26": {
+    "lower": 66.49266368449896,
+    "upper": 89.64081183264712,
+    "ceiling": 76.85185185185185
+   },
+   "run27": {
+    "lower": 66.49266368449896,
+    "upper": 89.64081183264712,
+    "ceiling": 76.85185185185185
+   }
+  }
+ },
+ "score_doc_confidence_1": {
+  "ruler_run27": {
+   "baseline": {
+    "score": 68.8,
+    "score_min": 68.8,
+    "score_max": 84.6
+   },
+   "run24": {
+    "score": 70.4,
+    "score_min": 70.4,
+    "score_max": 86.2
+   },
+   "run25": {
+    "score": 69.4,
+    "score_min": 69.4,
+    "score_max": 85.3
+   },
+   "run26": {
+    "score": 75.2,
+    "score_min": 75.2,
+    "score_max": 91.1
+   },
+   "run27": {
+    "score": 75.2,
+    "score_min": 75.2,
+    "score_max": 91.1
+   }
+  },
+  "ruler_run26": {
+   "baseline": {
+    "score": 68.8,
+    "score_min": 68.8,
+    "score_max": 84.6
+   },
+   "run24": {
+    "score": 70.4,
+    "score_min": 70.4,
+    "score_max": 86.2
+   },
+   "run25": {
+    "score": 69.4,
+    "score_min": 69.4,
+    "score_max": 85.3
+   },
+   "run26": {
+    "score": 75.2,
+    "score_min": 75.2,
+    "score_max": 91.1
+   },
+   "run27": {
+    "score": 75.2,
+    "score_min": 75.2,
+    "score_max": 91.1
+   }
+  },
+  "published_run26": {
+   "baseline": {
+    "score": 68.8,
+    "score_min": 68.8,
+    "score_max": 84.6
+   },
+   "run24": {
+    "score": 70.4,
+    "score_min": 70.4,
+    "score_max": 86.2
+   },
+   "run25": {
+    "score": 69.4,
+    "score_min": 69.4,
+    "score_max": 85.3
+   },
+   "run26": {
+    "score": 75.2,
+    "score_min": 75.2,
+    "score_max": 91.1
+   }
+  }
+ },
+ "detail_v2_run26": {
+  "lower": 66.49266368449896,
+  "upper": 89.64081183264712,
+  "ceiling": 76.85185185185185,
+  "lower_rounded": 66.4,
+  "dimensions": {
+   "coverage": {
+    "applicable": true,
+    "weight": 20,
+    "effective_weight": 22.222222222222,
+    "min": 0.591,
+    "max": 0.591,
+    "unknown_human_share": 0.0,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "written_share": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.591,
+      "upper": 0.591
+     }
+    }
+   },
+   "entities": {
+    "applicable": true,
+    "weight": 15,
+    "effective_weight": 16.666666666667,
+    "min": 0.666666666667,
+    "max": 1.0,
+    "unknown_human_share": 0.333333333333,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "digit_sequences": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "entity_alerts": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "names_clauses_verified": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     }
+    }
+   },
+   "hallucination": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.666666666667,
+    "max": 1.0,
+    "unknown_human_share": 0.333333333333,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "no_length_anomaly": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "no_unreliable_source_translated": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "proven_by_reference": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     }
+    }
+   },
+   "layout": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.961538461538,
+    "max": 0.961538461538,
+    "unknown_human_share": 0.0,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "in_page": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "no_collision": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "no_critical_layout_alert": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.807692307692,
+      "upper": 0.807692307692
+     },
+     "no_text_over_ink": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "not_truncated": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     }
+    }
+   },
+   "ocr": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.475588742102,
+    "max": 0.975588742102,
+    "unknown_human_share": 0.5,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "character_accuracy": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     },
+     "engine_confidence": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.951177484204,
+      "upper": 0.951177484204
+     }
+    }
+   },
+   "source_fidelity": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.948545861298,
+    "max": 0.948545861298,
+    "unknown_human_share": 0.0,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "pages_preserved": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "regions_unaltered": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.897091722595,
+      "upper": 0.897091722595
+     }
+    }
+   },
+   "translation": {
+    "applicable": true,
+    "weight": 15,
+    "effective_weight": 16.666666666667,
+    "min": 0.5,
+    "max": 1.0,
+    "unknown_human_share": 0.5,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "semantic_accuracy": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     },
+     "target_language": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     }
+    }
+   }
+  },
+  "evidence": {
+   "block_provenance": true,
+   "budget_respected": true,
+   "candidate_produced": true,
+   "execution_journal": true,
+   "generation_mode": true,
+   "original_unchanged": true,
+   "request_reconciliation": true
+  },
+  "measurement_gaps": [],
+  "partial_components": [],
+  "layout_alert_occurrences": {
+   "missing_text": 3,
+   "overflow": 2,
+   "oversized_mask": 0,
+   "protected_region": 0,
+   "text_over_ink": 0,
+   "unmapped_table": 0
+  }
+ },
+ "detail_v2_run27": {
+  "lower": 66.49266368449896,
+  "upper": 89.64081183264712,
+  "ceiling": 76.85185185185185,
+  "lower_rounded": 66.4,
+  "dimensions": {
+   "coverage": {
+    "applicable": true,
+    "weight": 20,
+    "effective_weight": 22.222222222222,
+    "min": 0.591,
+    "max": 0.591,
+    "unknown_human_share": 0.0,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "written_share": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.591,
+      "upper": 0.591
+     }
+    }
+   },
+   "entities": {
+    "applicable": true,
+    "weight": 15,
+    "effective_weight": 16.666666666667,
+    "min": 0.666666666667,
+    "max": 1.0,
+    "unknown_human_share": 0.333333333333,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "digit_sequences": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "entity_alerts": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "names_clauses_verified": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     }
+    }
+   },
+   "hallucination": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.666666666667,
+    "max": 1.0,
+    "unknown_human_share": 0.333333333333,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "no_length_anomaly": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "no_unreliable_source_translated": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "proven_by_reference": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     }
+    }
+   },
+   "layout": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.961538461538,
+    "max": 0.961538461538,
+    "unknown_human_share": 0.0,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "in_page": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "no_collision": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "no_critical_layout_alert": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.807692307692,
+      "upper": 0.807692307692
+     },
+     "no_text_over_ink": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "not_truncated": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     }
+    }
+   },
+   "ocr": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.475588742102,
+    "max": 0.975588742102,
+    "unknown_human_share": 0.5,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "character_accuracy": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     },
+     "engine_confidence": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.951177484204,
+      "upper": 0.951177484204
+     }
+    }
+   },
+   "source_fidelity": {
+    "applicable": true,
+    "weight": 10,
+    "effective_weight": 11.111111111111,
+    "min": 0.948545861298,
+    "max": 0.948545861298,
+    "unknown_human_share": 0.0,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "pages_preserved": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     },
+     "regions_unaltered": {
+      "human": false,
+      "kind": "measured",
+      "lower": 0.897091722595,
+      "upper": 0.897091722595
+     }
+    }
+   },
+   "translation": {
+    "applicable": true,
+    "weight": 15,
+    "effective_weight": 16.666666666667,
+    "min": 0.5,
+    "max": 1.0,
+    "unknown_human_share": 0.5,
+    "unknown_measurement_share": 0.0,
+    "components": {
+     "semantic_accuracy": {
+      "human": true,
+      "kind": "unknown",
+      "lower": 0.0,
+      "reason": "HUMAN_REFERENCE_MISSING",
+      "upper": 1.0
+     },
+     "target_language": {
+      "human": false,
+      "kind": "measured",
+      "lower": 1.0,
+      "upper": 1.0
+     }
+    }
+   }
+  },
+  "evidence": {
+   "block_provenance": true,
+   "budget_respected": true,
+   "candidate_produced": true,
+   "execution_journal": true,
+   "generation_mode": true,
+   "original_unchanged": true,
+   "request_reconciliation": true
+  },
+  "measurement_gaps": [],
+  "partial_components": [],
+  "layout_alert_occurrences": {
+   "missing_text": 3,
+   "overflow": 2,
+   "oversized_mask": 0,
+   "protected_region": 0,
+   "text_over_ink": 0,
+   "unmapped_table": 0
+  }
+ },
+ "critical_defects_measured": {
+  "run26": [
+   {
+    "code": "LAYOUT_OVERFLOW",
+    "count": 2,
+    "source": "product"
+   },
+   {
+    "code": "RENDER_SOURCE_TEXT_MISSING",
+    "count": 1,
+    "source": "product"
+   },
+   {
+    "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+    "count": 1,
+    "source": "product"
+   },
+   {
+    "code": "RENDER_TRANSLATED_TEXT_MISSING",
+    "count": 1,
+    "source": "product"
+   }
+  ],
+  "run27": [
+   {
+    "code": "LAYOUT_OVERFLOW",
+    "count": 2,
+    "source": "product"
+   },
+   {
+    "code": "RENDER_SOURCE_TEXT_MISSING",
+    "count": 1,
+    "source": "product"
+   },
+   {
+    "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+    "count": 1,
+    "source": "product"
+   },
+   {
+    "code": "RENDER_TRANSLATED_TEXT_MISSING",
+    "count": 1,
+    "source": "product"
+   }
+  ]
+ },
+ "critical_defects_measured_total": {
+  "run26": 5,
+  "run27": 5
+ },
+ "verified_manual_defects": [],
+ "verified_manual_critical_total": {
+  "run26": 0,
+  "run27": 0
+ },
+ "coverage_ruler_run27": {
+  "run26": {
+   "expected_chars": 1741,
+   "written_chars": 1029,
+   "partial_chars": 0,
+   "absent_chars": 228,
+   "not_attempted_chars": 484,
+   "coverage_written": 0.591,
+   "coverage_attempted": 0.722,
+   "french_rewritten_blocks": 0,
+   "french_rewritten_chars": 0,
+   "changed_outside_expected_chars": 21,
+   "status_blocks": {
+    "TRANSLATED": 22,
+    "PRESERVED_INTENTIONALLY": 27,
+    "NOT_TRANSLATABLE": 5,
+    "UNCERTAIN": 2,
+    "FAILED": 18,
+    "NOT_PROCESSED": 0
+   }
+  },
+  "run27": {
+   "expected_chars": 1741,
+   "written_chars": 1029,
+   "partial_chars": 0,
+   "absent_chars": 228,
+   "not_attempted_chars": 484,
+   "coverage_written": 0.591,
+   "coverage_attempted": 0.722,
+   "french_rewritten_blocks": 0,
+   "french_rewritten_chars": 0,
+   "changed_outside_expected_chars": 21,
+   "status_blocks": {
+    "TRANSLATED": 22,
+    "PRESERVED_INTENTIONALLY": 27,
+    "NOT_TRANSLATABLE": 5,
+    "UNCERTAIN": 2,
+    "FAILED": 18,
+    "NOT_PROCESSED": 0
+   }
+  }
+ },
+ "coverage_ruler_run26": {
+  "run26": {
+   "expected_chars": 1741,
+   "written_chars": 1029,
+   "partial_chars": 0,
+   "absent_chars": 228,
+   "not_attempted_chars": 484,
+   "coverage_written": 0.591,
+   "coverage_attempted": 0.722,
+   "french_rewritten_blocks": 0,
+   "french_rewritten_chars": 0,
+   "changed_outside_expected_chars": 21,
+   "status_blocks": {
+    "TRANSLATED": 22,
+    "PRESERVED_INTENTIONALLY": 27,
+    "NOT_TRANSLATABLE": 5,
+    "UNCERTAIN": 2,
+    "FAILED": 18,
+    "NOT_PROCESSED": 0
+   }
+  },
+  "run27": {
+   "expected_chars": 1741,
+   "written_chars": 1029,
+   "partial_chars": 0,
+   "absent_chars": 228,
+   "not_attempted_chars": 484,
+   "coverage_written": 0.591,
+   "coverage_attempted": 0.722,
+   "french_rewritten_blocks": 0,
+   "french_rewritten_chars": 0,
+   "changed_outside_expected_chars": 21,
+   "status_blocks": {
+    "TRANSLATED": 22,
+    "PRESERVED_INTENTIONALLY": 27,
+    "NOT_TRANSLATABLE": 5,
+    "UNCERTAIN": 2,
+    "FAILED": 18,
+    "NOT_PROCESSED": 0
+   }
+  }
+ },
+ "provenance_run27": {
+  "generation_mode": "TRANSLATION_MEMORY_REUSE_ONLY",
+  "model_invoked": false,
+  "requests_sent_run27b": 0,
+  "max_reserved_total_tokens": null,
+  "context_limit_tokens": 32768,
+  "budget_violations": 0,
+  "block_origins": {
+   "TRANSLATION_MEMORY": 74
+  },
+  "memory_blocks_by_original_origin": {
+   "TRANSLATION_MEMORY": 74
+  },
+  "memory_blocks_reused": 74,
+  "memory_hits_invalidated_by_current_guard": 0
+ },
+ "pdf_vs_run26": {
+  "pages_with_pixel_change": [
+   2
+  ],
+  "pages_with_visible_change": [],
+  "identical": false,
+  "visual_check": "planches original | run26 | run27 contrôlées (privé)"
+ }
+}

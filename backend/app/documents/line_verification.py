@@ -52,10 +52,10 @@ from pathlib import Path
 from typing import Any
 
 from app.documents.ocr_recovery import VERSION as ocr_recovery_version
-from app.documents.ocr_recovery import needs_review, recover_block
+from app.documents.ocr_recovery import lexically_implausible, needs_review, recover_block
 from app.documents.segmentation import is_unreliable_ocr, join_line_texts
 
-VERSION = "line-verification-10"
+VERSION = "line-verification-11"
 SCALE = 4.0
 HIGHLIGHT_MIN_COVERAGE = 0.10
 HIGHLIGHT_MIN_X_COVERAGE = 0.25
@@ -1011,6 +1011,7 @@ def verify_lines(
         "blocks_identifier_only": 0,
         "blocks_minority_script_low_confidence": 0,
         "blocks_low_confidence_not_recovered": 0,
+        "blocks_lexically_implausible": 0,
         "ocr_recovery": ocr_recovery_version,
         "blocks_ocr_unreliable_rechecked": 0,
         "blocks_split_at_rules": 0,
@@ -1177,6 +1178,16 @@ def verify_lines(
                 block["ocr_unreliable"] = True
                 block["ocr_unreliable_reason"] = "low_confidence_not_recovered"
                 stats["blocks_low_confidence_not_recovered"] += 1
+            elif (
+                str(block.get("provenance") or "").startswith("ocr")
+                and not block.get("ocr_unreliable")
+                and lexically_implausible(block, doc_languages)
+            ):
+                # F29 (run27): a confident but deformed reading is not
+                # translated (it would be a guess on a misreading): review.
+                block["ocr_unreliable"] = True
+                block["ocr_unreliable_reason"] = "lexically_implausible_ocr"
+                stats["blocks_lexically_implausible"] += 1
     if split_maps:
         for key in ("tables", "warnings"):
             _expand_refs(ir.get(key), split_maps)

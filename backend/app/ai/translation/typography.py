@@ -7,6 +7,12 @@ changes (no-break space before ":", space inserted before ";"). A strict
 issue was raised and the renderer re-wrote the same foreign text over the
 original. This key ignores Unicode compatibility forms, space variants,
 spacing around punctuation, quote/dash variants and case, and nothing else.
+
+F33 (run27): a doubled punctuation mark read by the OCR ("Fixe//Fax") that the
+model "corrects" ("Fixe/Fax") is typography too: runs of the SAME punctuation
+mark collapse to one in the key. Words and digits are still never touched, and
+an equivalent answer is replaced by the exact source, so nothing is lost; the
+original line is no longer re-typeset over itself.
 """
 
 from __future__ import annotations
@@ -16,6 +22,7 @@ import unicodedata
 
 _SPACES = re.compile(r"[\s\u00a0\u202f\u2007\u2009\u200a\u200b\u2060\ufeff]+")
 _AROUND_PUNCT = re.compile(r"\s*([:;!?,.()\[\]\"'/\-])\s*")
+_REPEATED_PUNCT = re.compile(r"([:;!?,.()\[\]\"'/\-])\1+")
 _VARIANTS = str.maketrans(
     {
         "\u2019": "'",
@@ -34,6 +41,7 @@ def typography_key(text: str | None) -> str:
     value = unicodedata.normalize("NFKC", text or "").translate(_VARIANTS)
     value = _SPACES.sub(" ", value)
     value = _AROUND_PUNCT.sub(r"\1", value)
+    value = _REPEATED_PUNCT.sub(r"\1", value)
     return value.strip().casefold()
 
 

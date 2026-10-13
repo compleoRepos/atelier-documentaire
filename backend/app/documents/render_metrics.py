@@ -1019,6 +1019,40 @@ def _raster_similarity(
     )
 
 
+def _mask_coverage_issues(
+    masks: list[dict[str, Any]], pages: list[dict[str, Any]], limit: float = 0.35
+) -> list[dict[str, Any]]:
+    """Pages whose text masks cover more than ``limit`` of the page.
+
+    F32 (run27): the coverage is the area of the UNION of the masks. Line masks
+    and block masks overlap; their areas used to be summed, counting the same
+    pixels up to twice (dense scanned letters reported 37-74 % for at most 28 %
+    actually masked). The limit is unchanged."""
+    from .geometry import union_area
+
+    boxes_by_page: dict[int, list[list[float]]] = {}
+    for mask in masks:
+        box = _rect(mask.get("bbox"))
+        if box:
+            boxes_by_page.setdefault(int(mask.get("page", 1)), []).append(box)
+    issues = []
+    for page_number, boxes in boxes_by_page.items():
+        mask_area = union_area(boxes)
+        page = next((item for item in pages if item["number"] == page_number), None)
+        page_area = float(page["width"]) * float(page["height"]) if page else 0.0
+        if page_area and mask_area / page_area > limit:
+            issues.append(
+                {
+                    "code": "RENDER_TEXT_MASK_TOO_LARGE",
+                    "severity": "critical",
+                    "page": page_number,
+                    "coverage": mask_area / page_area,
+                    "limit": limit,
+                }
+            )
+    return issues
+
+
 def measure_render_fidelity(
     source: Any,
     candidate: Any,
@@ -1113,27 +1147,7 @@ def measure_render_fidelity(
         masks.extend(item for item in text_masks if isinstance(item, dict))
     unique_masks = {(int(mask.get("page", 1)), tuple(mask.get("bbox", []))): mask for mask in masks}
     masks = list(unique_masks.values())
-    mask_issues = []
-    mask_area_by_page: dict[int, float] = {}
-    for mask in masks:
-        box = _rect(mask.get("bbox"))
-        if box:
-            mask_area_by_page[int(mask.get("page", 1))] = mask_area_by_page.get(
-                int(mask.get("page", 1)), 0.0
-            ) + _area(box)
-    for page_number, mask_area in mask_area_by_page.items():
-        page = next((item for item in original["pages"] if item["number"] == page_number), None)
-        page_area = float(page["width"]) * float(page["height"]) if page else 0.0
-        if page_area and mask_area / page_area > 0.35:
-            mask_issues.append(
-                {
-                    "code": "RENDER_TEXT_MASK_TOO_LARGE",
-                    "severity": "critical",
-                    "page": page_number,
-                    "coverage": mask_area / page_area,
-                    "limit": 0.35,
-                }
-            )
+    mask_issues = _mask_coverage_issues(masks, original["pages"])
     issues.extend(mask_issues)
     page_width = float(original["pages"][0]["width"]) if original["pages"] else 1.0
     page_height = float(original["pages"][0]["height"]) if original["pages"] else 1.0

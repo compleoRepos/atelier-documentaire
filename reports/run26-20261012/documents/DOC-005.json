@@ -1,0 +1,612 @@
+{
+  "schema": "run26-document-report-1",
+  "document_id": "DOC-005",
+  "pages": 2,
+  "scanned_pages": 2,
+  "blocks": 89,
+  "verdict_run": "run26",
+  "code_fingerprint": "449b3ab80ed0b263",
+  "status": "REVIEW_REQUIRED",
+  "status_justification": [
+    "CRITICAL_DEFECTS_PRESENT",
+    "SCORE_LOWER_BOUND_BELOW_THRESHOLD",
+    "HUMAN_VALIDATION_NOT_PERFORMED",
+    "SEMANTIC_ACCURACY_UNKNOWN_NO_HUMAN_REFERENCE",
+    "HALLUCINATION_NOT_PROVEN_BY_REFERENCE",
+    "OCR_CHARACTER_ACCURACY_UNKNOWN_NO_HUMAN_TRANSCRIPTION"
+  ],
+  "human_validation": "NOT_PERFORMED",
+  "score": {
+    "baseline": {
+      "score_official_lower_bound": 58.2,
+      "score_upper_bound": 74.0,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run24": {
+      "score_official_lower_bound": 61.6,
+      "score_upper_bound": 77.4,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "ENTITY_DIGITS_MISMATCH",
+          "count": 1,
+          "source": "scorecard"
+        }
+      ],
+      "blocking": []
+    },
+    "run25": {
+      "score_official_lower_bound": 61.6,
+      "score_upper_bound": 77.4,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "ENTITY_DIGITS_MISMATCH",
+          "count": 1,
+          "source": "scorecard"
+        }
+      ],
+      "blocking": []
+    },
+    "run26a": {
+      "score_official_lower_bound": 67.3,
+      "score_upper_bound": 83.1,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "ENTITY_DIGITS_MISMATCH",
+          "count": 1,
+          "source": "scorecard"
+        }
+      ],
+      "blocking": []
+    },
+    "run26": {
+      "score_official_lower_bound": 67.3,
+      "score_upper_bound": 83.1,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "ENTITY_DIGITS_MISMATCH",
+          "count": 1,
+          "source": "scorecard"
+        }
+      ],
+      "blocking": []
+    }
+  },
+  "dimensions": {
+    "run25": {
+      "coverage": {
+        "label": "Couverture textuelle écrite",
+        "weight": 20,
+        "min": 0.4536,
+        "max": 0.4536,
+        "applicable": true,
+        "components": {
+          "written_share": 0.4536
+        }
+      },
+      "entities": {
+        "label": "Préservation des entités et données sensibles",
+        "weight": 15,
+        "min": 0.666667,
+        "max": 0.666667,
+        "applicable": true,
+        "components": {
+          "digit_sequences": 0.6666666666666666
+        }
+      },
+      "evidence": {
+        "label": "Complétude et fiabilité des preuves",
+        "weight": 10,
+        "min": 0.428571,
+        "max": 0.428571,
+        "applicable": true,
+        "components": {
+          "block_provenance": 0.0,
+          "budget_respected": 1.0,
+          "candidate_produced": 1.0,
+          "execution_journal": 0.0,
+          "generation_mode": 0.0,
+          "original_unchanged": 1.0,
+          "request_reconciliation": 0.0
+        }
+      },
+      "hallucination": {
+        "label": "Absence d'hallucination",
+        "weight": 10,
+        "min": 0.666667,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "no_length_anomaly": 1.0,
+          "no_unreliable_source_translated": 1.0,
+          "proven_by_reference": null
+        }
+      },
+      "layout": {
+        "label": "Qualité visuelle et mise en page",
+        "weight": 10,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "in_page": 1.0,
+          "no_collision": 1.0,
+          "no_text_over_ink": 1.0,
+          "not_truncated": 1.0
+        }
+      },
+      "ocr": {
+        "label": "Qualité OCR",
+        "weight": 10,
+        "min": 0.412568,
+        "max": 0.912568,
+        "applicable": true,
+        "components": {
+          "character_accuracy": null,
+          "engine_confidence": 0.825136612021858
+        }
+      },
+      "source_fidelity": {
+        "label": "Fidélité au document source",
+        "weight": 10,
+        "min": 0.994331,
+        "max": 0.994331,
+        "applicable": true,
+        "components": {
+          "pages_preserved": 1.0,
+          "regions_unaltered": 0.9886621315192744
+        }
+      },
+      "translation": {
+        "label": "Confiance de traduction",
+        "weight": 15,
+        "min": 0.5,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "semantic_accuracy": null,
+          "target_language": 1.0
+        }
+      }
+    },
+    "run26": {
+      "coverage": {
+        "label": "Couverture textuelle écrite",
+        "weight": 20,
+        "min": 0.4536,
+        "max": 0.4536,
+        "applicable": true,
+        "components": {
+          "written_share": 0.4536
+        }
+      },
+      "entities": {
+        "label": "Préservation des entités et données sensibles",
+        "weight": 15,
+        "min": 0.666667,
+        "max": 0.666667,
+        "applicable": true,
+        "components": {
+          "digit_sequences": 0.6666666666666666
+        }
+      },
+      "evidence": {
+        "label": "Complétude et fiabilité des preuves",
+        "weight": 10,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "block_provenance": 1.0,
+          "budget_respected": 1.0,
+          "candidate_produced": 1.0,
+          "execution_journal": 1.0,
+          "generation_mode": 1.0,
+          "original_unchanged": 1.0,
+          "request_reconciliation": 1.0
+        }
+      },
+      "hallucination": {
+        "label": "Absence d'hallucination",
+        "weight": 10,
+        "min": 0.666667,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "no_length_anomaly": 1.0,
+          "no_unreliable_source_translated": 1.0,
+          "proven_by_reference": null
+        }
+      },
+      "layout": {
+        "label": "Qualité visuelle et mise en page",
+        "weight": 10,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "in_page": 1.0,
+          "no_collision": 1.0,
+          "no_text_over_ink": 1.0,
+          "not_truncated": 1.0
+        }
+      },
+      "ocr": {
+        "label": "Qualité OCR",
+        "weight": 10,
+        "min": 0.412568,
+        "max": 0.912568,
+        "applicable": true,
+        "components": {
+          "character_accuracy": null,
+          "engine_confidence": 0.825136612021858
+        }
+      },
+      "source_fidelity": {
+        "label": "Fidélité au document source",
+        "weight": 10,
+        "min": 0.994331,
+        "max": 0.994331,
+        "applicable": true,
+        "components": {
+          "pages_preserved": 1.0,
+          "regions_unaltered": 0.9886621315192744
+        }
+      },
+      "translation": {
+        "label": "Confiance de traduction",
+        "weight": 15,
+        "min": 0.5,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "semantic_accuracy": null,
+          "target_language": 1.0
+        }
+      }
+    }
+  },
+  "coverage": {
+    "baseline": {
+      "expected_chars": 270,
+      "attempted_chars": 188,
+      "written_chars": 12,
+      "partial_chars": 0,
+      "absent_chars": 176,
+      "not_attempted_chars": 82,
+      "coverage_attempted": 0.6963,
+      "coverage_written": 0.0444
+    },
+    "run17": {
+      "expected_chars": 232,
+      "attempted_chars": 36,
+      "written_chars": 36,
+      "partial_chars": 0,
+      "absent_chars": 0,
+      "not_attempted_chars": 196,
+      "coverage_attempted": 0.1552,
+      "coverage_written": 0.1552
+    },
+    "run24": {
+      "expected_chars": 366,
+      "attempted_chars": 254,
+      "written_chars": 166,
+      "partial_chars": 0,
+      "absent_chars": 88,
+      "not_attempted_chars": 112,
+      "coverage_attempted": 0.694,
+      "coverage_written": 0.4536
+    },
+    "run25": {
+      "expected_chars": 366,
+      "attempted_chars": 254,
+      "written_chars": 166,
+      "partial_chars": 0,
+      "absent_chars": 88,
+      "not_attempted_chars": 112,
+      "coverage_attempted": 0.694,
+      "coverage_written": 0.4536
+    },
+    "run26a": {
+      "expected_chars": 366,
+      "attempted_chars": 254,
+      "written_chars": 166,
+      "partial_chars": 0,
+      "absent_chars": 88,
+      "not_attempted_chars": 112,
+      "coverage_attempted": 0.694,
+      "coverage_written": 0.4536
+    },
+    "run26": {
+      "expected_chars": 366,
+      "attempted_chars": 254,
+      "written_chars": 166,
+      "partial_chars": 0,
+      "absent_chars": 88,
+      "not_attempted_chars": 112,
+      "coverage_attempted": 0.694,
+      "coverage_written": 0.4536
+    }
+  },
+  "block_status": {
+    "run25": {
+      "TRANSLATED": 3,
+      "PRESERVED_INTENTIONALLY": 50,
+      "NOT_TRANSLATABLE": 25,
+      "UNCERTAIN": 4,
+      "FAILED": 7,
+      "NOT_PROCESSED": 0
+    },
+    "run26": {
+      "TRANSLATED": 3,
+      "PRESERVED_INTENTIONALLY": 50,
+      "NOT_TRANSLATABLE": 25,
+      "UNCERTAIN": 5,
+      "FAILED": 6,
+      "NOT_PROCESSED": 0
+    },
+    "run26_chars": {
+      "TRANSLATED": 166,
+      "PRESERVED_INTENTIONALLY": 1783,
+      "NOT_TRANSLATABLE": 28,
+      "UNCERTAIN": 21,
+      "FAILED": 179,
+      "NOT_PROCESSED": 0
+    },
+    "run26_reasons": {
+      "FAILED:model_returned_source": 5,
+      "FAILED:render_residual_source_ink": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 25,
+      "PRESERVED_INTENTIONALLY:already_french": 47,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 1,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 2,
+      "TRANSLATED:translated_and_placed": 3,
+      "UNCERTAIN:form_structure_ambiguous": 2,
+      "UNCERTAIN:ocr_unreliable": 3
+    },
+    "transitions_run25_to_run26": {
+      "blocks_compared": 89,
+      "unchanged": 88,
+      "changes": {
+        "FAILED->UNCERTAIN": 1
+      }
+    }
+  },
+  "losses_run26_chars": {
+    "not_attempted_by_reason": {
+      "FAILED:model_returned_source": 91,
+      "UNCERTAIN:form_structure_ambiguous": 14,
+      "UNCERTAIN:ocr_unreliable": 7
+    },
+    "partial_or_absent_by_reason": {
+      "ABSENT:FAILED:render_residual_source_ink": 88
+    },
+    "out_of_scope_by_reason": {
+      "already_french": 1657,
+      "identical_in_french": 21,
+      "identifier_or_number": 105,
+      "no_linguistic_content": 28
+    }
+  },
+  "entity_checks": {
+    "translated_blocks_with_digits": 3,
+    "digit_sequences_identical_share": 0.6666666666666666,
+    "names_clauses_verified": "UNKNOWN_NO_HUMAN_REFERENCE",
+    "critical_entity_defects_run25": {
+      "ENTITY_DIGITS_MISMATCH": 1
+    },
+    "critical_entity_defects_run26": {
+      "ENTITY_DIGITS_MISMATCH": 1
+    }
+  },
+  "layout": {
+    "run25": {
+      "blocks_written": 3,
+      "words_colliding": 0,
+      "words_out_of_page": 0,
+      "inserted_words": 34,
+      "blocks_absent": 1
+    },
+    "run26": {
+      "blocks_written": 3,
+      "words_colliding": 0,
+      "words_out_of_page": 0,
+      "inserted_words": 34,
+      "blocks_absent": 1
+    }
+  },
+  "layout_critical_defects_run26": {
+    "RENDER_SOURCE_TEXT_MISSING": 1,
+    "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+    "RENDER_TRANSLATED_TEXT_MISSING": 1,
+    "SCAN_TEXT_OVER_SOURCE_INK": 1
+  },
+  "ocr": {
+    "scanned_pages": 2,
+    "engine_confidence_share_run25": 0.825136612021858,
+    "engine_confidence_share_run26": 0.825136612021858,
+    "character_accuracy": "UNKNOWN_NO_HUMAN_TRANSCRIPTION"
+  },
+  "critical_codes_occurrences": {
+    "run25": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+    },
+    "run26": {
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 1
+    }
+  },
+  "ocr_recovery_f25": {
+    "blocks_low_confidence_not_recovered": 6,
+    "ocr_recovery_blocks_tried": 7,
+    "ocr_recovery_lines_tried": 7,
+    "ocr_recovery_refused_empty_reading": 1,
+    "ocr_recovery_refused_no_alphanumeric": 2,
+    "ocr_recovery_refused_not_more_reliable": 4
+  },
+  "render_verification_f26": {
+    "method": "render-verification-2",
+    "min_recall": 0.9,
+    "placements": 3,
+    "verified": 3,
+    "not_verified": 0,
+    "not_measurable": 0,
+    "blocks_not_verified": 0
+  },
+  "evidence": {
+    "original_sha256_unchanged": true,
+    "generation_mode": "TRANSLATION_MEMORY_REUSE_ONLY",
+    "model_invoked": false,
+    "requests_sent": 0,
+    "request_traces": 0,
+    "block_provenance_summary": {
+      "TRANSLATION_MEMORY": 89
+    },
+    "budget": {
+      "chunks": 0,
+      "max_reserved_total_tokens": null,
+      "max_usage_total_tokens": null,
+      "max_completion_tokens": null,
+      "violations": 0
+    },
+    "served_model": null,
+    "translation_memory_from": "run26 intermédiaire (mêmes entrées)"
+  },
+  "private_visual_evidence_panels": [
+    "Original",
+    "baseline",
+    "run17",
+    "run24",
+    "run25",
+    "run26a",
+    "run26",
+    "Diff run26/original",
+    "Diff run26/run26a"
+  ],
+  "private_visual_evidence": [
+    "preuves-privees/planches/DOC-005/page-001.png",
+    "preuves-privees/planches/DOC-005/page-002.png",
+    "preuves-privees/planches/DOC-005/visual-regions-audit.png"
+  ]
+}

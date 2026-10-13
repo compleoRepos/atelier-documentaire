@@ -1873,6 +1873,9 @@ def render_pdf(
     changed_blocks = 0
     overflow_count = 0
     text_masks: list[dict[str, Any]] = []
+    # F26: what was really inserted (frame used by the engine), for the
+    # post-render verification of the candidate PDF.
+    placements: list[dict[str, Any]] = []
     table_trace: list[dict[str, Any]] = []
     if ir.get("format") == "pdf":
         from .protected_visuals import detect_pdf_visuals
@@ -2537,6 +2540,15 @@ def render_pdf(
                     queue.insert(0, key)
                 continue
             for item in items:
+                placements.append(
+                    {
+                        "page": item["page"],
+                        "inner": list(item["inner"]),
+                        "block_ids": [str(b) for b in item.get("block_ids") or []],
+                        "text": item["text"],
+                        "cell_id": item.get("cell_id"),
+                    }
+                )
                 original_fonts = [
                     b.get("font_size")
                     for b in ir_pages.get(item["page"], [])
@@ -2600,6 +2612,7 @@ def render_pdf(
         "changed_blocks": changed_blocks,
         "overflow_count": overflow_count,
         "text_masks": text_masks,
+        "placements": placements,
         "table_render_trace": table_trace,
         "table_structure": structure,
         "structure_metrics": structure_metrics,

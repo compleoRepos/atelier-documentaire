@@ -1,0 +1,755 @@
+{
+  "schema": "run26-document-report-1",
+  "document_id": "DOC-007",
+  "pages": 5,
+  "scanned_pages": 5,
+  "blocks": 178,
+  "verdict_run": "run26",
+  "code_fingerprint": "449b3ab80ed0b263",
+  "status": "REVIEW_REQUIRED",
+  "status_justification": [
+    "CRITICAL_DEFECTS_PRESENT",
+    "SCORE_LOWER_BOUND_BELOW_THRESHOLD",
+    "HUMAN_VALIDATION_NOT_PERFORMED",
+    "SEMANTIC_ACCURACY_UNKNOWN_NO_HUMAN_REFERENCE",
+    "HALLUCINATION_NOT_PROVEN_BY_REFERENCE",
+    "OCR_CHARACTER_ACCURACY_UNKNOWN_NO_HUMAN_TRANSCRIPTION"
+  ],
+  "human_validation": "NOT_PERFORMED",
+  "score": {
+    "baseline": {
+      "score_official_lower_bound": 72.4,
+      "score_upper_bound": 88.3,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 2,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_ENTITY_CHANGED",
+          "count": 2,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 3,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "UNMAPPED_TABLE_CONTENT",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 3,
+          "source": "product"
+        },
+        {
+          "code": "ENTITY_DIGITS_MISMATCH",
+          "count": 1,
+          "source": "scorecard"
+        }
+      ],
+      "blocking": []
+    },
+    "run24": {
+      "score_official_lower_bound": 72.2,
+      "score_upper_bound": 88.0,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 9,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_ENTITY_CHANGED",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 8,
+          "source": "product"
+        },
+        {
+          "code": "UNMAPPED_TABLE_CONTENT",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run25": {
+      "score_official_lower_bound": 72.5,
+      "score_upper_bound": 88.3,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 8,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_ENTITY_CHANGED",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 3,
+          "source": "product"
+        },
+        {
+          "code": "UNMAPPED_TABLE_CONTENT",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run26a": {
+      "score_official_lower_bound": 78.1,
+      "score_upper_bound": 93.9,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 7,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_ENTITY_CHANGED",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 4,
+          "source": "product"
+        },
+        {
+          "code": "UNMAPPED_TABLE_CONTENT",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run26": {
+      "score_official_lower_bound": 78.1,
+      "score_upper_bound": 93.9,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 7,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_ENTITY_CHANGED",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 4,
+          "source": "product"
+        },
+        {
+          "code": "UNMAPPED_TABLE_CONTENT",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 2,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    }
+  },
+  "dimensions": {
+    "run25": {
+      "coverage": {
+        "label": "Couverture textuelle écrite",
+        "weight": 20,
+        "min": 0.7779,
+        "max": 0.7779,
+        "applicable": true,
+        "components": {
+          "written_share": 0.7779
+        }
+      },
+      "entities": {
+        "label": "Préservation des entités et données sensibles",
+        "weight": 15,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "digit_sequences": 1.0
+        }
+      },
+      "evidence": {
+        "label": "Complétude et fiabilité des preuves",
+        "weight": 10,
+        "min": 0.428571,
+        "max": 0.428571,
+        "applicable": true,
+        "components": {
+          "block_provenance": 0.0,
+          "budget_respected": 1.0,
+          "candidate_produced": 1.0,
+          "execution_journal": 0.0,
+          "generation_mode": 0.0,
+          "original_unchanged": 1.0,
+          "request_reconciliation": 0.0
+        }
+      },
+      "hallucination": {
+        "label": "Absence d'hallucination",
+        "weight": 10,
+        "min": 0.660082,
+        "max": 0.993416,
+        "applicable": true,
+        "components": {
+          "no_length_anomaly": 1.0,
+          "no_unreliable_source_translated": 0.9802466029189734,
+          "proven_by_reference": null
+        }
+      },
+      "layout": {
+        "label": "Qualité visuelle et mise en page",
+        "weight": 10,
+        "min": 0.995238,
+        "max": 0.995238,
+        "applicable": true,
+        "components": {
+          "in_page": 1.0,
+          "no_collision": 1.0,
+          "no_text_over_ink": 1.0,
+          "not_truncated": 0.9809523809523809
+        }
+      },
+      "ocr": {
+        "label": "Qualité OCR",
+        "weight": 10,
+        "min": 0.379262,
+        "max": 0.879262,
+        "applicable": true,
+        "components": {
+          "character_accuracy": null,
+          "engine_confidence": 0.7585246266993537
+        }
+      },
+      "source_fidelity": {
+        "label": "Fidélité au document source",
+        "weight": 10,
+        "min": 0.998175,
+        "max": 0.998175,
+        "applicable": true,
+        "components": {
+          "pages_preserved": 1.0,
+          "regions_unaltered": 0.9963503649635036
+        }
+      },
+      "translation": {
+        "label": "Confiance de traduction",
+        "weight": 15,
+        "min": 0.488974,
+        "max": 0.988974,
+        "applicable": true,
+        "components": {
+          "semantic_accuracy": null,
+          "target_language": 0.9779477374123645
+        }
+      }
+    },
+    "run26": {
+      "coverage": {
+        "label": "Couverture textuelle écrite",
+        "weight": 20,
+        "min": 0.766,
+        "max": 0.766,
+        "applicable": true,
+        "components": {
+          "written_share": 0.766
+        }
+      },
+      "entities": {
+        "label": "Préservation des entités et données sensibles",
+        "weight": 15,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "digit_sequences": 1.0
+        }
+      },
+      "evidence": {
+        "label": "Complétude et fiabilité des preuves",
+        "weight": 10,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "block_provenance": 1.0,
+          "budget_respected": 1.0,
+          "candidate_produced": 1.0,
+          "execution_journal": 1.0,
+          "generation_mode": 1.0,
+          "original_unchanged": 1.0,
+          "request_reconciliation": 1.0
+        }
+      },
+      "hallucination": {
+        "label": "Absence d'hallucination",
+        "weight": 10,
+        "min": 0.665687,
+        "max": 0.99902,
+        "applicable": true,
+        "components": {
+          "no_length_anomaly": 1.0,
+          "no_unreliable_source_translated": 0.9970599514252844,
+          "proven_by_reference": null
+        }
+      },
+      "layout": {
+        "label": "Qualité visuelle et mise en page",
+        "weight": 10,
+        "min": 0.994898,
+        "max": 0.994898,
+        "applicable": true,
+        "components": {
+          "in_page": 1.0,
+          "no_collision": 1.0,
+          "no_text_over_ink": 1.0,
+          "not_truncated": 0.9795918367346939
+        }
+      },
+      "ocr": {
+        "label": "Qualité OCR",
+        "weight": 10,
+        "min": 0.379764,
+        "max": 0.879764,
+        "applicable": true,
+        "components": {
+          "character_accuracy": null,
+          "engine_confidence": 0.7595275239581012
+        }
+      },
+      "source_fidelity": {
+        "label": "Fidélité au document source",
+        "weight": 10,
+        "min": 0.999088,
+        "max": 0.999088,
+        "applicable": true,
+        "components": {
+          "pages_preserved": 1.0,
+          "regions_unaltered": 0.9981751824817519
+        }
+      },
+      "translation": {
+        "label": "Confiance de traduction",
+        "weight": 15,
+        "min": 0.49018,
+        "max": 0.99018,
+        "applicable": true,
+        "components": {
+          "semantic_accuracy": null,
+          "target_language": 0.9803592195374079
+        }
+      }
+    }
+  },
+  "coverage": {
+    "baseline": {
+      "expected_chars": 9206,
+      "attempted_chars": 8309,
+      "written_chars": 7333,
+      "partial_chars": 157,
+      "absent_chars": 819,
+      "not_attempted_chars": 897,
+      "coverage_attempted": 0.9026,
+      "coverage_written": 0.7965
+    },
+    "run17": {
+      "expected_chars": 8900,
+      "attempted_chars": 8062,
+      "written_chars": 6316,
+      "partial_chars": 103,
+      "absent_chars": 1643,
+      "not_attempted_chars": 838,
+      "coverage_attempted": 0.9058,
+      "coverage_written": 0.7097
+    },
+    "run24": {
+      "expected_chars": 8974,
+      "attempted_chars": 8044,
+      "written_chars": 6844,
+      "partial_chars": 82,
+      "absent_chars": 1118,
+      "not_attempted_chars": 930,
+      "coverage_attempted": 0.8964,
+      "coverage_written": 0.7626
+    },
+    "run25": {
+      "expected_chars": 8974,
+      "attempted_chars": 7930,
+      "written_chars": 6981,
+      "partial_chars": 82,
+      "absent_chars": 867,
+      "not_attempted_chars": 1044,
+      "coverage_attempted": 0.8837,
+      "coverage_written": 0.7779
+    },
+    "run26a": {
+      "expected_chars": 8974,
+      "attempted_chars": 7823,
+      "written_chars": 6874,
+      "partial_chars": 82,
+      "absent_chars": 867,
+      "not_attempted_chars": 1151,
+      "coverage_attempted": 0.8717,
+      "coverage_written": 0.766
+    },
+    "run26": {
+      "expected_chars": 8974,
+      "attempted_chars": 7823,
+      "written_chars": 6874,
+      "partial_chars": 82,
+      "absent_chars": 867,
+      "not_attempted_chars": 1151,
+      "coverage_attempted": 0.8717,
+      "coverage_written": 0.766
+    }
+  },
+  "block_status": {
+    "run25": {
+      "TRANSLATED": 93,
+      "PRESERVED_INTENTIONALLY": 10,
+      "NOT_TRANSLATABLE": 22,
+      "UNCERTAIN": 12,
+      "FAILED": 41,
+      "NOT_PROCESSED": 0
+    },
+    "run26": {
+      "TRANSLATED": 87,
+      "PRESERVED_INTENTIONALLY": 8,
+      "NOT_TRANSLATABLE": 22,
+      "UNCERTAIN": 29,
+      "FAILED": 32,
+      "NOT_PROCESSED": 0
+    },
+    "run26_chars": {
+      "TRANSLATED": 6956,
+      "PRESERVED_INTENTIONALLY": 66,
+      "NOT_TRANSLATABLE": 115,
+      "UNCERTAIN": 714,
+      "FAILED": 1331,
+      "NOT_PROCESSED": 0
+    },
+    "run26_reasons": {
+      "FAILED:entity_guard_rejected": 1,
+      "FAILED:model_returned_source": 20,
+      "FAILED:render_overflow": 7,
+      "FAILED:render_residual_source_ink": 4,
+      "NOT_TRANSLATABLE:no_linguistic_content": 22,
+      "PRESERVED_INTENTIONALLY:already_french": 1,
+      "PRESERVED_INTENTIONALLY:identical_in_french": 3,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 3,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 1,
+      "TRANSLATED:translated_and_placed": 87,
+      "UNCERTAIN:form_structure_ambiguous": 3,
+      "UNCERTAIN:ocr_script_inconsistent": 1,
+      "UNCERTAIN:ocr_unreliable": 25
+    },
+    "transitions_run25_to_run26": {
+      "blocks_compared": 178,
+      "unchanged": 160,
+      "changes": {
+        "FAILED->UNCERTAIN": 10,
+        "PRESERVED_INTENTIONALLY->UNCERTAIN": 2,
+        "TRANSLATED->FAILED": 1,
+        "TRANSLATED->UNCERTAIN": 5
+      }
+    }
+  },
+  "losses_run26_chars": {
+    "not_attempted_by_reason": {
+      "FAILED:entity_guard_rejected": 159,
+      "FAILED:model_returned_source": 305,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "UNCERTAIN:form_structure_ambiguous": 188,
+      "UNCERTAIN:ocr_script_inconsistent": 4,
+      "UNCERTAIN:ocr_unreliable": 491
+    },
+    "partial_or_absent_by_reason": {
+      "ABSENT:FAILED:render_overflow": 338,
+      "ABSENT:FAILED:render_residual_source_ink": 529,
+      "PARTIAL:TRANSLATED:translated_and_placed": 82
+    },
+    "out_of_scope_by_reason": {
+      "already_french": 16,
+      "identical_in_french": 16,
+      "no_linguistic_content": 115,
+      "proper_name_or_reference": 61
+    }
+  },
+  "entity_checks": {
+    "translated_blocks_with_digits": 21,
+    "digit_sequences_identical_share": 1.0,
+    "names_clauses_verified": "UNKNOWN_NO_HUMAN_REFERENCE",
+    "critical_entity_defects_run25": {
+      "PROTECTED_ENTITY_CHANGED": 1
+    },
+    "critical_entity_defects_run26": {
+      "PROTECTED_ENTITY_CHANGED": 1
+    }
+  },
+  "layout": {
+    "run25": {
+      "blocks_written": 91,
+      "blocks_absent": 12,
+      "words_colliding": 0,
+      "words_out_of_page": 0,
+      "inserted_words": 1093,
+      "blocks_partial": 2
+    },
+    "run26": {
+      "blocks_written": 85,
+      "blocks_absent": 11,
+      "words_colliding": 0,
+      "words_out_of_page": 0,
+      "inserted_words": 1076,
+      "blocks_partial": 2
+    }
+  },
+  "layout_critical_defects_run26": {
+    "LAYOUT_OVERFLOW": 7,
+    "RENDER_SOURCE_TEXT_MISSING": 1,
+    "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+    "RENDER_TEXT_MASK_TOO_LARGE": 2,
+    "RENDER_TRANSLATED_TEXT_MISSING": 1,
+    "SCAN_TEXT_OVER_SOURCE_INK": 4,
+    "UNMAPPED_TABLE_CONTENT": 1,
+    "VISUAL_MASK_TOO_LARGE": 2
+  },
+  "ocr": {
+    "scanned_pages": 5,
+    "engine_confidence_share_run25": 0.7585246266993537,
+    "engine_confidence_share_run26": 0.7595275239581012,
+    "character_accuracy": "UNKNOWN_NO_HUMAN_TRANSCRIPTION"
+  },
+  "critical_codes_occurrences": {
+    "run25": {
+      "LAYOUT_OVERFLOW": 8,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+    },
+    "run26": {
+      "LAYOUT_OVERFLOW": 7,
+      "PROTECTED_ENTITY_CHANGED": 1,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 2,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 4,
+      "UNMAPPED_TABLE_CONTENT": 1,
+      "VISUAL_MASK_TOO_LARGE": 2
+    }
+  },
+  "ocr_recovery_f25": {
+    "blocks_low_confidence_not_recovered": 24,
+    "ocr_recovery_blocks_tried": 35,
+    "ocr_recovery_lines_tried": 35,
+    "ocr_recovery_refused_empty_reading": 5,
+    "ocr_recovery_refused_right_to_left_script": 4,
+    "ocr_recovery_refused_not_more_reliable": 12,
+    "ocr_recovery_refused_ambiguous_zone": 13,
+    "ocr_recovery_lines_confirmed": 1
+  },
+  "render_verification_f26": {
+    "method": "render-verification-2",
+    "min_recall": 0.9,
+    "placements": 87,
+    "verified": 87,
+    "not_verified": 0,
+    "not_measurable": 0,
+    "blocks_not_verified": 0
+  },
+  "evidence": {
+    "original_sha256_unchanged": true,
+    "generation_mode": "TRANSLATION_MEMORY_REUSE_ONLY",
+    "model_invoked": false,
+    "requests_sent": 0,
+    "request_traces": 0,
+    "block_provenance_summary": {
+      "TRANSLATION_MEMORY": 178
+    },
+    "budget": {
+      "chunks": 0,
+      "max_reserved_total_tokens": null,
+      "max_usage_total_tokens": null,
+      "max_completion_tokens": null,
+      "violations": 0
+    },
+    "served_model": null,
+    "translation_memory_from": "run26 intermédiaire (mêmes entrées)"
+  },
+  "private_visual_evidence_panels": [
+    "Original",
+    "baseline",
+    "run17",
+    "run24",
+    "run25",
+    "run26a",
+    "run26",
+    "Diff run26/original",
+    "Diff run26/run26a"
+  ],
+  "private_visual_evidence": [
+    "preuves-privees/planches/DOC-007/page-001.png",
+    "preuves-privees/planches/DOC-007/page-002.png",
+    "preuves-privees/planches/DOC-007/page-003.png",
+    "preuves-privees/planches/DOC-007/page-004.png",
+    "preuves-privees/planches/DOC-007/page-005.png",
+    "preuves-privees/planches/DOC-007/visual-regions-audit.png"
+  ]
+}

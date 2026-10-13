@@ -3,9 +3,10 @@
 Every block of the document receives exactly one status and one reason, so a
 block kept in the source language is never confused with a translated one:
 
-* ``TRANSLATED`` - a real translation was produced and its replacement was
-  planned without a rendering failure (the independent PDF measure in
-  ``tools/recette/render_outcome.py`` still verifies what was written);
+* ``TRANSLATED`` - a real translation was produced, its replacement was
+  planned without a rendering failure and (F26) its words were found in the
+  frame used by the engine in the candidate PDF (``render_verification``);
+  the independent measure ``tools/recette/render_outcome.py`` re-checks it;
 * ``PRESERVED_INTENTIONALLY`` - already French, identifier/number, proper
   name or reference, protected visual element;
 * ``NOT_TRANSLATABLE`` - no word at all (symbol, number, OCR fragment);
@@ -26,7 +27,7 @@ import re
 from collections import Counter
 from typing import Any
 
-VERSION = "block-status-1"
+VERSION = "block-status-3"  # F26 RENDER_TARGET_NOT_VERIFIED, F28 rewritten identifiers
 STATUSES = (
     "TRANSLATED",
     "PRESERVED_INTENTIONALLY",
@@ -44,6 +45,7 @@ _RENDER_FAILURES = {
     "NATIVE_REDACTION_OVERLAP": "render_mask_unsafe",
     "PDF_TABLE_CELL_TARGET_MISSING": "render_table_cell_missing",
     "PDF_NATIVE_ROTATION_REQUIRES_REVIEW": "render_rotation_unsupported",
+    "RENDER_TARGET_NOT_VERIFIED": "render_target_incomplete",
 }
 _GUARD_FAILURES = {
     "PROTECTED_ENTITY_CHANGED": "entity_guard_rejected",
@@ -173,8 +175,13 @@ def _classify(
                 "already_french",
             )
         )
-    if block.get("identifier_only") or not requires(source) or _NUMERIC.fullmatch(source.strip()):
+    if (
+        block.get("identifier_only") or not requires(source) or _NUMERIC.fullmatch(source.strip())
+    ) and not changed:
         return "PRESERVED_INTENTIONALLY", "identifier_or_number"
+    # F28: a block that did not require translation but whose target was
+    # rewritten is not "preserved": the output differs from the source. It
+    # follows the normal path (render failures, then TRANSLATED).
     for flag, reason in _UNCERTAIN_FLAGS:
         if block.get(flag):
             return "UNCERTAIN", reason

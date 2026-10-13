@@ -658,6 +658,7 @@ def _geometry(
     candidate: dict[str, Any],
     source_ir: dict[str, Any] | None,
     translations: dict[str, str],
+    verified_block_ids: set[str] | frozenset[str] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     source_pages = source["pages"]
     candidate_pages = candidate["pages"]
@@ -682,12 +683,16 @@ def _geometry(
             }
         )
     source_blocks = _source_blocks(source_ir, source_pages)
+    # F27: a block preserved on purpose as a protected visual element keeps its
+    # source pixels; its (unapplied) translation is not "translated text".
     translated = [
         block
         for block in source_blocks
         if str(block.get("id")) in translations
         and translations.get(str(block.get("id"))) != block.get("text")
+        and not block.get("protected")
     ]
+    verified = {str(v) for v in (verified_block_ids or ())}
     # Sans remplacement, on compare les vrais blocs PDF des deux artefacts.
     # Un scan n'a pas de texte PDF natif : sa preuve est pixel, pas une disparition.
     translated_ids = {str(b.get("id")) for b in translated}
@@ -701,22 +706,33 @@ def _geometry(
         compared = [block for page in source_pages for block in page.get("blocks", [])]
     used: set = set()
     matches = []
+    # F27: the contiguous match below requires the whole target inside ONE
+    # extracted PDF text block. A target wrapped by the engine is often split by
+    # the extractor; when the post-render proof (F26) found the target in the
+    # exact frame used by the engine, the block is present, not missing.
+    by_placement: set[str] = set()
     for block in compared:
         block_id = str(block.get("id", ""))
         target_text = str(translations.get(block_id, block.get("text", "")))
         match = _match_candidate(block, target_text, candidate_pages, used)
         if match is not None:
             used.add((str(match["id"]), *match["matched_text_range"]))
+        elif block_id in verified:
+            by_placement.add(block_id)
         matches.append((block, match, target_text))
     translated_count = len(translated)
-    all_candidate_seen = sum(match is not None for _block, match, _text in matches)
+
+    def _seen(block, match) -> bool:
+        return match is not None or str(block.get("id")) in by_placement
+
+    all_candidate_seen = sum(_seen(block, match) for block, match, _text in matches)
     translated_seen = sum(
-        match is not None
+        _seen(block, match)
         for block, match, _text in matches
         if str(block.get("id")) in translated_ids
     )
     candidate_seen = translated_seen if translated_count else all_candidate_seen
-    missing = sum(match is None for _block, match, _text in matches)
+    missing = sum(not _seen(block, match) for block, match, _text in matches)
     if missing:
         issues.append(
             {"code": "RENDER_SOURCE_TEXT_MISSING", "severity": "critical", "count": missing}
@@ -736,6 +752,10 @@ def _geometry(
     anchor_scores = []
     clipping = 0
     for source_block, target_block, _target_text in matches:
+        if target_block is None and str(source_block.get("id")) in by_placement:
+            # Present and verified inside the engine frame (F26); no single
+            # extracted block to compare geometrically.
+            continue
         if target_block is None:
             ious.append(0.0)
             containments.append(0.0)
@@ -794,6 +814,7 @@ def _geometry(
         "displacement": sum(displacements) / len(displacements) if displacements else None,
         "clipping": 0.0 if clipping else (1.0 if matches else None),
         "font_size_reduction": sum(font_ratios) / len(font_ratios) if font_ratios else None,
+        "matched_by_placement_verification": len(by_placement),
     }
     scored_keys = (
         "dimensions",
@@ -1008,6 +1029,7 @@ def measure_render_fidelity(
     protected_regions: list[dict[str, Any]] | None = None,
     work_dir: str | os.PathLike[str] | None = None,
     libreoffice_timeout: float = 90.0,
+    verified_block_ids: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
     """Render both artifacts and return scorer-compatible measured evidence."""
     source_path = _path_value(source, False)
@@ -1048,7 +1070,9 @@ def measure_render_fidelity(
             },
         }
     translations = {str(key): str(value) for key, value in (translations or {}).items()}
-    geometry, geometry_issues = _geometry(original, target, source_ir, translations)
+    geometry, geometry_issues = _geometry(
+        original, target, source_ir, translations, verified_block_ids
+    )
     issues = warnings + geometry_issues
     structure: dict[str, Any] | None = None
     if source_path.suffix.casefold() == ".docx" and candidate_path.suffix.casefold() == ".docx":

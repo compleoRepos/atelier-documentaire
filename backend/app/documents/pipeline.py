@@ -1019,6 +1019,11 @@ def _with_render_proof(ir, translations, output, result, protected_regions):
         }
         for region in (protected_regions or [])
     ]
+    # F26: a block is only "rendered" if its translation is readable in the
+    # frame the engine used in the candidate PDF.
+    from .render_verification import verify_placements
+
+    verification_issues, verification = verify_placements(output, result.get("placements") or [])
     proof = measure_render_fidelity(
         render_source,
         str(output),
@@ -1027,10 +1032,14 @@ def _with_render_proof(ir, translations, output, result, protected_regions):
         protected_regions=regions,
         text_masks=result.get("text_masks"),
         work_dir=output.parent / f"{output.stem}-fidelity",
+        # F27: targets verified in the engine frame are present even when the
+        # PDF text extractor splits them over several blocks.
+        verified_block_ids=set(verification.get("verified_block_ids") or ()),
     )
     issues = result.get("issues", []) + proof.pop("issues", [])
     result.update(proof)
-    result["issues"] = issues
+    result["render_verification"] = verification
+    result["issues"] = issues + verification_issues
     return result
 
 

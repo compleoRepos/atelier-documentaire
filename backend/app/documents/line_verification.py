@@ -51,9 +51,11 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from app.documents.ocr_recovery import VERSION as ocr_recovery_version
+from app.documents.ocr_recovery import needs_review, recover_block
 from app.documents.segmentation import is_unreliable_ocr, join_line_texts
 
-VERSION = "line-verification-9"
+VERSION = "line-verification-10"
 SCALE = 4.0
 HIGHLIGHT_MIN_COVERAGE = 0.10
 HIGHLIGHT_MIN_X_COVERAGE = 0.25
@@ -986,6 +988,10 @@ def verify_lines(
 ) -> dict[str, Any]:
     """Annotate scanned blocks with highlight evidence and entity double reading."""
     reader = reader or _tesseract_line
+    doc_languages = [
+        str(item.get("code") if isinstance(item, dict) else item)
+        for item in ir.get("languages") or []
+    ]
     scanned = [p for p in ir.get("pages", []) if p.get("scanned")]
     from app.documents.language_evidence import refine_block_languages
 
@@ -1004,6 +1010,8 @@ def verify_lines(
         "blocks_form_structure_risk": 0,
         "blocks_identifier_only": 0,
         "blocks_minority_script_low_confidence": 0,
+        "blocks_low_confidence_not_recovered": 0,
+        "ocr_recovery": ocr_recovery_version,
         "blocks_ocr_unreliable_rechecked": 0,
         "blocks_split_at_rules": 0,
         "blocks_from_rule_splits": 0,
@@ -1077,6 +1085,8 @@ def verify_lines(
                 line_boxes = _declare_checkbox_regions(ir, page, block, rgb, scale, stats)
                 strip_checkbox_tokens(ir, block, line_boxes, stats)
                 flag_misread_checkbox_tokens(block, line_boxes, stats)
+                # F25 (run26): re-read low-confidence lines on a preprocessed copy.
+                recover_block(block, page.get("blocks", []), rgb, scale, doc_languages, stats)
                 flag_bidi_number_runs(block, stats)
                 _normalize_block_brackets(block, stats)
             lines = block.get("source_lines") or [block]
@@ -1157,6 +1167,16 @@ def verify_lines(
             ):
                 block["ocr_unreliable"] = True
                 stats["blocks_ocr_unreliable_rechecked"] += 1
+            elif (
+                str(block.get("provenance") or "").startswith("ocr")
+                and not block.get("ocr_unreliable")
+                and needs_review(block, doc_languages)
+            ):
+                # F25 (run26): still below 0.60 after recovery and no lexical
+                # evidence -> never sent to a model, human review.
+                block["ocr_unreliable"] = True
+                block["ocr_unreliable_reason"] = "low_confidence_not_recovered"
+                stats["blocks_low_confidence_not_recovered"] += 1
     if split_maps:
         for key in ("tables", "warnings"):
             _expand_refs(ir.get(key), split_maps)

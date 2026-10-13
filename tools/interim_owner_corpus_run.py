@@ -161,6 +161,36 @@ def _cached_issues_for(issues: list[dict], hits: set[str]) -> list[dict]:
     return kept
 
 
+def _merge_memory_provenance(telemetry: dict, cached: dict, hits: set[str], cache_run: str) -> None:
+    """RUN26 P0: a block served by the translation memory is never presented as a
+    new model output. Its provenance records the cache run and, when the cached
+    result carried it, the original origin (request) of the cached target."""
+    previous = ((cached.get("translation_telemetry") or {}).get("block_provenance") or {}).get(
+        "blocks"
+    ) or {}
+    provenance = telemetry.setdefault("block_provenance", {"version": None, "blocks": {}})
+    blocks = provenance.setdefault("blocks", {})
+    for bid in sorted(hits):
+        origin = previous.get(bid) or {}
+        blocks[bid] = {
+            "origin": "TRANSLATION_MEMORY",
+            "cache_run": cache_run,
+            "cached_origin": origin.get("origin") or "UNKNOWN_PRE_RUN26",
+            "cached_correlation_id": origin.get("correlation_id"),
+        }
+    summary: dict[str, int] = {}
+    for value in blocks.values():
+        summary[value["origin"]] = summary.get(value["origin"], 0) + 1
+    provenance["summary"] = dict(sorted(summary.items()))
+    sent = int(telemetry.get("requests_sent") or 0)
+    telemetry["model_invoked"] = sent > 0
+    telemetry["generation_mode"] = (
+        ("MIXED_MEMORY_AND_NEW_GENERATION" if hits else "NEW_MODEL_GENERATION")
+        if sent
+        else ("TRANSLATION_MEMORY_REUSE_ONLY" if hits else "NO_MODEL_CALL")
+    )
+
+
 def _caching_translate(work: Path, cache_dir: Path):
     """Translation memory: reuse the Interim target of a previous run for every
     block whose send signature is unchanged; send only the other blocks (real
@@ -221,6 +251,7 @@ def _caching_translate(work: Path, cache_dir: Path):
             "blocks_reused": len(hits),
             "blocks_processed_now": sum(len(p.get("blocks", [])) for p in reduced.get("pages", [])),
         }
+        _merge_memory_provenance(telemetry, cached, hits, cache_dir.parent.parent.name)
         (work / "interim-service-result.json").write_text(json.dumps(merged, ensure_ascii=False))
         return merged
 
@@ -386,10 +417,73 @@ async def run_one(
         "translation_s": round(translation_s, 1),
         "translations_reused_without_new_request": reuse,
         "translation_memory": telemetry.get("translation_memory"),
+        # RUN26 P0 evidence: never present a replay or a memory reuse as a new
+        # generation; one trace per request actually sent.
+        "generation_mode": "RECORDED_RESULT_REPLAY" if reuse else telemetry.get("generation_mode"),
+        "model_invoked": False if reuse else telemetry.get("model_invoked"),
+        "block_provenance_summary": (telemetry.get("block_provenance") or {}).get("summary"),
+        "request_trace": [
+            {
+                k: trace.get(k)
+                for k in (
+                    "request_index",
+                    "correlation_id",
+                    "response_id",
+                    "started_at",
+                    "completed_at",
+                    "http_status",
+                    "served_model",
+                    "total_tokens",
+                )
+            }
+            | {"blocks": len(trace.get("block_ids") or [])}
+            for trace in (telemetry.get("request_trace") or [])
+        ],
         "human_reference_validated": False,
     }
     (work / "interim-run-summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2))
     return summary
+
+
+def _code_fingerprint() -> str:
+    """Same value as the private run scripts: sha256 over `sha256sum` lines of
+    backend/app and tools *.py files (C-sorted), first 16 hex characters."""
+    files = sorted(
+        str(path.relative_to(ROOT))
+        for base in ("backend/app", "tools")
+        for path in (ROOT / base).rglob("*.py")
+        if "__pycache__" not in path.parts
+    )
+    lines = "".join(
+        f"{hashlib.sha256((ROOT / name).read_bytes()).hexdigest()}  {name}\n" for name in files
+    )
+    return hashlib.sha256(lines.encode()).hexdigest()[:16]
+
+
+def _git_head() -> str | None:
+    import subprocess
+
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=True,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    value = out.stdout.strip()
+    return value if len(value) == 40 else None
+
+
+def _journal(path: Path, event: str, **fields) -> None:
+    """Append one timestamped event (technical fields only, no document content)."""
+    from datetime import UTC, datetime
+
+    record = {"at": datetime.now(UTC).isoformat(timespec="milliseconds"), "event": event, **fields}
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 def main() -> None:
@@ -437,8 +531,23 @@ def main() -> None:
         if sha not in authorized:
             raise SystemExit(f"{entry['document_id']}: INTERIM_OWNER_DOCUMENT_NOT_AUTHORIZED")
     args.out_dir.mkdir(parents=True, exist_ok=True)
+    journal = args.out_dir / "execution-journal.jsonl"
+    _journal(
+        journal,
+        "run_start",
+        code_fingerprint=_code_fingerprint(),
+        git_head=_git_head(),
+        live=bool(args.live),
+        reuse_translations=bool(args.reuse_translations),
+        reuse_analysis=bool(args.reuse_analysis),
+        translation_cache_run=args.translation_cache.name if args.translation_cache else None,
+        documents=[e["document_id"] for e in entries],
+        authorization_id=record.get("authorization_id"),
+        authorization_expires_at=record.get("expires_at"),
+    )
     for entry in entries:
         print(json.dumps({"start": entry["document_id"]}), flush=True)
+        _journal(journal, "document_start", document_id=entry["document_id"])
         try:
             summary = asyncio.run(
                 run_one(
@@ -487,6 +596,17 @@ def main() -> None:
             )
         }
         print(json.dumps(compact, ensure_ascii=False), flush=True)
+        _journal(
+            journal,
+            "document_end",
+            **compact,
+            generation_mode=summary.get("generation_mode"),
+            model_invoked=summary.get("model_invoked"),
+            block_provenance_summary=summary.get("block_provenance_summary"),
+            request_traces=len(summary.get("request_trace") or []),
+            original_sha256_unchanged=summary.get("original_sha256_unchanged"),
+        )
+    _journal(journal, "run_end", code_fingerprint=_code_fingerprint(), git_head=_git_head())
 
 
 if __name__ == "__main__":

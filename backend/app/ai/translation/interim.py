@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import uuid
 from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import urlparse
 
@@ -71,6 +74,19 @@ def _issue(code: str, message: str, **extra: Any) -> dict[str, Any]:
     value: dict[str, Any] = {"code": code, "severity": "critical", "message": message}
     value.update(extra)
     return value
+
+
+_RESPONSE_ID = re.compile(r"[A-Za-z0-9_.:\-]{1,128}")
+
+
+def _utc_now() -> str:
+    return datetime.now(UTC).isoformat(timespec="milliseconds")
+
+
+def _response_id(body: Mapping[str, Any]) -> str | None:
+    """Provider response identifier, kept only when it is a short opaque token."""
+    value = body.get("id")
+    return value if isinstance(value, str) and _RESPONSE_ID.fullmatch(value) else None
 
 
 def _json_bytes(value: Any) -> bytes:
@@ -574,7 +590,18 @@ class _InterimEngineImplementation:
             "max_completion_tokens": max_output,
             "reasoning": {"effort": "minimal"},
         }
-        headers = {"content-type": "application/json"}
+        # RUN26 P0 evidence: every request carries a client correlation id and
+        # timestamps, recorded on every outcome (success, refusal, network error)
+        # so that a run summary can be reconciled request by request.
+        trace: dict[str, Any] = {
+            "correlation_id": uuid.uuid4().hex,
+            "request_index": self.requests_sent + 1,
+            "started_at": _utc_now(),
+            "completed_at": None,
+            "response_id": None,
+            "http_status": None,
+        }
+        headers = {"content-type": "application/json", "x-request-id": trace["correlation_id"]}
         if self.api_key:
             headers["authorization"] = f"Bearer {self.api_key}"
         endpoint = self.base_url + "/chat/completions"
@@ -587,6 +614,8 @@ class _InterimEngineImplementation:
             ) as client:
                 self.requests_sent += 1
                 response = await client.post(endpoint, headers=headers, json=payload)
+                trace["completed_at"] = _utc_now()
+                trace["http_status"] = response.status_code
                 if 300 <= response.status_code < 400:
                     return _service_result(
                         issues=[
@@ -594,16 +623,21 @@ class _InterimEngineImplementation:
                                 "INTERIM_REDIRECT",
                                 "Redirects from the configured Interim proxy are forbidden.",
                             )
-                        ]
+                        ],
+                        metadata={"request_trace": trace},
                     )
                 response.raise_for_status()
         except httpx.TimeoutException:
+            trace["completed_at"] = trace["completed_at"] or _utc_now()
             return _service_result(
-                issues=[_issue("INTERIM_TIMEOUT", "Interim proxy request timed out.")]
+                issues=[_issue("INTERIM_TIMEOUT", "Interim proxy request timed out.")],
+                metadata={"request_trace": trace},
             )
         except (httpx.HTTPError, OSError, RuntimeError):
+            trace["completed_at"] = trace["completed_at"] or _utc_now()
             return _service_result(
-                issues=[_issue("INTERIM_GATEWAY_FAILED", "Interim proxy request failed.")]
+                issues=[_issue("INTERIM_GATEWAY_FAILED", "Interim proxy request failed.")],
+                metadata={"request_trace": trace},
             )
 
         try:
@@ -612,9 +646,12 @@ class _InterimEngineImplementation:
                 raise ValueError("response body must be an object")
         except (ValueError, json.JSONDecodeError, TypeError):
             return _service_result(
-                issues=[_issue("INTERIM_INVALID_MODEL_OUTPUT", "Response body is not valid JSON.")]
+                issues=[_issue("INTERIM_INVALID_MODEL_OUTPUT", "Response body is not valid JSON.")],
+                metadata={"request_trace": trace},
             )
+        trace["response_id"] = _response_id(body)
         metadata = self._metadata(body, preflight)
+        metadata["request_trace"] = trace
         checked_usage, checked_error = self._validate_usage(
             body.get("usage"),
             prompt_upper_bound=preflight["prompt_upper_bound"],

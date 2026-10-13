@@ -764,6 +764,84 @@ def _fit_prompt_to_budget(
     return messages
 
 
+PROVENANCE_VERSION = "block-provenance-1"
+
+
+def _origin(result: Any, origin: str, retry: bool, *, outcome: str | None = None) -> dict[str, Any]:
+    """Origin of one block's target: the request that produced it (RUN26 P0)."""
+    trace = (getattr(result, "metadata", None) or {}).get("request_trace") or {}
+    value: dict[str, Any] = {
+        "origin": origin,
+        "request_index": trace.get("request_index"),
+        "correlation_id": trace.get("correlation_id"),
+        "retry_unchanged": bool(retry),
+    }
+    if outcome:
+        value["outcome"] = outcome
+    return value
+
+
+def _record_provenance(
+    telemetry: dict[str, Any],
+    block_origin: dict[str, dict[str, Any]],
+    translations: Mapping[str, str],
+    mode: str,
+    issues: list[dict[str, Any]],
+) -> None:
+    """Per-block provenance, request trace list and request-count reconciliation.
+
+    A block absent from ``block_origin`` was never sent to an engine (pre-filter:
+    no linguistic content, unreliable OCR, identifier...). ``generation_mode``
+    states explicitly whether this execution produced any new model output.
+    """
+    for block_id in translations:
+        block_origin.setdefault(str(block_id), {"origin": "NOT_SENT"})
+    traces = [
+        dict(chunk["request_trace"])
+        for chunk in telemetry.get("chunks", [])
+        if isinstance(chunk, Mapping) and isinstance(chunk.get("request_trace"), Mapping)
+    ]
+    for chunk, trace in zip(
+        [
+            c
+            for c in telemetry.get("chunks", [])
+            if isinstance(c, Mapping) and c.get("request_trace")
+        ],
+        traces,
+        strict=True,
+    ):
+        trace["block_ids"] = list(chunk.get("ids") or [])
+        usage = chunk.get("usage") if isinstance(chunk.get("usage"), Mapping) else {}
+        trace["total_tokens"] = usage.get("total_tokens")
+        trace["served_model"] = chunk.get("served_model")
+    summary: dict[str, int] = {}
+    for value in block_origin.values():
+        summary[value["origin"]] = summary.get(value["origin"], 0) + 1
+    sent = telemetry.get("requests_sent")
+    telemetry["request_trace"] = traces
+    telemetry["model_invoked"] = bool(sent) if mode == "interim" else mode != "offline"
+    telemetry["generation_mode"] = (
+        "NEW_MODEL_GENERATION"
+        if (sent if mode == "interim" else mode != "offline")
+        else "NO_MODEL_CALL"
+    )
+    telemetry["block_provenance"] = {
+        "version": PROVENANCE_VERSION,
+        "summary": dict(sorted(summary.items())),
+        "blocks": block_origin,
+    }
+    if mode == "interim" and isinstance(sent, int) and sent != len(traces):
+        issues.append(
+            {
+                "code": "EVIDENCE_REQUEST_COUNT_MISMATCH",
+                "severity": "critical",
+                "message": "Le nombre de requêtes envoyées ne correspond pas aux traces enregistrées.",
+                "requests_sent": sent,
+                "request_traces": len(traces),
+            }
+        )
+
+
 async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
     """Translate IR blocks and return the pipeline-compatible JSON result."""
     options = dict(options or {})
@@ -957,6 +1035,8 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
         "latency_ms": 0.0,
         "chunks": [],
     }
+    # RUN26 P0 evidence: origin of every block's target (which request, or none).
+    block_origin: dict[str, dict[str, Any]] = {}
     started_total = time.perf_counter()
     if mode == "interim":
         telemetry.update(
@@ -991,6 +1071,8 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
             if x.get("code") == "UNTRANSLATED" and x.get("block_id") is not None
         )
         telemetry["chunks"].append({"count": len(blocks), "mode": "offline", "latency_ms": 0.0})
+        for block_id in result.translations:
+            block_origin[str(block_id)] = {"origin": "OFFLINE_MEMORY"}
     else:
         builder = ContextPackBuilder(
             tokenizer=tokenizer
@@ -1121,6 +1203,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                 for block_id in chunk_ids:
                     translations[block_id] = str(block_by_id[block_id].get("text", ""))
                     untranslated.append(block_id)
+                    block_origin[block_id] = _origin(result, "MODEL_CALL_FAILED", retry_unchanged)
                 return
             decisions = result.metadata.get("decisions") or result.metadata.get(
                 "translation_decisions"
@@ -1167,6 +1250,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                 for block_id in chunk_ids:
                     translations[block_id] = str(block_by_id[block_id].get("text", ""))
                     untranslated.append(block_id)
+                    block_origin[block_id] = _origin(result, "MODEL_CALL_FAILED", retry_unchanged)
                 return
             # Blocks whose answer was rejected by the entity guard are restored
             # to their source: they must NOT look "unchanged" to the retry below
@@ -1191,6 +1275,14 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                     text = source_text
                     typography_only.append(block_id)
                 translations[block_id] = text
+                block_origin[block_id] = _origin(
+                    result,
+                    "MODEL_CALL",
+                    retry_unchanged,
+                    outcome="GUARD_REJECTED"
+                    if issue
+                    else ("UNCHANGED" if text == source_text else "CHANGED"),
+                )
                 if issue:
                     issues.append(issue)
                     untranslated.append(block_id)
@@ -1445,6 +1537,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
     if mode == "interim":
         telemetry["requests_sent"] = getattr(engine, "requests_sent", 0)
         telemetry["execution_status"] = "EXECUTED" if telemetry["requests_sent"] else "NOT_EXECUTED"
+    _record_provenance(telemetry, block_origin, translations, mode, issues)
     ir["_translation_telemetry"] = telemetry
     return {
         "translations": translations,

@@ -1,0 +1,130 @@
+{
+ "version": "run27-export-1",
+ "documents": [
+  "DOC-001",
+  "DOC-002",
+  "DOC-003",
+  "DOC-004",
+  "DOC-005",
+  "DOC-006",
+  "DOC-007",
+  "DOC-008"
+ ],
+ "methods": {
+  "v1": "doc-confidence-1 / scorecard-1 (gel RUN26, historique)",
+  "v2": "doc-confidence-2 / scorecard-2 (gel RUN27 avant remédiation)",
+  "metrics": "measure-v2.1-run18"
+ },
+ "rulers": {
+  "ruler_run26": "311f7804c8b6ce76",
+  "ruler_run27": "c6f0bb9a7b180eb6",
+  "product_files_changed_in_ruler": [
+   "backend/app/ai/quality/engine.py",
+   "backend/app/ai/quality/entities.py",
+   "backend/app/ai/translation/service.py",
+   "backend/app/ai/translation/typography.py",
+   "backend/app/ai/vision/scorer.py",
+   "backend/app/documents/block_status.py",
+   "backend/app/documents/line_verification.py",
+   "backend/app/documents/ocr_recovery.py"
+  ]
+ },
+ "corpus_doc_confidence_2": {
+  "ruler_run27": {
+   "baseline": {
+    "ceiling": 72.71412037037037,
+    "lower": 59.212943076003704,
+    "upper": 86.49882270563333
+   },
+   "run24": {
+    "ceiling": 75.81018518518518,
+    "lower": 63.16709754001678,
+    "upper": 87.3569123548316
+   },
+   "run25": {
+    "ceiling": 75.81018518518518,
+    "lower": 63.24332352495746,
+    "upper": 87.43313833977228
+   },
+   "run26": {
+    "ceiling": 75.81018518518519,
+    "lower": 63.54210301054177,
+    "upper": 87.73191782535659
+   },
+   "run27": {
+    "ceiling": 75.81018518518519,
+    "lower": 65.93583637030271,
+    "upper": 90.12565118511753
+   }
+  },
+  "ruler_run26": {
+   "baseline": {
+    "ceiling": 72.71412037037037,
+    "lower": 59.212943076003704,
+    "upper": 86.49882270563333
+   },
+   "run24": {
+    "ceiling": 75.81018518518518,
+    "lower": 64.6106160585353,
+    "upper": 88.80043087335012
+   },
+   "run25": {
+    "ceiling": 75.81018518518518,
+    "lower": 64.68684204347598,
+    "upper": 88.8766568582908
+   },
+   "run26": {
+    "ceiling": 75.81018518518518,
+    "lower": 64.9856215290603,
+    "upper": 89.1754363438751
+   },
+   "run27": {
+    "ceiling": 75.81018518518518,
+    "lower": 67.27166970363605,
+    "upper": 91.46148451845086
+   }
+  },
+  "threshold": 94.0,
+  "threshold_met": false
+ },
+ "corpus_doc_confidence_1": {
+  "ruler_run27": {
+   "baseline": 63.1,
+   "run24": 66.1,
+   "run25": 66.1,
+   "run26": 71.9,
+   "run27": 74.6
+  },
+  "ruler_run26": {
+   "baseline": 63.1,
+   "run24": 67.9,
+   "run25": 68.0,
+   "run26": 73.8,
+   "run27": 75.8
+  },
+  "published_run26": {
+   "baseline": 63.1,
+   "run24": 67.9,
+   "run25": 68.0,
+   "run26": 73.8
+  }
+ },
+ "statuses": {
+  "DOC-001": "REVIEW_REQUIRED",
+  "DOC-002": "REVIEW_REQUIRED",
+  "DOC-003": "REVIEW_REQUIRED",
+  "DOC-004": "REVIEW_REQUIRED",
+  "DOC-005": "REVIEW_REQUIRED",
+  "DOC-006": "REVIEW_REQUIRED",
+  "DOC-007": "REVIEW_REQUIRED",
+  "DOC-008": "REVIEW_REQUIRED"
+ },
+ "human_validation": {
+  "pack_rows": 1072,
+  "reviewed_rows": 0
+ },
+ "interim_requests_run27": {
+  "run27_intermediate": 4,
+  "run27b_verdict": 1
+ }
+}

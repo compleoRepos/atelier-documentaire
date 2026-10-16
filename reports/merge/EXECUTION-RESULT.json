@@ -1,0 +1,63 @@
+{
+  "schema": "parallel-merge-result/v1",
+  "merge_branch": "integration/prompt-1-2-20261008",
+  "base_commit": "6fb913a3a402e45c5813bf343fb85f26ef0e0e20",
+  "parents": {
+    "prompt_1": "001658994522a03e631f5637a1e9aaa20cafcc21",
+    "prompt_2": "154691deebe9d1bae26098b8897abe39c1a1406a"
+  },
+  "git_conflicts": {
+    "files": [
+      "backend/app/documents/pipeline.py"
+    ],
+    "zones": 4,
+    "resolution": "both contributions kept"
+  },
+  "integration_fixes": [
+    "PROTECTED_CANDIDATE_TABLE_ART exclusion (IoU>=0.6, traced)",
+    "automatic candidate provenance + page clipping",
+    "protected_visual_region schema unified (spec 18 + Angular)",
+    "raster rectangle search exact-equivalent rewrite with explicit work budget"
+  ],
+  "equivalence_bench": {
+    "synthetic": {
+      "cases": 40,
+      "identical": 40
+    },
+    "scanned_pages": {
+      "cases": 31,
+      "identical": 31,
+      "old_total_s": 1014.2,
+      "new_total_s": 28.3
+    }
+  },
+  "postmerge_tests": {
+    "python_technical": {
+      "passed": 360,
+      "failed": 0,
+      "skipped": 0
+    },
+    "golden_corpus": {
+      "passed": 8,
+      "failed": 0,
+      "pages": 31
+    },
+    "angular": {
+      "passed": 16,
+      "failed": 0
+    },
+    "ruff": "ok",
+    "pip_audit": "no known vulnerabilities",
+    "npm_audit": "0 vulnerabilities",
+    "originals_sha256": "unchanged"
+  },
+  "external_llm_calls_on_real_corpus": 0,
+  "blocked_requirements": [
+    "REAL_CORPUS_MODEL_TRANSLATION_NOT_EXECUTED_USER_CONFIDENTIALITY_DECISION",
+    "PRIVATE_QWEN_ENDPOINT_TOKENIZER_WEIGHTS_NOT_AVAILABLE",
+    "HUMAN_GOLDEN_REFERENCES_AND_BASELINE_NOT_AVAILABLE",
+    "SIGNATURE_STAMP_AUTHENTICATION_NOT_PERFORMED",
+    "AWS_OR_BANK_INFRASTRUCTURE_QUALIFICATION_NOT_AVAILABLE"
+  ],
+  "bank_qualification": "NOT_VALIDATED"
+}

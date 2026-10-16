@@ -1,0 +1,66 @@
+{
+  "schema": "parallel-prompt-result/v1",
+  "prompt": 2,
+  "branch": "feature/prompt-2-fidelite-20261008",
+  "base_commit": "6fb913a3a402e45c5813bf343fb85f26ef0e0e20",
+  "execution_status": "completed",
+  "tests_passed": 246,
+  "tests_failed": 0,
+  "tests_breakdown": {
+    "python_technical_unique_passed": 226,
+    "python_corpus_unique_last_result_passed": 8,
+    "python_total_unique_passed": 234,
+    "angular_unique_passed": 12,
+    "count_method": "Latest successful result per unique testcase; no addition of repeated runs",
+    "corpus_evidence": [
+      "test-report/prompt-2/final-corpus-latest.xml: DOC-001 and DOC-006 passed; six failures retained in log",
+      "test-report/prompt-2/corpus-corrected.xml: all six failed IDs rerun after null stroke width fix, six passed"
+    ],
+    "technical_evidence": "test-report/prompt-2/delivery-technical.xml",
+    "ruff": "PASS",
+    "typescript_typecheck": "PASS",
+    "angular_build": "PASS",
+    "acceptance_gate": "FAIL: required private AI/human Golden/calibration evidence absent",
+    "quality_baseline_gate": "NOT_EVALUATED"
+  },
+  "blocked_requirements": [
+    "NOT_AVAILABLE_IN_ENVIRONMENT: live private Qwen endpoint, exact model weights and exact local tokenizer; no live Qwen execution performed",
+    "NOT_AVAILABLE_IN_ENVIRONMENT: approved human Golden references and calibrated banking quality baseline; linguistic/semantic scores remain null",
+    "REVIEW_REQUIRED: semantic assignment of translated multi-run styles is ambiguous; traceable proportional redistribution is not semantic validation",
+    "REVIEW_REQUIRED: hyperlink/bookmark/field/tab/break/nested-text boundaries can refuse changes; original content remains intact",
+    "REVIEW_REQUIRED: PDF native rotation without validated coordinate mapping, unsupported RTL shaping, non-rectangular/ambiguous table cells and uncovered source text are not automatically rewritten",
+    "Authenticity of original signatures/stamps/logos/QR/barcodes is never verified; visual preservation is not cryptographic certification",
+    "Banking acceptance is not established; GLOBAL_SCORE remains null and approval requires human review/calibration",
+    "Preprocessing, private/temporary AI provider and API/UI stages belong to P1; final merge and integration tests belong to the coordinator"
+  ],
+  "report_paths": [
+    "reports/prompt-2/AUDIT.md",
+    "reports/prompt-2/TEST_REPORT.md",
+    "reports/prompt-2/DOCUMENT_FIDELITY_REPORT.md",
+    "reports/prompt-2/ARCHITECTURE.md",
+    "reports/prompt-2/CHANGED_FILES.md",
+    "reports/prompt-2/SYNTHETIC_MEASUREMENTS.json",
+    "reports/prompt-2/CORPUS_TECHNICAL_SUMMARY.json",
+    "reports/prompt-2/EXECUTION-RESULT.json",
+    "docs/architecture.md"
+  ],
+  "private_artifacts_available": true,
+  "private_artifacts_scope": "Original sandbox only, test-report/prompt-2 excluded from Git; all eight corpus documents and 31 per-page proof sets available; no public transfer",
+  "corpus_originals_immutable": true,
+  "corpus_document_count": 8,
+  "corpus_page_count": 31,
+  "external_llm_calls_by_this_execution": 0,
+  "synthetic_target_provenance": "Deterministic renderer fixtures, never represented as Qwen/Interim output or human Golden",
+  "merge_interfaces": [
+    "Preserve analyze_document/reconstruct_document/evaluate_document/translate_document signatures in shared pipeline.py; P2 delegates DOCX and PDF renderers to dedicated modules",
+    "DOCX source_ref contains xml_part and zero-based numeric paragraph_path; preserve hierarchical rows/cells/paragraphs/runs, block_ids, table_ids, merges and header/footer/note parts",
+    "protected_visual_regions coordinates must be mapped to original source page by P1 before P2 normalization; source_id, editable=false, candidate provenance and authenticity_verified=false remain explicit",
+    "P2 protect_ir merges existing P1 candidates, independently detected source visuals and user annotations; P1 type protected_visual_region is normalized to protected_visual while extra provenance remains",
+    "P1 transform_source_to_processing and transform_processing_to_source 3x3 matrices and source/page scaling must remain consistent; renderer opens only immutable original source",
+    "P2 structure_metrics, pdf_structure and candidate table_structure are independently extracted from actual candidate; do not replace them with copied source IR",
+    "DOCX redistribution_trace and PDF table_render_trace contain document content and must remain private; document_fidelity extends translation.json with technical proof, not automatic approval",
+    "P1 remote interfaces read-only at 69be1300451f48d4c2847549d077e84ee9f5dd01; no checkout/rebase/cherry-pick/merge of P1 or main performed",
+    "Temporary Interim provider belongs to P1 and is authorized for synthetic documents only; none of the eight RH PDFs/IR/previews may be sent to external LLM services"
+  ],
+  "validation_scope": "Implemented, executed, tested and technically measured locally; not certified for banking and not semantically/human-Golden validated"
+}

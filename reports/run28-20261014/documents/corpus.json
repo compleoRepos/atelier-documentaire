@@ -1,0 +1,147 @@
+{
+ "version": "run28-export-1",
+ "documents": [
+  "DOC-001",
+  "DOC-002",
+  "DOC-003",
+  "DOC-004",
+  "DOC-005",
+  "DOC-006",
+  "DOC-007",
+  "DOC-008"
+ ],
+ "methods": {
+  "v1": "doc-confidence-1 / scorecard-1 (gel RUN26, historique, inchangé)",
+  "v2": "doc-confidence-2 / scorecard-2 (gel RUN27, inchangé)",
+  "metrics": "measure-v2.1-run18 (inchangé)",
+  "official_value": "borne basse v2 ; borne haute et plafond ne valent jamais validation"
+ },
+ "rulers": {
+  "ruler_run27": "aa3883b0360e2dd6",
+  "ruler_run28": "08e998169c0dad9b",
+  "note": "règle = empreinte de la fermeture du code influençant la mesure ; RUN28 change des statuts de blocs (F35, F39, F40, F41)"
+ },
+ "corpus_doc_confidence_2": {
+  "ruler_run28": {
+   "baseline": {
+    "ceiling": 72.71412037037037,
+    "lower": 59.188274099337086,
+    "upper": 86.47415372896671
+   },
+   "run24": {
+    "ceiling": 75.81018518518518,
+    "lower": 63.162113103566384,
+    "upper": 87.35192791838121
+   },
+   "run25": {
+    "ceiling": 75.81018518518518,
+    "lower": 63.238842941834434,
+    "upper": 87.42865775664924
+   },
+   "run26": {
+    "ceiling": 75.81018518518519,
+    "lower": 63.538681992999315,
+    "upper": 87.72849680781412
+   },
+   "run27": {
+    "ceiling": 75.81018518518519,
+    "lower": 65.93304742558473,
+    "upper": 90.12286224039956
+   },
+   "run28": {
+    "ceiling": 75.46296296296296,
+    "lower": 65.7062837282778,
+    "upper": 90.24332076531483
+   }
+  },
+  "ruler_run27": {
+   "baseline": {
+    "ceiling": 72.71412037037037,
+    "lower": 59.212943076003704,
+    "upper": 86.49882270563333
+   },
+   "run24": {
+    "ceiling": 75.81018518518518,
+    "lower": 63.16709754001678,
+    "upper": 87.3569123548316
+   },
+   "run25": {
+    "ceiling": 75.81018518518518,
+    "lower": 63.24332352495746,
+    "upper": 87.43313833977228
+   },
+   "run26": {
+    "ceiling": 75.81018518518519,
+    "lower": 63.54210301054177,
+    "upper": 87.73191782535659
+   },
+   "run27": {
+    "ceiling": 75.81018518518519,
+    "lower": 65.93583637030271,
+    "upper": 90.12565118511753
+   },
+   "run28": {
+    "ceiling": 75.46296296296296,
+    "lower": 65.7062837282778,
+    "upper": 90.24332076531483
+   }
+  },
+  "threshold": 94.0,
+  "threshold_met": false
+ },
+ "corpus_doc_confidence_1": {
+  "ruler_run28": {
+   "baseline": 63.1,
+   "run24": 66.1,
+   "run25": 66.1,
+   "run26": 71.9,
+   "run27": 74.6,
+   "run28": 73.9
+  },
+  "ruler_run27": {
+   "baseline": 63.1,
+   "run24": 66.1,
+   "run25": 66.1,
+   "run26": 71.9,
+   "run27": 74.6,
+   "run28": 73.9
+  }
+ },
+ "critical_defects_scorecard2_total": {
+  "run27": 55,
+  "run28": 42
+ },
+ "product_critical_alerts_total": {
+  "run27": 106,
+  "run28": 80
+ },
+ "layout_overflow_blocks_total": {
+  "run27": 28,
+  "run28": 14
+ },
+ "statuses": {
+  "DOC-001": "REVIEW_REQUIRED",
+  "DOC-002": "REVIEW_REQUIRED",
+  "DOC-003": "REVIEW_REQUIRED",
+  "DOC-004": "REVIEW_REQUIRED",
+  "DOC-005": "REVIEW_REQUIRED",
+  "DOC-006": "REVIEW_REQUIRED",
+  "DOC-007": "REVIEW_REQUIRED",
+  "DOC-008": "REVIEW_REQUIRED"
+ },
+ "human_validation": {
+  "pack_rows": 1072,
+  "reviewed_rows": 0
+ },
+ "interim_requests_run28_sequence": {
+  "run28": 2,
+  "run28b": 1,
+  "run28c": 1,
+  "run28d": 2,
+  "run28e": 0
+ },
+ "interim_requests_run28_total": 6,
+ "interim_context_limit_tokens": 32768,
+ "verdict_run": "run28e (mémoire revalidée, 0 requête)",
+ "production_ready": false
+}

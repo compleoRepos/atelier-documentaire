@@ -1,0 +1,13 @@
+{{- if not .Values.scratch.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "atelier.fullname" . }}-scratch
+  labels: {{- include "atelier.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: {{ .Values.scratch.storageClassName | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.scratch.size }}
+{{- end }}

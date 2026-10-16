@@ -1,0 +1,721 @@
+{
+  "schema": "run26-document-report-1",
+  "document_id": "DOC-004",
+  "pages": 2,
+  "scanned_pages": 2,
+  "blocks": 229,
+  "verdict_run": "run26",
+  "code_fingerprint": "449b3ab80ed0b263",
+  "status": "REVIEW_REQUIRED",
+  "status_justification": [
+    "CRITICAL_DEFECTS_PRESENT",
+    "SCORE_LOWER_BOUND_BELOW_THRESHOLD",
+    "HUMAN_VALIDATION_NOT_PERFORMED",
+    "SEMANTIC_ACCURACY_UNKNOWN_NO_HUMAN_REFERENCE",
+    "HALLUCINATION_NOT_PROVEN_BY_REFERENCE",
+    "OCR_CHARACTER_ACCURACY_UNKNOWN_NO_HUMAN_TRANSCRIPTION"
+  ],
+  "human_validation": "NOT_PERFORMED",
+  "score": {
+    "baseline": {
+      "score_official_lower_bound": 70.7,
+      "score_upper_bound": 86.6,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 4,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run24": {
+      "score_official_lower_bound": 67.5,
+      "score_upper_bound": 83.4,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 13,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_REGION_CHANGED",
+          "count": 8,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 8,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run25": {
+      "score_official_lower_bound": 68.6,
+      "score_upper_bound": 84.4,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 14,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_REGION_CHANGED",
+          "count": 8,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 3,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run26a": {
+      "score_official_lower_bound": 74.5,
+      "score_upper_bound": 90.4,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 17,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_REGION_CHANGED",
+          "count": 6,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 3,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    },
+    "run26": {
+      "score_official_lower_bound": 74.5,
+      "score_upper_bound": 90.4,
+      "measured_weight_share": 0.8417,
+      "threshold": 94.0,
+      "threshold_met": false,
+      "status": "REVIEW_REQUIRED",
+      "critical_defects": [
+        {
+          "code": "LAYOUT_OVERFLOW",
+          "count": 17,
+          "source": "product"
+        },
+        {
+          "code": "PROTECTED_REGION_CHANGED",
+          "count": 6,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_SOURCE_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_CLIPPED_OR_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TEXT_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "RENDER_TRANSLATED_TEXT_MISSING",
+          "count": 1,
+          "source": "product"
+        },
+        {
+          "code": "SCAN_TEXT_OVER_SOURCE_INK",
+          "count": 3,
+          "source": "product"
+        },
+        {
+          "code": "VISUAL_MASK_TOO_LARGE",
+          "count": 1,
+          "source": "product"
+        }
+      ],
+      "blocking": []
+    }
+  },
+  "dimensions": {
+    "run25": {
+      "coverage": {
+        "label": "Couverture textuelle écrite",
+        "weight": 20,
+        "min": 0.5889,
+        "max": 0.5889,
+        "applicable": true,
+        "components": {
+          "written_share": 0.5889
+        }
+      },
+      "entities": {
+        "label": "Préservation des entités et données sensibles",
+        "weight": 15,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "digit_sequences": 1.0
+        }
+      },
+      "evidence": {
+        "label": "Complétude et fiabilité des preuves",
+        "weight": 10,
+        "min": 0.428571,
+        "max": 0.428571,
+        "applicable": true,
+        "components": {
+          "block_provenance": 0.0,
+          "budget_respected": 1.0,
+          "candidate_produced": 1.0,
+          "execution_journal": 0.0,
+          "generation_mode": 0.0,
+          "original_unchanged": 1.0,
+          "request_reconciliation": 0.0
+        }
+      },
+      "hallucination": {
+        "label": "Absence d'hallucination",
+        "weight": 10,
+        "min": 0.651825,
+        "max": 0.985158,
+        "applicable": true,
+        "components": {
+          "no_length_anomaly": 1.0,
+          "no_unreliable_source_translated": 0.9554737194509542,
+          "proven_by_reference": null
+        }
+      },
+      "layout": {
+        "label": "Qualité visuelle et mise en page",
+        "weight": 10,
+        "min": 0.995327,
+        "max": 0.995327,
+        "applicable": true,
+        "components": {
+          "in_page": 1.0,
+          "no_collision": 1.0,
+          "no_text_over_ink": 0.9906542056074766,
+          "not_truncated": 0.9906542056074766
+        }
+      },
+      "ocr": {
+        "label": "Qualité OCR",
+        "weight": 10,
+        "min": 0.377073,
+        "max": 0.877073,
+        "applicable": true,
+        "components": {
+          "character_accuracy": null,
+          "engine_confidence": 0.7541460576083794
+        }
+      },
+      "source_fidelity": {
+        "label": "Fidélité au document source",
+        "weight": 10,
+        "min": 0.997967,
+        "max": 0.997967,
+        "applicable": true,
+        "components": {
+          "pages_preserved": 1.0,
+          "regions_unaltered": 0.9959349593495935
+        }
+      },
+      "translation": {
+        "label": "Confiance de traduction",
+        "weight": 15,
+        "min": 0.484666,
+        "max": 0.984666,
+        "applicable": true,
+        "components": {
+          "semantic_accuracy": null,
+          "target_language": 0.9693318729463308
+        }
+      }
+    },
+    "run26": {
+      "coverage": {
+        "label": "Couverture textuelle écrite",
+        "weight": 20,
+        "min": 0.5799,
+        "max": 0.5799,
+        "applicable": true,
+        "components": {
+          "written_share": 0.5799
+        }
+      },
+      "entities": {
+        "label": "Préservation des entités et données sensibles",
+        "weight": 15,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "digit_sequences": 1.0
+        }
+      },
+      "evidence": {
+        "label": "Complétude et fiabilité des preuves",
+        "weight": 10,
+        "min": 1.0,
+        "max": 1.0,
+        "applicable": true,
+        "components": {
+          "block_provenance": 1.0,
+          "budget_respected": 1.0,
+          "candidate_produced": 1.0,
+          "execution_journal": 1.0,
+          "generation_mode": 1.0,
+          "original_unchanged": 1.0,
+          "request_reconciliation": 1.0
+        }
+      },
+      "hallucination": {
+        "label": "Absence d'hallucination",
+        "weight": 10,
+        "min": 0.664715,
+        "max": 0.998049,
+        "applicable": true,
+        "components": {
+          "no_length_anomaly": 1.0,
+          "no_unreliable_source_translated": 0.9941463414634146,
+          "proven_by_reference": null
+        }
+      },
+      "layout": {
+        "label": "Qualité visuelle et mise en page",
+        "weight": 10,
+        "min": 0.995536,
+        "max": 0.995536,
+        "applicable": true,
+        "components": {
+          "in_page": 1.0,
+          "no_collision": 1.0,
+          "no_text_over_ink": 0.9910714285714286,
+          "not_truncated": 0.9910714285714286
+        }
+      },
+      "ocr": {
+        "label": "Qualité OCR",
+        "weight": 10,
+        "min": 0.400958,
+        "max": 0.900958,
+        "applicable": true,
+        "components": {
+          "character_accuracy": null,
+          "engine_confidence": 0.8019160326852635
+        }
+      },
+      "source_fidelity": {
+        "label": "Fidélité au document source",
+        "weight": 10,
+        "min": 0.997967,
+        "max": 0.997967,
+        "applicable": true,
+        "components": {
+          "pages_preserved": 1.0,
+          "regions_unaltered": 0.9959349593495935
+        }
+      },
+      "translation": {
+        "label": "Confiance de traduction",
+        "weight": 15,
+        "min": 0.488842,
+        "max": 0.988842,
+        "applicable": true,
+        "components": {
+          "semantic_accuracy": null,
+          "target_language": 0.9776833156216791
+        }
+      }
+    }
+  },
+  "coverage": {
+    "baseline": {
+      "expected_chars": 3641,
+      "attempted_chars": 3164,
+      "written_chars": 2610,
+      "partial_chars": 0,
+      "absent_chars": 554,
+      "not_attempted_chars": 477,
+      "coverage_attempted": 0.869,
+      "coverage_written": 0.7168
+    },
+    "run17": {
+      "expected_chars": 3464,
+      "attempted_chars": 2527,
+      "written_chars": 1250,
+      "partial_chars": 122,
+      "absent_chars": 1155,
+      "not_attempted_chars": 937,
+      "coverage_attempted": 0.7295,
+      "coverage_written": 0.3609
+    },
+    "run24": {
+      "expected_chars": 3437,
+      "attempted_chars": 2962,
+      "written_chars": 1849,
+      "partial_chars": 99,
+      "absent_chars": 1014,
+      "not_attempted_chars": 475,
+      "coverage_attempted": 0.8618,
+      "coverage_written": 0.538
+    },
+    "run25": {
+      "expected_chars": 3437,
+      "attempted_chars": 2927,
+      "written_chars": 2024,
+      "partial_chars": 99,
+      "absent_chars": 804,
+      "not_attempted_chars": 510,
+      "coverage_attempted": 0.8516,
+      "coverage_written": 0.5889
+    },
+    "run26a": {
+      "expected_chars": 3549,
+      "attempted_chars": 3015,
+      "written_chars": 2058,
+      "partial_chars": 99,
+      "absent_chars": 858,
+      "not_attempted_chars": 534,
+      "coverage_attempted": 0.8495,
+      "coverage_written": 0.5799
+    },
+    "run26": {
+      "expected_chars": 3549,
+      "attempted_chars": 3015,
+      "written_chars": 2058,
+      "partial_chars": 99,
+      "absent_chars": 858,
+      "not_attempted_chars": 534,
+      "coverage_attempted": 0.8495,
+      "coverage_written": 0.5799
+    }
+  },
+  "block_status": {
+    "run25": {
+      "TRANSLATED": 86,
+      "PRESERVED_INTENTIONALLY": 15,
+      "NOT_TRANSLATABLE": 41,
+      "UNCERTAIN": 46,
+      "FAILED": 41,
+      "NOT_PROCESSED": 0
+    },
+    "run26": {
+      "TRANSLATED": 88,
+      "PRESERVED_INTENTIONALLY": 11,
+      "NOT_TRANSLATABLE": 41,
+      "UNCERTAIN": 56,
+      "FAILED": 33,
+      "NOT_PROCESSED": 0
+    },
+    "run26_chars": {
+      "TRANSLATED": 2243,
+      "PRESERVED_INTENTIONALLY": 148,
+      "NOT_TRANSLATABLE": 124,
+      "UNCERTAIN": 447,
+      "FAILED": 958,
+      "NOT_PROCESSED": 0
+    },
+    "run26_reasons": {
+      "FAILED:model_returned_source": 11,
+      "FAILED:render_mask_unsafe": 1,
+      "FAILED:render_overflow": 17,
+      "FAILED:render_residual_source_ink": 3,
+      "FAILED:render_rtl_shaping_unsupported": 1,
+      "NOT_TRANSLATABLE:no_linguistic_content": 41,
+      "PRESERVED_INTENTIONALLY:already_french": 2,
+      "PRESERVED_INTENTIONALLY:identifier_or_number": 1,
+      "PRESERVED_INTENTIONALLY:proper_name_or_reference": 4,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 4,
+      "TRANSLATED:translated_and_placed": 88,
+      "UNCERTAIN:ocr_unreliable": 56
+    },
+    "transitions_run25_to_run26": {
+      "blocks_compared": 229,
+      "unchanged": 210,
+      "changes": {
+        "FAILED->NOT_TRANSLATABLE": 1,
+        "FAILED->PRESERVED_INTENTIONALLY": 1,
+        "FAILED->TRANSLATED": 2,
+        "FAILED->UNCERTAIN": 6,
+        "NOT_TRANSLATABLE->TRANSLATED": 1,
+        "PRESERVED_INTENTIONALLY->TRANSLATED": 2,
+        "PRESERVED_INTENTIONALLY->UNCERTAIN": 3,
+        "TRANSLATED->FAILED": 2,
+        "TRANSLATED->UNCERTAIN": 1
+      }
+    }
+  },
+  "losses_run26_chars": {
+    "not_attempted_by_reason": {
+      "FAILED:model_returned_source": 156,
+      "PRESERVED_INTENTIONALLY:protected_visual_element": 17,
+      "UNCERTAIN:ocr_unreliable": 361
+    },
+    "partial_or_absent_by_reason": {
+      "ABSENT:FAILED:render_mask_unsafe": 49,
+      "ABSENT:FAILED:render_overflow": 571,
+      "ABSENT:FAILED:render_residual_source_ink": 135,
+      "ABSENT:FAILED:render_rtl_shaping_unsupported": 47,
+      "ABSENT:PRESERVED_INTENTIONALLY:protected_visual_element": 11,
+      "ABSENT:TRANSLATED:translated_and_placed": 45,
+      "PARTIAL:TRANSLATED:translated_and_placed": 99
+    },
+    "out_of_scope_by_reason": {
+      "already_french": 6,
+      "identical_in_french": 91,
+      "identifier_or_number": 19,
+      "no_linguistic_content": 124,
+      "proper_name_or_reference": 131
+    }
+  },
+  "entity_checks": {
+    "translated_blocks_with_digits": 26,
+    "digit_sequences_identical_share": 1.0,
+    "names_clauses_verified": "UNKNOWN_NO_HUMAN_REFERENCE",
+    "critical_entity_defects_run25": {},
+    "critical_entity_defects_run26": {}
+  },
+  "layout": {
+    "run25": {
+      "blocks_written": 81,
+      "blocks_absent": 25,
+      "blocks_partial": 1,
+      "words_colliding": 0,
+      "words_out_of_page": 0,
+      "inserted_words": 461,
+      "blocks_over_ink": 1
+    },
+    "run26": {
+      "blocks_written": 83,
+      "blocks_absent": 28,
+      "blocks_partial": 1,
+      "words_colliding": 0,
+      "words_out_of_page": 0,
+      "inserted_words": 466,
+      "blocks_over_ink": 1
+    }
+  },
+  "layout_critical_defects_run26": {
+    "LAYOUT_OVERFLOW": 17,
+    "PROTECTED_REGION_CHANGED": 6,
+    "RENDER_SOURCE_TEXT_MISSING": 1,
+    "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+    "RENDER_TEXT_MASK_TOO_LARGE": 1,
+    "RENDER_TRANSLATED_TEXT_MISSING": 1,
+    "SCAN_TEXT_OVER_SOURCE_INK": 3,
+    "VISUAL_MASK_TOO_LARGE": 1
+  },
+  "ocr": {
+    "scanned_pages": 2,
+    "engine_confidence_share_run25": 0.7541460576083794,
+    "engine_confidence_share_run26": 0.8019160326852635,
+    "character_accuracy": "UNKNOWN_NO_HUMAN_TRANSCRIPTION"
+  },
+  "critical_codes_occurrences": {
+    "run25": {
+      "LAYOUT_OVERFLOW": 14,
+      "PROTECTED_REGION_CHANGED": 8,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "VISUAL_MASK_TOO_LARGE": 1
+    },
+    "run26": {
+      "LAYOUT_OVERFLOW": 17,
+      "PROTECTED_REGION_CHANGED": 6,
+      "RENDER_SOURCE_TEXT_MISSING": 1,
+      "RENDER_TEXT_CLIPPED_OR_MISSING": 1,
+      "RENDER_TEXT_MASK_TOO_LARGE": 1,
+      "RENDER_TRANSLATED_TEXT_MISSING": 1,
+      "SCAN_TEXT_OVER_SOURCE_INK": 3,
+      "VISUAL_MASK_TOO_LARGE": 1
+    }
+  },
+  "ocr_recovery_f25": {
+    "blocks_low_confidence_not_recovered": 15,
+    "ocr_recovery_blocks_tried": 34,
+    "ocr_recovery_lines_tried": 32,
+    "ocr_recovery_lines_confirmed": 1,
+    "ocr_recovery_refused_not_more_reliable": 8,
+    "ocr_recovery_refused_right_to_left_script": 4,
+    "ocr_recovery_lines_recovered": 15,
+    "ocr_recovery_blocks_changed": 15,
+    "ocr_recovery_refused_numbers_disagree": 3,
+    "ocr_recovery_refused_empty_reading": 1
+  },
+  "render_verification_f26": {
+    "method": "render-verification-2",
+    "min_recall": 0.9,
+    "placements": 88,
+    "verified": 88,
+    "not_verified": 0,
+    "not_measurable": 0,
+    "blocks_not_verified": 0
+  },
+  "evidence": {
+    "original_sha256_unchanged": true,
+    "generation_mode": "TRANSLATION_MEMORY_REUSE_ONLY",
+    "model_invoked": false,
+    "requests_sent": 0,
+    "request_traces": 0,
+    "block_provenance_summary": {
+      "TRANSLATION_MEMORY": 229
+    },
+    "budget": {
+      "chunks": 0,
+      "max_reserved_total_tokens": null,
+      "max_usage_total_tokens": null,
+      "max_completion_tokens": null,
+      "violations": 0
+    },
+    "served_model": null,
+    "translation_memory_from": "run26 intermédiaire (mêmes entrées)"
+  },
+  "private_visual_evidence_panels": [
+    "Original",
+    "baseline",
+    "run17",
+    "run24",
+    "run25",
+    "run26a",
+    "run26",
+    "Diff run26/original",
+    "Diff run26/run26a"
+  ],
+  "private_visual_evidence": [
+    "preuves-privees/planches/DOC-004/page-001.png",
+    "preuves-privees/planches/DOC-004/page-002.png",
+    "preuves-privees/planches/DOC-004/visual-regions-audit.png"
+  ]
+}

@@ -1,0 +1,155 @@
+stages:
+  - lint
+  - unit
+  - security
+  - integration
+  - golden
+  - regression
+  - build
+  - load
+  - deploy
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PYTHONPATH: "$CI_PROJECT_DIR/backend"
+  GOLDEN_REFERENCE_DIR: "$CI_PROJECT_DIR/dataset/expected"
+  # Le répertoire sécurisé doit être injecté par le runner; aucune référence privée n'est committée.
+  GOLDEN_INJECTED_DIR: ""
+
+.python:
+  image: python:3.12-slim
+  before_script:
+    - python -m pip install --no-cache-dir -r backend/requirements.txt
+    - python -m pip install --no-cache-dir pytest pytest-asyncio ruff pip-audit
+  cache:
+    key: python-$CI_COMMIT_REF_SLUG
+    paths: [.cache/pip]
+
+lint:python:
+  extends: .python
+  stage: lint
+  script:
+    - ruff check backend tools
+    - python -m compileall -q backend tools
+
+unit:
+  extends: .python
+  stage: unit
+  script:
+    - pytest backend/tests/unit -q --junitxml=reports/unit.xml
+  artifacts:
+    when: always
+    reports: { junit: reports/unit.xml }
+    paths: [reports/]
+
+security:dependencies:
+  extends: .python
+  stage: security
+  script:
+    - pip-audit -r backend/requirements.txt --strict
+
+security:frontend:
+  stage: security
+  image: node:22-bookworm-slim
+  script:
+    - test -f frontend/package-lock.json
+    - cd frontend && npm ci --ignore-scripts && npm audit --audit-level=high
+
+integration:
+  extends: .python
+  stage: integration
+  script:
+    - pytest backend/tests/integration backend/tests/security -q --junitxml=reports/integration.xml
+  artifacts:
+    when: always
+    reports: { junit: reports/integration.xml }
+    paths: [reports/]
+
+# Ce job ne télécharge ni ne publie le corpus. Le runner protégé monte GOLDEN_INJECTED_DIR.
+golden:strict:
+  extends: .python
+  stage: golden
+  rules:
+    - if: '$GOLDEN_INJECTED_DIR != ""'
+      when: on_success
+    - when: never
+  script:
+    - test -d "$GOLDEN_INJECTED_DIR"
+    - python tools/verify_acceptance.py --reference-dir "$GOLDEN_INJECTED_DIR" --strict
+    - pytest backend/tests/golden_dataset -q --junitxml=reports/golden.xml
+  artifacts:
+    when: always
+    reports: { junit: reports/golden.xml }
+    paths: [reports/]
+
+# Sans dataset injecté, ce job échoue volontairement au lieu de simuler PASS.
+golden:missing-reference:
+  extends: .python
+  stage: golden
+  rules:
+    - if: '$GOLDEN_INJECTED_DIR == ""'
+      when: on_success
+    - when: never
+  script:
+    - python tools/verify_acceptance.py --reference-dir "${GOLDEN_REFERENCE_DIR}" --strict
+
+regression:
+  extends: .python
+  stage: regression
+  script:
+    - pytest backend/tests/regression -q --junitxml=reports/regression.xml
+  artifacts:
+    when: always
+    reports: { junit: reports/regression.xml }
+    paths: [reports/]
+
+build:backend:
+  stage: build
+  image: docker:27
+  services: ["docker:27-dind"]
+  script:
+    - docker build --file backend/Dockerfile --tag "$CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA" .
+
+build:frontend:
+  stage: build
+  image: node:22-bookworm-slim
+  script:
+    - cd frontend
+    - npm ci --ignore-scripts
+    - npm run typecheck
+    - npm run build
+
+tools:load-test:
+  extends: .python
+  stage: load
+  rules:
+    - if: '$LOAD_TEST_BASE_URL != "" && $LOAD_TEST_ENABLED == "true"'
+      when: manual
+    - when: never
+  script:
+    - python tools/load_test.py --base-url "$LOAD_TEST_BASE_URL" --users "${LOAD_TEST_USERS:-1}" --pages "${LOAD_TEST_PAGES:-1}" --output reports/load-test.json
+  artifacts:
+    when: always
+    paths: [reports/load-test.json]
+
+# Nécessite un runner protégé, KUBECONFIG et une autorisation explicite; jamais automatique.
+deploy:dev:
+  stage: deploy
+  image: alpine/helm:3.16.4
+  rules:
+    - if: '$DEPLOY_DEV == "true"'
+      when: manual
+    - when: never
+  script:
+    - test -n "$KUBECONFIG"
+    - helm upgrade --install atelier-documentaire infrastructure/helm/atelier-documentaire --namespace "${KUBE_NAMESPACE:?set KUBE_NAMESPACE}" --create-namespace --wait
+
+deploy:prod:
+  stage: deploy
+  image: alpine/helm:3.16.4
+  when: manual
+  allow_failure: false
+  environment: production
+  script:
+    - test -n "$KUBECONFIG"
+    - helm upgrade --install atelier-documentaire infrastructure/helm/atelier-documentaire --namespace "${KUBE_NAMESPACE:?set KUBE_NAMESPACE}" --wait

@@ -1,0 +1,153 @@
+{
+  "schema": "execution-result/v1",
+  "prompt": "industrialisation finale 2026-10-09 (audit, corrections, rejeu des 8 PDF, rapports avant/apres)",
+  "execution_status": "completed",
+  "acceptance_note": "Mission completed with every document in REVIEW_REQUIRED: no human reference is validated and critical alerts remain visible. No document is declared PASS.",
+  "branch": "feature/industrialisation-finale-20261009",
+  "base_commit": "60bd172",
+  "code_fingerprint": {
+    "executed": "f69a6210b29e8196",
+    "committed": "f2d0950f03f0d780",
+    "difference": "header docstring of backend/app/documents/line_verification.py only (two real example values removed); AST without docstrings identical"
+  },
+  "defects_fixed": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5",
+    "D6",
+    "D7",
+    "D8",
+    "D9",
+    "D10",
+    "D11",
+    "D12",
+    "D13",
+    "D14",
+    "D15",
+    "D16",
+    "D17",
+    "D18",
+    "D19",
+    "D20",
+    "D21",
+    "D22",
+    "D23",
+    "D24",
+    "D25",
+    "D26",
+    "D27"
+  ],
+  "remaining_limits": 18,
+  "tests": {
+    "backend_technical": {
+      "command": "pytest -q -p no:cacheprovider backend/tests --ignore=backend/tests/golden_dataset",
+      "executed": 549,
+      "passed": 549,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_s": 206.3,
+      "code_state": "committed (f2d0950f03f0d780)"
+    },
+    "added_tests": {
+      "files": 17,
+      "tests": 131
+    },
+    "golden_corpus": {
+      "command": "pytest -v -p no:cacheprovider backend/tests/golden_dataset",
+      "executed": 8,
+      "passed": 8,
+      "failed": 0,
+      "duration_s": 1156.7,
+      "code_state": "executed (f69a6210b29e8196, same AST)",
+      "status": "PASSED"
+    },
+    "frontend": {
+      "typecheck": "ok",
+      "tests": {
+        "executed": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "build": "ok",
+      "npm_audit_vulnerabilities": 0
+    },
+    "lint": {
+      "ruff_check_backend_tools": "ok",
+      "ruff_format_changed_files": "29/30 (tools/interim_owner_corpus_run.py already unformatted at base 60bd172, not enforced by CI)",
+      "git_diff_check": "ok"
+    }
+  },
+  "corpus_run": {
+    "documents": 8,
+    "pages": 31,
+    "errors": 0,
+    "original_sha_unchanged": 8,
+    "interim": {
+      "requests": 63,
+      "max_reserved_per_request": 20988,
+      "max_usage_per_request": 2498,
+      "bound": 32768,
+      "requests_reserved_over_bound": 0,
+      "requests_usage_over_bound": 0,
+      "budget_violations": 0
+    },
+    "quality_status": {
+      "REVIEW_REQUIRED": 8,
+      "PASS": 0
+    },
+    "coverage_strict": {
+      "baseline": 0.881,
+      "final": 0.8788
+    },
+    "coverage_written": {
+      "baseline": 0.8305,
+      "final": 0.8065
+    },
+    "silent_missing_chars": {
+      "baseline": 0,
+      "final": 0
+    },
+    "residual_source_words": {
+      "baseline": 146,
+      "final": 171
+    },
+    "visual_regions": {
+      "checked": 56,
+      "preserved": 41,
+      "altered_reclassified_text": 10,
+      "slightly_touched": 5,
+      "stamps_logos_signatures_altered": 0
+    }
+  },
+  "not_available": {
+    "qwen_private": "NOT_AVAILABLE",
+    "human_references": "NOT_AVAILABLE",
+    "cer_wer": null,
+    "translation_score": null
+  },
+  "ci": {
+    "source_commit": "ebb09ebc54122aa25677157ed55d43edf4f04fcc",
+    "run": "https://github.com/compleoRepos/atelier-documentaire-prive/actions/runs/37882871159",
+    "trigger": "pull_request (draft PR #1, not merged)",
+    "conclusion": "success",
+    "jobs": {
+      "backend": "success",
+      "backend-integration-and-migrations": "success",
+      "frontend": "success",
+      "container-and-manifest-validation": "success",
+      "private-acceptance": "skipped (requires authorized private runner)",
+      "manual-release-gate": "skipped (workflow_dispatch only, fail-closed without private evidence)"
+    },
+    "note": "later commits on this branch change reports/ only"
+  },
+  "private_artifacts": "Planches comparatives, metriques detaillees, sorties et journaux : repertoire prive et archive privee, jamais dans Git.",
+  "confidentiality_audit": {
+    "real_fragments_found_in_uncommitted_tests": true,
+    "replaced_with_synthetic": true,
+    "ever_committed_or_pushed": false,
+    "method": "string literals vs OCR text of the 8 analyses (3-gram, >=6-digit numbers, capitalised words)"
+  }
+}

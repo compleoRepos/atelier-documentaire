@@ -466,6 +466,9 @@ def _font_kwargs(size: float, style: dict[str, Any], align: int) -> dict[str, An
         "align": align,
         "overlay": True,
         "color": style.get("color") or [0, 0, 0],
+        # RUN29 F45: ``style["lineheight"]`` (tight line box) is only set by
+        # the last-resort fit in _plan_scan_block; None keeps PyMuPDF's default.
+        "lineheight": style.get("lineheight"),
     }
 
 
@@ -1045,13 +1048,144 @@ def _apply_full_covers(kept: list[dict[str, Any]], doc: Any = None) -> None:
         item["cover_pieces"] = len(pieces)
 
 
+# RUN29 F50: a cover can cut through source glyphs whose rest stays visible
+# (OCR box smaller than its own print: half letters above, below or beside the
+# translation). A cut fragment is a connected ink component of the original
+# raster, at most _CUT_GLYPH_MAX_PT in both directions (rules, frames and merged
+# lines excluded), of which this item's covers erase at least
+# _CUT_GLYPH_MIN_ERASED while at least _CUT_GLYPH_MIN_REST pixels stay outside
+# every planned cover, that visible rest lying mostly outside every OCR box of
+# the page (orphan ink). A kept neighbour's ascenders or descenders nicked by the
+# cover padding lie inside the neighbour's own OCR box and are not counted.
+# Thresholds at _INK_ZOOM; calibrated on 13 visually labelled corpus covers.
+_CUT_GLYPH_CHECK = True
+_CUT_GLYPH_MARGIN_PT = 12.0
+_CUT_GLYPH_MAX_PT = 40.0
+_CUT_GLYPH_MIN_PIXELS = 6
+_CUT_GLYPH_MIN_ERASED = 0.2
+_CUT_GLYPH_MIN_REST = 10
+_CUT_GLYPH_ORPHAN_SHARE = 0.5
+_CUT_GLYPH_OCR_PAD_PT = 1.0
+_CUT_GLYPH_MIN_FRAGMENTS = 2
+_CUT_GLYPH_MIN_ORPHAN_PIXELS = 20
+# F50c (run29): erased share from which a cut glyph is the replaced line's own.
+_CUT_GLYPH_OWN_CHECK = True
+_CUT_GLYPH_OWN_ERASED = 0.5
+# F50b: a thin long fragment (median stroke <= 1.5 px at _INK_ZOOM over >= 15 pt)
+# is a table rule, not a glyph: erased rules are RENDER_RULE_ERASED's job (F49),
+# never a reason to refuse a translation. Measured on the corpus: rules 1 px
+# thick, glyph and stamp strokes >= 2 px.
+_CUT_GLYPH_RULE_MAX_THICK_PT = 0.75
+_CUT_GLYPH_RULE_MIN_LEN_PT = 15.0
+
+
+def _fill_rect_mask(mask: Any, page: Any, rect: Any, pad: float = 0.0) -> None:
+    height, width = mask.shape
+    y0 = max(0, _px(page, float(rect[1]) - pad, 1))
+    y1 = min(height, _px(page, float(rect[3]) + pad, 1))
+    x0 = max(0, _px(page, float(rect[0]) - pad, 0))
+    x1 = min(width, _px(page, float(rect[2]) + pad, 0))
+    if y1 > y0 and x1 > x0:
+        mask[y0:y1, x0:x1] = True
+
+
+def _ocr_box_mask(page: Any, ir: dict[str, Any], page_number: int, shape: Any) -> Any:
+    """Every OCR block and source-line box of the page, padded, at _INK_ZOOM."""
+    import numpy as np
+
+    mask = np.zeros(shape, dtype=bool)
+    for ir_page in ir.get("pages", []):
+        if int(ir_page.get("number", 0)) != page_number:
+            continue
+        for block in ir_page.get("blocks") or []:
+            boxes = [block.get("bbox")] + [
+                line.get("bbox")
+                for line in block.get("source_lines") or []
+                if isinstance(line, dict)
+            ]
+            for box in boxes:
+                rect = _rect(box)
+                if rect:
+                    _fill_rect_mask(mask, page, rect, _CUT_GLYPH_OCR_PAD_PT)
+    return mask
+
+
+def _cut_glyph_fragments(
+    page: Any, dark: Any, item_covers: list[list[float]], all_covers: Any, ocr_boxes: Any
+) -> tuple[int, int]:
+    """(cut fragments, orphan visible pixels) left by this item's covers."""
+    import cv2
+    import numpy as np
+
+    rects = [rect for rect in (_rect(cover) for cover in item_covers) if rect]
+    if dark is None or not rects:
+        return 0, 0
+    height, width = dark.shape
+    margin = _CUT_GLYPH_MARGIN_PT
+    x0 = max(0, _px(page, min(r[0] for r in rects) - margin, 0))
+    y0 = max(0, _px(page, min(r[1] for r in rects) - margin, 1))
+    x1 = min(width, _px(page, max(r[2] for r in rects) + margin, 0))
+    y1 = min(height, _px(page, max(r[3] for r in rects) + margin, 1))
+    if x1 <= x0 or y1 <= y0:
+        return 0, 0
+    own_page = np.zeros((height, width), dtype=bool)
+    for rect in rects:
+        _fill_rect_mask(own_page, page, rect)
+    own = own_page[y0:y1, x0:x1]
+    covered = all_covers[y0:y1, x0:x1]
+    boxed = ocr_boxes[y0:y1, x0:x1]
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(
+        dark[y0:y1, x0:x1].astype(np.uint8), connectivity=8
+    )
+    limit = _CUT_GLYPH_MAX_PT * _INK_ZOOM
+    fragments, orphan = 0, 0
+    for label in range(1, count):
+        left, top, span_x, span_y, area = (int(v) for v in stats[label])
+        if area < _CUT_GLYPH_MIN_PIXELS or span_x > limit or span_y > limit:
+            continue
+        window = (slice(top, top + span_y), slice(left, left + span_x))
+        component = labels[window] == label
+        runs = component.sum(axis=1 if span_y >= span_x else 0)
+        runs = runs[runs > 0]
+        thickness = float(np.median(runs)) / _INK_ZOOM if runs.size else 0.0
+        if (
+            thickness <= _CUT_GLYPH_RULE_MAX_THICK_PT
+            and max(span_x, span_y) / _INK_ZOOM >= _CUT_GLYPH_RULE_MIN_LEN_PT
+        ):
+            continue
+        erased = int((component & own[window]).sum())
+        if erased == 0 or erased < _CUT_GLYPH_MIN_ERASED * area:
+            continue
+        rest = component & ~covered[window]
+        rest_pixels = int(rest.sum())
+        if rest_pixels < _CUT_GLYPH_MIN_REST:
+            continue
+        orphan_pixels = int((rest & ~boxed[window]).sum())
+        if orphan_pixels >= _CUT_GLYPH_ORPHAN_SHARE * rest_pixels:
+            fragments += 1
+            orphan += orphan_pixels
+        elif _CUT_GLYPH_OWN_CHECK and erased >= _CUT_GLYPH_OWN_ERASED * area:
+            # F50c (run29): a glyph mostly under this item's cover belongs to
+            # the replaced line; its visible rest is a residue of the source
+            # even when it lies inside an OCR box (cover shrunk away from a
+            # kept neighbour, descenders left under the translation).
+            fragments += 1
+            orphan += rest_pixels
+    return fragments, orphan
+
+
 def _drop_text_over_source_ink(
     doc: Any, ir: dict[str, Any], valid: list[dict[str, Any]], issues: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
     """Fixed point over all planned replacements of scanned pages: an item whose
     drawn text lines still lie over unmasked original ink is dropped (original
     kept, critical issue). Dropping removes its masks, which can only expose more
-    ink under other items, so the loop is monotone and terminates."""
+    ink under other items, so the loop is monotone and terminates.
+
+    RUN29 F50: an item whose covers would cut source glyphs while leaving their
+    rest visible (_cut_glyph_fragments) is dropped the same way
+    (SCAN_COVER_CUTS_SOURCE_GLYPHS). Items are only ever removed, so the loop
+    still terminates."""
     scanned = {int(p.get("number", 0)) for p in ir.get("pages", []) if p.get("scanned")}
     if not any(int(item["page"]) in scanned for item in valid):
         return list(valid)
@@ -1062,6 +1196,7 @@ def _drop_text_over_source_ink(
             drawn[id(item)] = _drawn_line_rects(scratch, doc[int(item["page"]) - 1].rect, item)
     scratch.close()
     kept = list(valid)
+    glyph_pages: dict[int, tuple[Any, Any, Any]] = {}
     while True:
         _apply_full_covers(kept, doc)
         covers: dict[int, list[list[float]]] = {}
@@ -1082,7 +1217,39 @@ def _drop_text_over_source_ink(
             share = count / max(1, area)
             if count >= _SOURCE_INK_MIN_PIXELS and share >= _SOURCE_INK_MIN_SHARE:
                 dropped.append((item, count, share))
-        if not dropped:
+        cut: list[tuple[dict[str, Any], int, int]] = []
+        if _CUT_GLYPH_CHECK:
+            import numpy as np
+
+            ink_dropped = {id(item) for item, _, _ in dropped}
+            union: dict[int, Any] = {}
+            for item in kept:
+                page_number = int(item["page"])
+                if page_number not in scanned or id(item) in ink_dropped:
+                    continue
+                if page_number not in glyph_pages:
+                    page = doc[page_number - 1]
+                    dark = _page_dark(page)
+                    boxes = (
+                        None if dark is None else _ocr_box_mask(page, ir, page_number, dark.shape)
+                    )
+                    glyph_pages[page_number] = (page, dark, boxes)
+                page, dark, boxes = glyph_pages[page_number]
+                if dark is None:
+                    continue
+                if page_number not in union:
+                    mask = np.zeros(dark.shape, dtype=bool)
+                    for cover in covers.get(page_number, []):
+                        rect = _rect(cover)
+                        if rect:
+                            _fill_rect_mask(mask, page, rect)
+                    union[page_number] = mask
+                fragments, orphan = _cut_glyph_fragments(
+                    page, dark, item.get("source_rects") or [], union[page_number], boxes
+                )
+                if fragments >= _CUT_GLYPH_MIN_FRAGMENTS or orphan >= _CUT_GLYPH_MIN_ORPHAN_PIXELS:
+                    cut.append((item, fragments, orphan))
+        if not dropped and not cut:
             for item in kept:
                 if item.get("cover_pieces"):
                     block_ids = [str(b) for b in item.get("block_ids") or []]
@@ -1107,7 +1274,21 @@ def _drop_text_over_source_ink(
                         )
                     )
             return kept
-        gone = {id(item) for item, _, _ in dropped}
+        gone = {id(item) for item, _, _ in dropped} | {id(item) for item, _, _ in cut}
+        for item, fragments, orphan in cut:
+            block_ids = [str(b) for b in item.get("block_ids") or []]
+            issues.append(
+                _warn(
+                    "SCAN_COVER_CUTS_SOURCE_GLYPHS",
+                    "Le masque couperait des caractères source dont une partie resterait visible; original conservé.",
+                    "critical",
+                    block_id=block_ids[0] if len(block_ids) == 1 else None,
+                    block_ids=block_ids,
+                    cell_id=item.get("cell_id"),
+                    cut_fragments=fragments,
+                    orphan_pixels=orphan,
+                )
+            )
         for item, count, share in dropped:
             block_ids = [str(b) for b in item.get("block_ids") or []]
             issues.append(
@@ -1311,10 +1492,129 @@ def _grow_right(box: list[float], limit: float, obstacles: list[list[float]]) ->
 
 
 _SCAN_MIN_FONT_RATIO = 0.72
+_SCAN_TIGHT_LINE_HEIGHT = 1.0  # RUN29 F45: line box factor of the last-resort fit
+_SCAN_WRAP_BETWEEN_NEIGHBOURS = True  # RUN29 F44: kill switch of the two-line wrap
+# RUN29 F53: a rule kept visible next to a cover (F38/F48 clip the cover off
+# it) must not run through the body of the translated text: a struck-through
+# line reads as deleted. A rule at the baseline (underline effect) is allowed.
+_SCAN_CHECK_TEXT_OVER_RULES = True  # kill switch (tests only)
+_RULE_CROSS_MIN_PT = 15.0  # a horizontal dark run this long is a rule, not a glyph
+_RULE_CROSS_MIN_SHARE = 0.3  # ... and at least this share of the frame width
+_RULE_CROSS_MAX_THICK_PT = 2.5  # rules are thin; thicker bands are graphics
+_RULE_CROSS_BODY = (0.5, 0.1)  # x-height body: baseline - 0.5 s .. baseline - 0.1 s
+_RULE_CROSS_MIN_OVERLAP_PT = 3.0  # horizontal overlap rule / drawn line
 # Max candidate height of a one-line block, in font sizes: 2 lines at 72 % need
 # 2 x 1.2 x 0.72 = 1.73, so 1.45 keeps one line while allowing the ascent.
 _SCAN_SINGLE_LINE_HEIGHT = 1.45
 _ALIGN = {"left": 0, "center": 1, "right": 2, "justify": 3}
+
+
+def _visible_rules_in(
+    page: Any, rect: list[float], covers: list[list[float]]
+) -> list[tuple[float, float, float]]:
+    """RUN29 F53: thin horizontal rules of the original ink inside ``rect``
+    that stay visible (not under any cover), as (y, x0, x1) in points."""
+    import numpy as np
+
+    dark = _page_dark(page)
+    if dark is None:
+        return []
+    height, width = dark.shape
+    x0, x1 = max(0, _px(page, rect[0], 0)), min(width, _px(page, rect[2], 0))
+    y0, y1 = max(0, _px(page, rect[1], 1)), min(height, _px(page, rect[3], 1))
+    if x1 - x0 < 2 or y1 - y0 < 1:
+        return []
+    sub = dark[y0:y1, x0:x1].copy()
+    for cover in covers or []:
+        cx0, cx1 = _px(page, cover[0], 0) - x0, _px(page, cover[2], 0) - x0
+        cy0, cy1 = _px(page, cover[1], 1) - y0, _px(page, cover[3], 1) - y0
+        sub[max(0, cy0) : max(0, cy1), max(0, cx0) : max(0, cx1)] = False
+    min_run = max(_RULE_CROSS_MIN_PT, _RULE_CROSS_MIN_SHARE * (rect[2] - rect[0])) * _INK_ZOOM
+    rows: list[tuple[int, int, int]] = []
+    for yy in range(sub.shape[0]):
+        row = sub[yy]
+        if not row.any():
+            continue
+        edges = np.diff(np.concatenate(([0], row.astype(np.int8), [0])))
+        starts, ends = np.where(edges == 1)[0], np.where(edges == -1)[0]
+        lengths = ends - starts
+        if lengths.max() >= min_run:
+            keep = lengths >= min_run
+            rows.append((yy, int(starts[keep].min()), int(ends[keep].max())))
+    bands: list[list[int]] = []
+    for yy, sx, ex in rows:
+        if bands and yy == bands[-1][1] + 1:
+            bands[-1][1] = yy
+            bands[-1][2] = min(bands[-1][2], sx)
+            bands[-1][3] = max(bands[-1][3], ex)
+        else:
+            bands.append([yy, yy, sx, ex])
+    origin_x, origin_y = page.rect.x0, page.rect.y0
+    return [
+        (
+            origin_y + (y0 + (top + bottom + 1) / 2) / _INK_ZOOM,
+            origin_x + (x0 + sx) / _INK_ZOOM,
+            origin_x + (x0 + ex) / _INK_ZOOM,
+        )
+        for top, bottom, sx, ex in bands
+        if (bottom - top + 1) <= _RULE_CROSS_MAX_THICK_PT * _INK_ZOOM
+    ]
+
+
+def _drawn_lines(
+    page_rect: Any, rect: list[float], text: str, size: float, style: dict[str, Any], align: int
+) -> list[tuple[float, float, float, float]]:
+    """RUN29 F53: (baseline y, size, x0, x1) of every line PyMuPDF draws for
+    ``text`` in ``rect``, measured on a blank scratch page of the same size."""
+    scratch = fitz.open()
+    try:
+        blank = scratch.new_page(width=page_rect.width, height=page_rect.height)
+        dx, dy = page_rect.x0, page_rect.y0
+        frame = fitz.Rect(rect[0] - dx, rect[1] - dy, rect[2] - dx, rect[3] - dy)
+        kwargs = {k: v for k, v in _font_kwargs(size, style, align).items() if v is not None}
+        if blank.insert_textbox(frame, text, **kwargs) < 0:
+            return []
+        lines = []
+        for block in blank.get_text("dict").get("blocks", []):
+            for line in block.get("lines", []):
+                spans = [s for s in line.get("spans", []) if str(s.get("text", "")).strip()]
+                if not spans:
+                    continue
+                baseline = max(float(s["origin"][1]) for s in spans) + dy
+                span_size = max(float(s.get("size") or size) for s in spans)
+                x0 = min(float(s["bbox"][0]) for s in spans) + dx
+                x1 = max(float(s["bbox"][2]) for s in spans) + dx
+                lines.append((baseline, span_size, x0, x1))
+        return lines
+    finally:
+        scratch.close()
+
+
+def _text_crosses_visible_rule(
+    page: Any,
+    rect: list[float],
+    text: str,
+    size: float,
+    style: dict[str, Any],
+    align: int,
+    covers: list[list[float]],
+) -> float | None:
+    """RUN29 F53: y of a visible rule running through the x-height body of a
+    drawn line of ``text``, or None."""
+    rules = _visible_rules_in(page, rect, covers)
+    if not rules:
+        return None
+    top_share, bottom_share = _RULE_CROSS_BODY
+    for baseline, line_size, lx0, lx1 in _drawn_lines(page.rect, rect, text, size, style, align):
+        body_top, body_bottom = (
+            baseline - top_share * line_size,
+            baseline - bottom_share * line_size,
+        )
+        for rule_y, rx0, rx1 in rules:
+            overlap = min(lx1, rx1) - max(lx0, rx0)
+            if body_top <= rule_y <= body_bottom and overlap >= _RULE_CROSS_MIN_OVERLAP_PT:
+                return rule_y
+    return None
 
 
 def _scan_style(block: dict[str, Any]) -> tuple[dict[str, Any], int]:
@@ -1448,6 +1748,25 @@ _COVER_RULE_EDGE_BAND = 0.35
 # +-1 pt) and the minimal continuous run of one row that is a rule segment.
 _RULE_SKEW_ROWS = 2
 _RULE_SEGMENT_SHARE = 0.2
+# RUN29 F48: longest scanning drop-out bridged inside a rule (pixels at
+# _INK_ZOOM, i.e. 1.5 pt); a word space at body size is wider.
+_RULE_GAP_PX = 3
+_RULE_BRIDGE_MIN_PT = 20.0  # F48b: bridge only rules checked over >= 20 pt
+
+
+def _bridge_gaps(line: Any, max_gap: int) -> Any:
+    """Copy of a 1-D boolean array where False runs of at most ``max_gap``
+    pixels lying BETWEEN two True pixels are set to True (edges untouched)."""
+    import numpy as np
+
+    bridged = np.array(line, dtype=bool, copy=True)
+    ink = np.flatnonzero(bridged)
+    if ink.size < 2 or max_gap <= 0:
+        return bridged
+    holes = np.diff(ink) - 1
+    for index in np.flatnonzero((holes > 0) & (holes <= max_gap)):
+        bridged[ink[index] + 1 : ink[index + 1]] = True
+    return bridged
 
 
 def _longest_run(values: Any) -> int:
@@ -1481,13 +1800,25 @@ def _clip_cover_off_rules(page: Any, cover: list[float]) -> list[float] | None:
         return None
     reach = 2  # pixels a rule must continue past the cover
     skew = _RULE_SKEW_ROWS
+    # RUN29 F48b: bridging is only sound over a substantial length.  Along a
+    # 5 pt cover (an OCR box smaller than its bold two-line print, DOC-004)
+    # the stem of a bold letter, once its 1 px drop-outs were bridged, passed
+    # for a vertical rule and the cover was cut off the text it had to hide.
+    min_bridged = _RULE_BRIDGE_MIN_PT * _INK_ZOOM
+    h_gap = _RULE_GAP_PX if x1 - x0 >= min_bridged else 0
+    v_gap = _RULE_GAP_PX if y1 - y0 >= min_bridged else 0
 
     def h_rule(row: int) -> bool:
         # RUN28 F38: a scanned rule is often slightly skewed and spreads over
         # 2-3 pixel rows (0.28 of the width on any single row, 1.00 over
         # +-2 rows); the continuity test runs on the union of nearby rows.
+        # RUN29 F48: a scanned rule also has drop-outs (DOC-004: a 1 px rule
+        # descending 0.8 deg with a 2 px hole kept 77 % continuity and was
+        # erased by the cover); holes <= _RULE_GAP_PX are bridged for the
+        # continuity test only — the "continues past the cover" test below
+        # is still measured on the raw pixels.
         line = dark[max(0, row - skew) : row + skew + 1].any(axis=0)
-        if _longest_run(line[x0:x1]) < 0.85 * (x1 - x0):
+        if _longest_run(_bridge_gaps(line[x0:x1], h_gap)) < 0.85 * (x1 - x0):
             return False
         return bool(line[max(0, x0 - reach) : x0].all() and x0 >= reach) or bool(
             line[x1 : x1 + reach].all() and x1 + reach <= width
@@ -1495,7 +1826,7 @@ def _clip_cover_off_rules(page: Any, cover: list[float]) -> list[float] | None:
 
     def v_rule(col: int) -> bool:
         line = dark[:, max(0, col - skew) : col + skew + 1].any(axis=1)
-        if _longest_run(line[y0:y1]) < 0.9 * (y1 - y0):
+        if _longest_run(_bridge_gaps(line[y0:y1], v_gap)) < 0.9 * (y1 - y0):
             return False
         return bool(line[max(0, y0 - reach) : y0].all() and y0 >= reach) or bool(
             line[y1 : y1 + reach].all() and y1 + reach <= height
@@ -1695,8 +2026,67 @@ def _scan_covers(
             if clipped is not None:
                 padded = clipped
                 notes.append("cover_clipped_off_rule")
+            cleared = _clear_protected_regions(page, padded, regions)
+            if cleared != padded:
+                padded = cleared
+                notes.append("cover_cleared_off_protected_region")
         covers.append(padded)
     return covers, notes
+
+
+# RUN29 F43: a cover stopped 0.2 pt short of a protected region (checkbox,
+# stamp, signature) still shares a raster pixel with the region's edge at any
+# display resolution below ~360 dpi (measured: 120 dpi previews, the region's
+# last pixel column lightened by the cover's anti-aliased edge). One point is
+# wider than a pixel at every resolution >= 72 dpi. The edge is moved back only
+# across a strip proven free of ink, so no source glyph is ever left uncovered;
+# the first ``_PROTECTED_AA_GAP`` next to the region (its own anti-aliasing) is
+# not required to be blank.
+_PROTECTED_CLEARANCE = 1.0
+_PROTECTED_AA_GAP = 0.45
+
+
+def _strip_has_ink(page: Any, strip: list[float]) -> bool:
+    dark = _page_dark(page)
+    if dark is None:
+        return True
+    height, width = dark.shape
+    sx0, sx1 = max(0, _px(page, strip[0], 0)), min(width, _px(page, strip[2], 0))
+    sy0, sy1 = max(0, _px(page, strip[1], 1)), min(height, _px(page, strip[3], 1))
+    if sx1 <= sx0 or sy1 <= sy0:
+        return False
+    return bool(dark[sy0:sy1, sx0:sx1].any())
+
+
+def _clear_protected_regions(
+    page: Any, padded: list[float], regions: list[list[float]]
+) -> list[float]:
+    out = list(padded)
+    gap, aa = _PROTECTED_CLEARANCE, _PROTECTED_AA_GAP
+    for r in regions:
+        rows = r[1] < out[3] and out[1] < r[3]
+        cols = r[0] < out[2] and out[0] < r[2]
+        if rows and r[2] <= out[0] + 1e-6 and out[0] - r[2] < gap:
+            new = r[2] + gap
+            strip = [max(out[0], r[2] + aa), out[1], new, out[3]]
+            if new < out[2] - 1.0 and not _strip_has_ink(page, strip):
+                out[0] = new
+        elif rows and r[0] >= out[2] - 1e-6 and r[0] - out[2] < gap:
+            new = r[0] - gap
+            strip = [new, out[1], min(out[2], r[0] - aa), out[3]]
+            if new > out[0] + 1.0 and not _strip_has_ink(page, strip):
+                out[2] = new
+        elif cols and r[3] <= out[1] + 1e-6 and out[1] - r[3] < gap:
+            new = r[3] + gap
+            strip = [out[0], max(out[1], r[3] + aa), out[2], new]
+            if new < out[3] - 1.0 and not _strip_has_ink(page, strip):
+                out[1] = new
+        elif cols and r[1] >= out[3] - 1e-6 and r[1] - out[3] < gap:
+            new = r[1] - gap
+            strip = [out[0], new, out[2], min(out[3], r[1] - aa)]
+            if new > out[1] + 1.0 and not _strip_has_ink(page, strip):
+                out[3] = new
+    return out
 
 
 def _glyph_band(
@@ -2047,6 +2437,118 @@ def _plan_scan_block(
                     block_id=block_id,
                 )
             )
+    if best is None and lines == 1 and _SCAN_WRAP_BETWEEN_NEIGHBOURS:
+        # RUN29 F44 (after F37: a one-line rendering, even condensed, is never
+        # turned into two lines). The frames above are sized at the NOMINAL font
+        # (size * 1.25 * n), so on an inflated one-line OCR box they spill onto
+        # the next row and are refused, although two lines at the bounded
+        # reduction (>= 72 %) fit between the nearest neighbours (measured on
+        # the corpus: 14-21 pt free for 11-14 pt boxes). The frame is bounded by
+        # every OCR line box and protected zone above and below (never taller
+        # than two nominal lines); inside the painted cover any ink is the
+        # line's own (hidden), everything outside the cover must be proven blank
+        # on the original raster (never trimmed to stop at foreign ink).
+        floor = max(4.0, size * _SCAN_MIN_FONT_RATIO)
+        all_others = [
+            lb for o in ir_blocks if str(o.get("id")) != block_id for lb in _line_boxes(o)
+        ]
+        neighbour_rects: list[list[float]] = []
+        cover_box = [
+            min(c[0] for c in covers),
+            min(c[1] for c in covers),
+            max(c[2] for c in covers),
+            max(c[3] for c in covers),
+        ]
+        glyphs = _glyph_band(page, box, others) or (box[1], box[3])
+        mid = (glyphs[0] + glyphs[1]) / 2
+        spans = sorted(
+            {(round(c[0], 2), round(c[2], 2)) for c in candidates[:2]},
+            key=lambda s: s[1] - s[0],
+        )
+        for x0, x1 in spans:
+            column = [o for o in all_others + region_boxes if o[0] < x1 and x0 < o[2]]
+            if any(o[1] < mid < o[3] for o in column):
+                continue  # a neighbour crosses the line's own print
+            top = max([inner[1]] + [o[3] + 0.6 for o in column if (o[1] + o[3]) / 2 < mid])
+            bottom = min(
+                [top + size * 1.25 * 2, page.rect.y1 - 18]
+                + [o[1] - 0.6 for o in column if (o[1] + o[3]) / 2 > mid]
+            )
+            if bottom - top < 2 * floor * 1.17:
+                continue
+            rect = [x0, top, x1, bottom]
+            if any(_strict_overlap(rect, o) for o in all_others + region_boxes):
+                continue
+            if not _growth_is_blank(page, rect, cover_box):
+                continue  # unboxed ink (rule, label) in the frame
+            fit_rects.append(rect)
+            neighbour_rects.append(rect)
+        variants = [style]
+        if _condensed_available(style):
+            variants.append({**style, "condensed": True})
+        for variant in variants:
+            for rect in neighbour_rects:
+                ok, remainder, used = _fit_on_scratch(
+                    source_bytes,
+                    page_number,
+                    fitz.Rect(*rect),
+                    target,
+                    size,
+                    variant,
+                    align,
+                    _SCAN_MIN_FONT_RATIO,
+                )
+                if ok and (best is None or used > best[2] + 1e-6):
+                    best = (rect, remainder, used)
+            if best is not None:
+                style = variant
+                issues.append(
+                    _warn(
+                        "SINGLE_LINE_WRAPPED_BETWEEN_NEIGHBOURS",
+                        "Ligne unique traduite sur deux lignes entre ses voisins (aucun bloc ni zone protégée, encre hors masque vérifiée absente, réduction bornée).",
+                        "info",
+                        block_id=block_id,
+                        condensed=bool(variant.get("condensed")),
+                    )
+                )
+                break
+    if best is None and fit_rects and _SCAN_TIGHT_LINE_HEIGHT:
+        # RUN29 F45: insert_textbox reserves 1.40 x the font size for one line
+        # (PyMuPDF 1.28 default line box, measured) while the glyph ink, accents
+        # and descenders included, spans 1.17 x. A tight line box (1.0, frame
+        # 1.24 x) keeps every glyph inside the same proven-free frames, same
+        # size floor; regular then condensed. Last resort only: blocks that
+        # fit with the default line box are never affected. A falsy
+        # _SCAN_TIGHT_LINE_HEIGHT disables F45 (kill switch).
+        variants = [{**style, "lineheight": _SCAN_TIGHT_LINE_HEIGHT}]
+        if _condensed_available(style):
+            variants.append({**style, "condensed": True, "lineheight": _SCAN_TIGHT_LINE_HEIGHT})
+        for variant in variants:
+            for rect in fit_rects:
+                ok, remainder, used = _fit_on_scratch(
+                    source_bytes,
+                    page_number,
+                    fitz.Rect(*rect),
+                    target,
+                    size,
+                    variant,
+                    align,
+                    _SCAN_MIN_FONT_RATIO,
+                )
+                if ok and (best is None or used > best[2] + 1e-6):
+                    best = (rect, remainder, used)
+            if best is not None:
+                style = variant
+                issues.append(
+                    _warn(
+                        "SCAN_TIGHT_LINE_HEIGHT",
+                        "Interligne resserré (encre des glyphes contenue dans le cadre vérifié libre, même plancher de taille) au lieu d'un refus.",
+                        "info",
+                        block_id=block_id,
+                        condensed=bool(variant.get("condensed")),
+                    )
+                )
+                break
     if best is None:
         issues.append(
             _warn(
@@ -2060,6 +2562,22 @@ def _plan_scan_block(
         )
         return None, issues, True
     rect, remainder, used = best
+    if _SCAN_CHECK_TEXT_OVER_RULES:
+        # RUN29 F53: the frame may straddle a rule that the cover leaves visible
+        # (inflated OCR box); the growth checks only look outside the box.
+        rule_y = _text_crosses_visible_rule(page, rect, target, used, style, align, covers)
+        if rule_y is not None:
+            issues.append(
+                _warn(
+                    "SCAN_TEXT_CROSSES_RULE",
+                    "La traduction serait dessinée à travers un filet conservé (aspect barré); source conservée, revue humaine.",
+                    "critical",
+                    block_id=block_id,
+                    rule_y=round(rule_y, 1),
+                    font_size=round(used, 2),
+                )
+            )
+            return None, issues, False
     if used < size * 0.85:
         issues.append(
             _warn(

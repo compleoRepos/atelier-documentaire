@@ -100,6 +100,9 @@ def test_f37_font_kwargs_select_the_condensed_variant_of_the_same_style():
 
 @needs_condensed
 def test_f37_condensed_font_is_the_last_resort_before_overflow(monkeypatch):
+    # RUN29: F37 is tested in isolation from the later F45 resort (tight line
+    # box), which is switched off here and tested in test_run29_render_regressions.
+    monkeypatch.setattr(pf, "_SCAN_TIGHT_LINE_HEIGHT", None)
     # Find the first length at which the regular font overflows.
     with monkeypatch.context() as m:
         m.setattr(pf, "_condensed_available", lambda style: False)

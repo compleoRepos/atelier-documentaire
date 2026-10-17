@@ -1,0 +1,52 @@
+# RUN29 — Défauts ouverts, limites et prérequis
+
+> **Le RUN29 n'est pas prêt pour une mise en service.** Des défauts critiques subsistent (53 défauts critiques scorecard-2 dédupliqués, 105 alertes produit critiques). Aucune ligne de référence humaine n'a été revue (0/1 072). Le seuil de 94 n'est pas atteint : la borne basse v2 du corpus vaut 64,4737, avec un plafond de 75,4630 sans références humaines. Verdict motivé : [RUN29-DEPLOYMENT-VERDICT.md](RUN29-DEPLOYMENT-VERDICT.md).
+
+Conventions : identifiants `MV-xx` = défauts vérifiés **visuellement** sur les fichiers réellement produits (recadrages privés, jamais publiés) ; `OI-xx` = problèmes ouverts de ce rapport. Aucun extrait de document, identifiant de bloc ni coordonnée n'est publié.
+
+## 1. Défauts ouverts du produit
+
+| Id | Gravité | Documents | Constat | Détecté par | Correction nécessaire |
+|---|---|---|---|---|---|
+| OI-01 | critique | 7/8 (tous sauf DOC-003) | 53 défauts critiques scorecard-2 (dédupliqués) et 105 alertes produit critiques (occurrences). Ventilation par code : `SCAN_COVER_CUTS_SOURCE_GLYPHS` 12 (DOC-001 1, DOC-004 7, DOC-005 1, DOC-006 3) ; `LAYOUT_OVERFLOW` 8 ; triplet `RENDER_SOURCE_TEXT_MISSING` / `RENDER_TEXT_CLIPPED_OR_MISSING` / `RENDER_TRANSLATED_TEXT_MISSING` 7 × 3 (un par document ayant au moins une traduction attendue non dessinée : tous sauf DOC-003) ; `RENDER_RULE_ERASED` 5 ; `SCAN_TEXT_OVER_SOURCE_INK` 4 (DOC-002 1, DOC-004 1, DOC-006 2) ; `SCAN_TEXT_CROSSES_RULE` 2 (DOC-004) ; `UNMAPPED_TABLE_CONTENT` 1 (DOC-007) | scorer v2 et moteur qualité | traiter les causes OI-02 à OI-08 ; aucune moyenne ne compense un défaut critique |
+| OI-02 | critique | DOC-004 (6), DOC-007 (1), DOC-008 (1) | 8 blocs encore en `LAYOUT_OVERFLOW` : cellules de 5 à 7 pt dont la traduction est 1,7 à 2,4 fois plus longue ; même deux lignes réduites ou un interligne serré ne tiennent pas. L'original est conservé et le bloc n'est pas traduit à l'écran | planificateur scan (échec explicite) | reformulation courte contrôlée (abréviations autorisées par glossaire) ou mise en page alternative (note de bas de page, annexe) validée par le métier |
+| OI-03 | critique | DOC-001, DOC-004, DOC-006 | 3 traductions contenant de l'arabe ou de l'hébreu refusées au rendu (`RTL_SHAPING_UNSUPPORTED`) : la primitive de dessin de texte ne façonne pas les écritures de droite à gauche | planificateur scan (refus explicite) | moteur de façonnage (HarfBuzz) et algorithme bidirectionnel avant dessin, avec tests visuels |
+| OI-04 | critique | DOC-004 | **MV-06** : phrases de droite à gauche multi-lignes découpées par l'OCR en lignes indépendantes et traduites ligne à ligne ; sens possiblement altéré, statut `TRANSLATED` sans alerte (non recompté en RUN29) | inspection visuelle seulement | regroupement des lignes en phrases avant traduction (segmentation), puis répartition contrôlée sur les lignes d'origine |
+| OI-05 | critique | DOC-004 | **MV-18** : un trait de signature lu par l'OCR comme deux lettres, reportées dans la traduction ; la couverture empiète sur le haut du paraphe. Identique en RUN28 et en RUN29 | inspection visuelle seulement | détection des signatures manuscrites comme zones protégées ; rejet des jetons OCR issus d'une zone de signature |
+| OI-06 | critique | DOC-004 (2), DOC-006 (3) | 5 filets de tableau encore effacés sous une couverture (`RENDER_RULE_ERASED`, F49) : filets trop interrompus ou trop inclinés pour le détecteur F38/F48. Les filets épais (≥ 2 pt) ne sont pas contrôlés ; le rappel de F49 n'est pas mesuré | F49 (nouveau) | redessiner le filet d'origine après la couverture (restauration des pixels du filet) plutôt que l'exclure de la couverture ; mesurer le rappel sur un jeu étiqueté |
+| OI-07 | majeur | DOC-001, DOC-004, DOC-005, DOC-006 | 14 traductions **refusées par prudence** (12 `render_source_glyphs_cut` F50/F50c, 2 `render_text_crosses_rule` F53) : l'original est conservé à l'écran, sans perte d'information visuelle, mais la traduction de ces lignes manque. DOC-005 n'a plus aucun bloc traduit | F50, F50c, F53 (refus explicites, critiques) | étendre la couverture à l'emprise réelle des glyphes et redessiner les filets, puis réessayer le placement ; ne pas assouplir les refus |
+| OI-08 | majeur | DOC-004 | **MV-17** résiduel : 2 cadres où un filet frôle le texte traduit (mineurs ou ambigus) non touchés par F53 ; 2 faux positifs de l'évaluateur hors ligne (titre souligné, bord de cellule) | évaluateur privé hors ligne | validation humaine ; calibration de F53 sur un jeu étiqueté plus large |
+| OI-09 | majeur | DOC-004, DOC-006, DOC-007 | **MV-16** : 6 lignes autrefois en débordement désormais placées sur deux lignes réduites (F44) ou avec interligne serré (F45) ; **MV-05** : lignes en corps condensé très petit (cadres de 5 à 7 pt). Lisibilité non garantie | codes `SINGLE_LINE_WRAPPED_BETWEEN_NEIGHBOURS`, `SCAN_TIGHT_LINE_HEIGHT`, compteur `condensed_font_blocks` | contrôle humain de lisibilité ; plancher de corps validé par le métier |
+| OI-10 | majeur | DOC-004, DOC-006 | **MV-07** : une ligne d'OCR bruité traduite de façon incohérente ; **MV-14** : une traduction empiète sur un numéro de liste voisin ; **MV-15** (mineur) : ponctuation bidirectionnelle inversée dans une traduction mémorisée ; **MV-08** (mineur) : graisse perdue, jour ordinal sans suffixe | inspection visuelle seulement | détection d'incohérence OCR avant traduction ; obstacle « numéro de liste » dans le planificateur ; normalisation bidi des cibles |
+| OI-11 | majeur | 7/8 | 83 blocs `FAILED:model_returned_source` (Interim a renvoyé la source ; 84 en RUN28, un bloc est désormais classé `ocr_unreliable`). Analyse RUN28 toujours valable : la grande majorité fait 1 à 3 mots (noms, adresses, fragments OCR) | statut explicite | classification préalable « à ne pas traduire » (noms propres, adresses) ou nouvelle tentative ciblée ; sinon revue humaine |
+| OI-12 | majeur | 8/8 | 152 blocs `UNCERTAIN` (dont 140 `ocr_unreliable`) laissés non traduits par prudence | statut explicite | OCR de meilleure qualité (moteur OCR alternatif, prétraitement), puis revue humaine |
+
+## 2. Limites des détecteurs et de la mesure
+
+| Id | Nature | Constat | Conséquence |
+|---|---|---|---|
+| OI-13 | méthode | Les contrôles F49, F50, F50c et F53 ont été calibrés sur des cas étiquetés **du corpus lui-même** (13 cas pour F50, 6 pour F53, 11 signalements pour F49). Aucun jeu de validation indépendant | précision observée élevée sur ces cas, **rappel non mesuré** ; des défauts du même type peuvent rester non détectés |
+| OI-14 | méthode | La portée gelée `measure_v2.expected_scope` (gel RUN27) compte encore certaines lignes de références conservées comme attendues ; la v2 compare les entités à l'OCR, pas à l'image | couverture pénalisée sans perte réelle ; les altérations visibles seulement à l'œil (MV-06, MV-07, MV-18) ne sont pas mesurées |
+| OI-15 | méthode | Le statut `REVIEW_REQUIRED` des résumés du lanceur corpus vient du service de traduction ; le moteur qualité complet (qui renvoie `FAIL` sur erreur critique) n'est pas exécuté par le lanceur | le statut ne distingue pas les documents à défaut critique ; il ne vaut jamais validation |
+| OI-16 | limite | F36 : identifiants ambigus à l'OCR (l/1, O/0) non détectés ; F42 : un ordinal à 3 chiffres ou plus converti en notation française reste vu comme une modification | faux négatifs et faux positifs possibles sur les entités |
+| OI-17 | limite | Le marquage des lignes de références (F35) n'est rejoué en réutilisation d'analyse que si le document contient des pages scannées | non observable sur ce corpus (8 scans) |
+| OI-18 | limite | Les tests automatisés ne prouvent aucune inférence réelle : la suite utilise des moteurs factices identifiés comme tels, le golden le moteur `offline` (aucun modèle invoqué) ; les rejeux corpus réutilisent la mémoire de traduction Interim | seules les passes gpt-oss (`run29oss*`) contiennent de vraies inférences en RUN29 ; aucune nouvelle inférence Interim n'a eu lieu |
+
+## 3. Prérequis non disponibles
+
+| Id | Prérequis | État | Ce qui bloque |
+|---|---|---|---|
+| OI-19 | Validation humaine | pack privé de 1 072 lignes, **0 ligne revue**, `NOT_STARTED` pour les 8 documents | aucune certification linguistique ou visuelle possible ; seuil 94 inaccessible (plafond v2 75,4630 au niveau du corpus) |
+| OI-20 | Moteur privé de production | gpt-oss-20b exécuté localement sur CPU (llama.cpp, 1 vCPU visible, environ 2 min par requête) ; passe finale sur les 8 originaux : 420 blocs traduits contre 492 avec Interim, 150 sources renvoyées inchangées contre 83, 6 défauts critiques d'entités contre 0 ; **vLLM non testé** (aucun GPU) ; Qwen : aucun poids ni point d'accès disponible | aucun moteur privé n'est qualifié ; résultats détaillés dans [RUN29-ENGINE-COMPARISON.md](RUN29-ENGINE-COMPARISON.md) |
+| OI-21 | Traçabilité du moteur privé | la provenance porte encore le libellé historique `private-qwen-gateway` quel que soit le modèle privé ; sans alias imposé côté serveur, llama.cpp renvoie un chemin local comme modèle servi (constaté en privé, jamais exporté) | le modèle réel doit être déduit de la configuration du serveur ; libellé à rendre configurable |
+| OI-22 | Parcours Office | XLSX/PPTX : aucune preuve visuelle mesurée (`visual_proof=NOT_AVAILABLE`), texte rogné par la largeur de colonne non détecté, conversion d'aperçu d'un PPTX minimal en échec signalé | inchangé depuis RUN28 (non modifié en RUN29) |
+| OI-23 | Confidentialité de l'historique | l'historique Git du dépôt **privé** (branches RUN ≤ 27) contient des fragments textuels du corpus ; le dépôt public est un instantané propre à commit unique | ne jamais rendre public le dépôt privé sans réécriture d'historique |
+
+## 4. Ce qui exige un humain
+
+| Élément | Documents | Pourquoi |
+|---|---|---|
+| Relecture du sens des 490 blocs traduits | 7/8 (DOC-005 n'a plus de bloc traduit) | aucune référence humaine ; les gardes d'entités ne vérifient pas le sens |
+| Lisibilité des lignes réduites, condensées ou à interligne serré (MV-05, MV-16) | DOC-004, DOC-006, DOC-007 | aucun seuil automatique de lisibilité validé |
+| Phrases RTL scindées (MV-06), OCR bruité (MV-07), signature (MV-18) | DOC-004 | invisibles aux métriques |
+| Décision métier sur les 14 refus prudents (OI-07) et les 8 débordements (OI-02) | DOC-001, 004, 005, 006, 007, 008 | arbitrage entre traduction manquante et mise en page |

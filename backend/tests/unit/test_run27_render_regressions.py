@@ -111,7 +111,13 @@ def test_f31_pieces_avoid_the_kept_neighbour_and_the_shrunk_cover():
         assert piece[0] >= margin[2] or piece[1] >= margin[3]  # disjoint from the label
 
 
-def test_f31_own_glyph_tops_are_masked_and_reported():
+def test_f31_own_glyph_tops_are_masked_and_reported(monkeypatch):
+    # RUN29 isolation: IR_SCANNED carries no OCR box, so the RUN29 F50 cut-glyph
+    # guard would see the label's ink as orphan. F50 is covered with a consistent
+    # IR in test_run29_render_regressions.py; the F31 assertions are unchanged.
+    import app.documents.pdf_fidelity as pf
+
+    monkeypatch.setattr(pf, "_CUT_GLYPH_CHECK", False)
     doc = _scan_doc(_raster())
     item = _value_item()
     _apply_full_covers([item], doc)

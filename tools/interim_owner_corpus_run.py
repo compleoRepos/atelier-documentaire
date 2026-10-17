@@ -388,6 +388,7 @@ async def run_one(
     reuse: bool = False,
     reuse_analysis: bool = False,
     translation_cache: Path | None = None,
+    private: dict | None = None,
 ) -> dict:
     doc_id = entry["document_id"]
     source = entry["source"]
@@ -441,17 +442,33 @@ async def run_one(
         ir = analyze_document(str(source), str(work))
         service_module.translate_blocks = _capturing_translate(work)
     analysis_s = time.perf_counter() - started
-    options = {
-        "engine": "interim",
-        "environment": "lab",
-        "interim_data_scope": OWNER_SCOPE,
-        "interim_owner_authorization_file": str(authorization),
-        "source_sha256": sha_before,
-        "target_language": "fr",
-        "interim_api_base": os.environ["OPENAI_API_BASE"],
-        "interim_api_key": os.environ["OPENAI_API_KEY"],
-        "timeout": timeout,
-    }
+    if private is not None:
+        # RUN29: same service, IR, prompts and budgets; only the engine differs.
+        # The private gateway is validated by PrivateQwenEngine (private or
+        # loopback address only, no redirect, local tokenizer, 32K preflight).
+        options = {
+            "engine": "private",
+            "environment": "lab",
+            "source_sha256": sha_before,
+            "target_language": "fr",
+            "private_ai_base_url": private["base_url"],
+            "private_ai_allowed_hosts": private["allowed_hosts"],
+            "private_ai_model": private["model"],
+            "tokenizer_path": private["tokenizer_path"],
+            "timeout": timeout,
+        }
+    else:
+        options = {
+            "engine": "interim",
+            "environment": "lab",
+            "interim_data_scope": OWNER_SCOPE,
+            "interim_owner_authorization_file": str(authorization),
+            "source_sha256": sha_before,
+            "target_language": "fr",
+            "interim_api_base": os.environ["OPENAI_API_BASE"],
+            "interim_api_key": os.environ["OPENAI_API_KEY"],
+            "timeout": timeout,
+        }
     started = time.perf_counter()
     try:
         result = await translate_document(ir, str(work), options)
@@ -470,6 +487,8 @@ async def run_one(
     candidate = work / ("candidate.docx" if ir.get("format") == "docx" else "candidate.pdf")
     summary = {
         "document_id": doc_id,
+        "engine": options["engine"],
+        "provider": telemetry.get("provider"),
         "pages": len(ir.get("pages", [])),
         "blocks": len(blocks),
         "blocks_changed": changed,
@@ -604,11 +623,36 @@ def main() -> None:
         default=None,
         help="out dir of a previous Interim run: reuse targets of unchanged blocks (with --reuse-analysis)",
     )
+    parser.add_argument(
+        "--engine",
+        choices=["interim", "private"],
+        default="interim",
+        help="private: OpenAI-compatible private gateway (vLLM, llama.cpp); data stays private",
+    )
+    parser.add_argument("--private-base-url", default=None)
+    parser.add_argument("--private-model", default=None)
+    parser.add_argument("--private-tokenizer", type=Path, default=None)
     args = parser.parse_args()
+    private = None
+    if args.engine == "private":
+        from urllib.parse import urlparse
+
+        if not (args.private_base_url and args.private_model and args.private_tokenizer):
+            parser.error(
+                "--engine private requiert --private-base-url, --private-model et --private-tokenizer"
+            )
+        if args.translation_cache is not None or args.reuse_translations:
+            parser.error("--engine private : nouvelles inférences uniquement (ni mémoire ni rejeu)")
+        private = {
+            "base_url": args.private_base_url,
+            "allowed_hosts": [urlparse(args.private_base_url).hostname or ""],
+            "model": args.private_model,
+            "tokenizer_path": str(args.private_tokenizer),
+        }
     if args.translation_cache is not None and not args.reuse_analysis:
         parser.error("--translation-cache requiert --reuse-analysis")
     if not args.live:
-        parser.error("--live requis : les originaux autorisés seront envoyés à Interim")
+        parser.error("--live requis : les originaux autorisés seront traduits par le moteur choisi")
     if ROOT == args.out_dir.resolve() or ROOT in args.out_dir.resolve().parents:
         parser.error("--out-dir doit être hors du dépôt (données confidentielles)")
     error, record = load_owner_authorization(args.authorization)
@@ -630,6 +674,8 @@ def main() -> None:
         code_fingerprint=_code_fingerprint(),
         git_head=_git_head(),
         live=bool(args.live),
+        engine=args.engine,
+        private_model=(private or {}).get("model"),
         reuse_translations=bool(args.reuse_translations),
         reuse_analysis=bool(args.reuse_analysis),
         translation_cache_run=args.translation_cache.name if args.translation_cache else None,
@@ -650,6 +696,7 @@ def main() -> None:
                     args.reuse_translations,
                     args.reuse_analysis,
                     args.translation_cache,
+                    private,
                 )
             )
         except Exception as exc:  # report class only, never document content
@@ -692,6 +739,8 @@ def main() -> None:
             journal,
             "document_end",
             **compact,
+            engine=summary.get("engine"),
+            provider=summary.get("provider"),
             generation_mode=summary.get("generation_mode"),
             model_invoked=summary.get("model_invoked"),
             block_provenance_summary=summary.get("block_provenance_summary"),

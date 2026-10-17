@@ -19,6 +19,8 @@ argon2-cffi==25.1.0
 numpy==2.5.3
 opencv-python-headless==4.13.0.92
 transformers==5.19.0
+# RUN29 F46: required by transformers apply_chat_template (private engine 32K preflight)
+jinja2==3.1.6
 tokenizers==0.23.2
 python-multipart==0.0.32
 alembic==1.20.0

@@ -71,6 +71,12 @@ NEW_READING_TRUSTED = 0.90
 IMPLAUSIBLE_BELOW = 0.70
 IMPLAUSIBLE_MIN_WORDS = 8
 IMPLAUSIBLE_MIN_LATIN = 0.90
+# F51 (run29): below this measured confidence, a reading whose only word of
+# 3+ letters has <= 5 letters is no lexical evidence (``weak_lexical_evidence``).
+# Measured on the corpus (counts only): 17 blocks match, 16 were already held
+# for review by other gates, the last one was a misread handwritten value.
+WEAK_SUPPORT_BELOW = 0.35
+WEAK_SUPPORT_MAX_LETTERS = 5
 
 TESSERACT_CODES = {
     "ara": "ara",
@@ -392,7 +398,22 @@ def needs_review(block: dict[str, Any], languages: list[str]) -> bool:
     conf = block.get("confidence")
     if conf is None or float(conf) >= REVIEW_BELOW or not block.get("source_lines"):
         return False
-    return not lexically_supported(str(block.get("text") or ""), block.get("language"), languages)
+    text = str(block.get("text") or "")
+    if float(conf) < WEAK_SUPPORT_BELOW and weak_lexical_evidence(text):
+        return True
+    return not lexically_supported(text, block.get("language"), languages)
+
+
+def weak_lexical_evidence(text: str) -> bool:
+    """F51 (run29): at most one word of 3+ letters, itself <= 5 letters.
+
+    Such a reading is "lexically supported" by a single short common word,
+    which proves nothing at a very low confidence: a handwritten value read
+    at 0.21 as one 4-letter word of an unrelated language was translated
+    into an invented phrase and written over the original.
+    """
+    words = _WORD.findall(text or "")
+    return len(words) <= 1 and all(len(word) <= WEAK_SUPPORT_MAX_LETTERS for word in words)
 
 
 def latin_share(text: str) -> float:

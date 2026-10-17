@@ -1053,6 +1053,194 @@ def _mask_coverage_issues(
     return issues
 
 
+# RUN29 F49: structural rule check. A paper cover that erased a table rule
+# was invisible to every metric (DOC-004 run29d: critical count went DOWN
+# while a rule disappeared over ~120 pt). Values are in points; previews are
+# rasterised at a known page size so they are converted per page.
+_RULE_DARK_LEVEL = 160  # grey level under which a preview pixel is ink
+_RULE_MIN_LENGTH_PT = 30.0  # a run at least this long on one pixel row/column
+_RULE_MIN_COMPONENT_PT = 40.0  # a rule component at least this long
+_RULE_GAP_CLOSE_PX = 1  # drop-outs of <= 2 px are closed before measuring
+_RULE_THIN_OFFSET_PX = 3  # pixels above/below a thin rule are paper
+_RULE_THIN_SHARE = 0.7
+_RULE_OUTSIDE_MASK_PT = 4.0  # structural: the rule continues past the masks
+_RULE_ERASED_PT = 8.0  # contiguous length erased under the masks
+
+
+def _close_runs(rows: Any, radius: int) -> Any:
+    """Binary closing along the last axis (fills holes of <= 2*radius px)."""
+    import numpy as np
+
+    if radius <= 0:
+        return rows
+    width = 2 * radius + 1
+    padded = np.pad(rows, ((0, 0), (radius, radius)), constant_values=False)
+    dilated = np.lib.stride_tricks.sliding_window_view(padded, width, axis=1).any(axis=-1)
+    padded = np.pad(dilated, ((0, 0), (radius, radius)), constant_values=True)
+    return np.lib.stride_tricks.sliding_window_view(padded, width, axis=1).all(axis=-1)
+
+
+def _long_runs(rows: Any, min_length: int) -> Any:
+    """Pixels belonging to a horizontal run of at least ``min_length``."""
+    import numpy as np
+
+    keep = np.zeros_like(rows, dtype=bool)
+    edges = np.diff(np.pad(rows.astype(np.int8), ((0, 0), (1, 1))), axis=1)
+    for row in np.flatnonzero((edges == 1).any(axis=1)):
+        starts = np.flatnonzero(edges[row] == 1)
+        stops = np.flatnonzero(edges[row] == -1)
+        for start, stop in zip(starts, stops, strict=True):
+            if stop - start >= min_length:
+                keep[row, start:stop] = True
+    return keep
+
+
+def _longest_true_run(values: Any) -> tuple[int, int]:
+    """(length, start index) of the longest run of True values."""
+    best = current = 0
+    best_start = start = 0
+    for index, value in enumerate(values):
+        if value:
+            if current == 0:
+                start = index
+            current += 1
+            if current > best:
+                best, best_start = current, start
+        else:
+            current = 0
+    return best, best_start
+
+
+def _erased_rules_one_axis(
+    source: Any, target: Any, masked: Any, scale: float, cross_scale: float
+) -> list[dict[str, Any]]:
+    """Rules running along axis 1 of the arrays (rows = horizontal rules)."""
+    import cv2
+    import numpy as np
+
+    closed = _close_runs(source, _RULE_GAP_CLOSE_PX)
+    runs = _long_runs(closed, max(8, round(_RULE_MIN_LENGTH_PT * scale))) & source
+    if not runs.any():
+        return []
+    # A skewed rule steps from one pixel row to the next: 8-connectivity on a
+    # slightly grown map joins the steps into one component.
+    grown = cv2.dilate(runs.astype(np.uint8), np.ones((3, 3), np.uint8))
+    count, labels = cv2.connectedComponents(grown, connectivity=8)
+    survived = cv2.dilate(target.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
+    offset = _RULE_THIN_OFFSET_PX
+    height = source.shape[0]
+    found: list[dict[str, Any]] = []
+    for label in range(1, count):
+        ys, xs = np.nonzero(runs & (labels == label))
+        if xs.size == 0:
+            continue
+        span = int(xs.max() - xs.min() + 1)
+        if span < _RULE_MIN_COMPONENT_PT * scale:
+            continue
+        above = source[np.clip(ys - offset, 0, height - 1), xs] & (ys - offset >= 0)
+        below = source[np.clip(ys + offset, 0, height - 1), xs] & (ys + offset < height)
+        if float(np.mean(~above & ~below)) < _RULE_THIN_SHARE:
+            continue  # thick structure: a text row, a dark fill, a logo
+        columns = np.arange(xs.min(), xs.max() + 1)
+        inside = np.zeros(columns.size, dtype=bool)
+        outside = np.zeros(columns.size, dtype=bool)
+        kept = np.zeros(columns.size, dtype=bool)
+        index = xs - xs.min()
+        under = masked[ys, xs]
+        np.logical_or.at(inside, index[under], True)
+        np.logical_or.at(outside, index[~under], True)
+        np.logical_or.at(kept, index[under & survived[ys, xs]], True)
+        if outside.sum() < _RULE_OUTSIDE_MASK_PT * scale:
+            continue  # an underline inside the text area, not a structural rule
+        erased = inside & ~kept
+        longest, first = _longest_true_run(erased)
+        if longest < _RULE_ERASED_PT * scale:
+            continue
+        found.append(
+            {
+                "along": (float(xs.min() / scale), float((xs.max() + 1) / scale)),
+                "across": (float(ys.min() / cross_scale), float((ys.max() + 1) / cross_scale)),
+                "erased_along": (
+                    float((xs.min() + first) / scale),
+                    float((xs.min() + first + longest) / scale),
+                ),
+                "rule_pt": round(span / scale, 2),
+                "erased_pt": round(longest / scale, 2),
+                "erased_share": round(float(erased.sum()) / max(1, int(inside.sum())), 3),
+            }
+        )
+    return found
+
+
+def _erased_rule_issues(
+    source_previews: list[Path],
+    candidate_previews: list[Path],
+    masks: list[dict[str, Any]],
+    pages: list[dict[str, Any]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """RUN29 F49: table rules / frame lines of the original that are no longer
+    drawn in the rendering where a text mask was painted.
+
+    Only thin, long lines that ALSO continue outside the masks are considered
+    (structure, not a text row or an underline). A rule redrawn or left intact
+    passes; the check never repairs anything, it reports."""
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    summary: dict[str, Any] = {"available": False, "pages_checked": 0, "erased_rules": 0}
+    if not source_previews or len(source_previews) != len(candidate_previews):
+        return summary, []
+    issues: list[dict[str, Any]] = []
+    for page_number, (source_path, candidate_path) in enumerate(
+        zip(source_previews, candidate_previews, strict=True), 1
+    ):
+        page = next((item for item in pages if item.get("number") == page_number), None)
+        original = Image.open(source_path).convert("L")
+        rendered = Image.open(candidate_path).convert("L")
+        if page is None or original.size != rendered.size:
+            continue
+        sx = original.width / max(float(page["width"]), 1.0)
+        sy = original.height / max(float(page["height"]), 1.0)
+        mask_image = Image.new("L", original.size, 0)
+        draw = ImageDraw.Draw(mask_image)
+        for item in masks:
+            box = _rect(item.get("bbox"))
+            if box and int(item.get("page", 1)) == page_number:
+                draw.rectangle((box[0] * sx, box[1] * sy, box[2] * sx, box[3] * sy), fill=255)
+        masked = np.asarray(mask_image) > 0
+        if not masked.any():
+            summary["pages_checked"] += 1
+            continue
+        source = np.asarray(original) < _RULE_DARK_LEVEL
+        target = np.asarray(rendered) < _RULE_DARK_LEVEL
+        summary["pages_checked"] += 1
+        for orientation, found in (
+            ("horizontal", _erased_rules_one_axis(source, target, masked, sx, sy)),
+            ("vertical", _erased_rules_one_axis(source.T, target.T, masked.T, sy, sx)),
+        ):
+            for rule in found:
+                (a0, a1), (c0, c1) = rule["along"], rule["across"]
+                e0, e1 = rule["erased_along"]
+                bbox = [a0, c0, a1, c1] if orientation == "horizontal" else [c0, a0, c1, a1]
+                erased_bbox = [e0, c0, e1, c1] if orientation == "horizontal" else [c0, e0, c1, e1]
+                issues.append(
+                    {
+                        "code": "RENDER_RULE_ERASED",
+                        "severity": "critical",
+                        "page": page_number,
+                        "orientation": orientation,
+                        "bbox": [round(value, 2) for value in bbox],
+                        "erased_bbox": [round(value, 2) for value in erased_bbox],
+                        "rule_pt": rule["rule_pt"],
+                        "erased_pt": rule["erased_pt"],
+                        "erased_share": rule["erased_share"],
+                    }
+                )
+    summary["available"] = summary["pages_checked"] > 0
+    summary["erased_rules"] = len(issues)
+    return summary, issues
+
+
 def measure_render_fidelity(
     source: Any,
     candidate: Any,
@@ -1172,6 +1360,10 @@ def measure_render_fidelity(
         ],
     )
     issues.extend(protected_issues)
+    rule_integrity, rule_issues = _erased_rule_issues(
+        original["previews"], target["previews"], masks, original["pages"]
+    )
+    issues.extend(rule_issues)
     measured_components = [
         value for value in [geometry.get("score"), raster_score] if value is not None
     ]
@@ -1197,6 +1389,7 @@ def measure_render_fidelity(
         "geometry_metrics": geometry,
         "geometry_pure": geometry.get("score"),
         "layout_score": layout_score,
+        "rule_integrity": rule_integrity,
         "structure_metrics": structure_metrics,
         "docx_structure": structure,
         "pdf_structure": pdf_structure if source_path.suffix.casefold() != ".docx" else None,

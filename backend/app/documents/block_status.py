@@ -27,7 +27,7 @@ import re
 from collections import Counter
 from typing import Any
 
-VERSION = "block-status-4"  # RUN28 F35 reference_line + OFFICE_* render failures  # F26 RENDER_TARGET_NOT_VERIFIED, F28 rewritten identifiers
+VERSION = "block-status-6"  # RUN29 F53 render_text_crosses_rule  # RUN29 F50 render_source_glyphs_cut  # RUN28 F35 reference_line + OFFICE_* render failures  # F26 RENDER_TARGET_NOT_VERIFIED, F28 rewritten identifiers
 STATUSES = (
     "TRANSLATED",
     "PRESERVED_INTENTIONALLY",
@@ -39,6 +39,8 @@ STATUSES = (
 _RENDER_FAILURES = {
     "LAYOUT_OVERFLOW": "render_overflow",
     "SCAN_TEXT_OVER_SOURCE_INK": "render_residual_source_ink",
+    "SCAN_COVER_CUTS_SOURCE_GLYPHS": "render_source_glyphs_cut",  # RUN29 F50
+    "SCAN_TEXT_CROSSES_RULE": "render_text_crosses_rule",  # RUN29 F53
     "RTL_SHAPING_UNSUPPORTED": "render_rtl_shaping_unsupported",
     "PROTECTED_OVERLAP_REVIEW": "render_protected_overlap",
     "PROTECTED_TRANSLATION_NOT_APPLIED": "render_protected_region",

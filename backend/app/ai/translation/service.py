@@ -214,7 +214,20 @@ class PrivateQwenEngine(TranslationEngine):
                     }
                 ]
             )
-        prompt_with_schema, prompt_tokens = self._preflight(messages)
+        try:
+            prompt_with_schema, prompt_tokens = self._preflight(messages)
+        except (ImportError, ValueError, TypeError) as exc:
+            # RUN29 F46/F47: a budget that cannot be measured is never sent
+            # (e.g. jinja2 missing for the chat template, unknown encoding).
+            return EngineResult(
+                issues=[
+                    {
+                        "code": "PRIVATE_PREFLIGHT_FAILED",
+                        "severity": "critical",
+                        "message": f"Budget de contexte non mesurable : {type(exc).__name__}.",
+                    }
+                ]
+            )
         if prompt_with_schema + max_output + self.safety_margin > self.max_context:
             return EngineResult(
                 issues=[
@@ -393,14 +406,34 @@ def _tokenizer_hash(tokenizer: Any, name: str) -> str:
 
 
 def _token_count(value: Any, tokenizer: Any = None) -> int:
+    """Number of tokens of an encoded prompt (fail-closed).
+
+    RUN29 F47: transformers 5 ``apply_chat_template(tokenize=True)`` returns a
+    ``BatchEncoding`` mapping; ``len()`` of it is the number of KEYS (2), not
+    of tokens (3 082 measured on a real chat-template tokenizer), which let any
+    prompt through the 32K guard. The ids are now read explicitly; a batch must
+    hold exactly one sequence and an unknown type is refused instead of being
+    estimated from whitespace."""
     if tokenizer is not None and isinstance(value, str) and hasattr(tokenizer, "encode"):
         return len(tokenizer.encode(value, add_special_tokens=False))
+    if isinstance(value, Mapping) or (
+        hasattr(value, "keys") and hasattr(value, "__getitem__") and not isinstance(value, str)
+    ):
+        if "input_ids" not in value:
+            raise ValueError("token count unavailable: encoding without input_ids")
+        value = value["input_ids"]
     if hasattr(value, "shape"):
+        shape = tuple(value.shape)
+        if len(shape) == 2 and shape[0] != 1:
+            raise ValueError("token count unavailable: batch of several sequences")
         return int(value.shape[-1])
-    try:
+    if isinstance(value, list | tuple) and value and isinstance(value[0], list | tuple):
+        if len(value) != 1:
+            raise ValueError("token count unavailable: batch of several sequences")
+        value = value[0]
+    if isinstance(value, str | list | tuple | range):
         return len(value)
-    except TypeError:
-        return len(str(value).split())
+    raise ValueError(f"token count unavailable: {type(value).__name__}")
 
 
 def _strict_translation_json(content: Any, expected_ids: Sequence[str]) -> dict[str, str]:
@@ -1150,9 +1183,25 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
         previous_decisions = list(
             options.get("previous_decisions", options.get("previous", [])) or []
         )
-        _SPLIT_CODES = {"INTERIM_CONTEXT_OVERFLOW", "INTERIM_INVALID_MODEL_OUTPUT"}
+        # RUN29 F52: the private engine (Qwen/vLLM, gpt-oss...) had neither the
+        # proactive per-request block cap nor the bounded split retry of the
+        # Interim path (a 334-block request was sent and rejected as a whole).
+        # Same policy for both remote modes; rejected output is never accepted.
+        _SPLIT_CODES_BY_MODE = {
+            "interim": {"INTERIM_CONTEXT_OVERFLOW", "INTERIM_INVALID_MODEL_OUTPUT"},
+            "private": {"CONTEXT_OVERFLOW", "INVALID_MODEL_OUTPUT"},
+        }
+        _SPLIT_CODES = _SPLIT_CODES_BY_MODE.get(mode, set())
+        _SPLIT_RETRY_CODE = (
+            "INTERIM_CHUNK_SPLIT_RETRY" if mode == "interim" else "PRIVATE_CHUNK_SPLIT_RETRY"
+        )
         _MAX_SPLIT_DEPTH = 5
-        max_blocks = int(options.get("interim_max_blocks_per_request", 40)) if mode == "interim" else 0
+        if mode == "interim":
+            max_blocks = int(options.get("interim_max_blocks_per_request", 40))
+        elif mode == "private":
+            max_blocks = int(options.get("private_ai_max_blocks_per_request", 40))
+        else:
+            max_blocks = 0
 
         async def _translate_active(
             chunk: dict[str, Any],
@@ -1234,7 +1283,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
             if result.issues:
                 rejected = {str(issue.get("code")) for issue in result.issues} & _SPLIT_CODES
                 if (
-                    mode == "interim"
+                    mode in _SPLIT_CODES_BY_MODE
                     and rejected
                     and len(active_blocks) > 1
                     and depth < _MAX_SPLIT_DEPTH
@@ -1244,7 +1293,7 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
                     # the rejected output. Bounded depth; final failures stay critical.
                     issues.append(
                         {
-                            "code": "INTERIM_CHUNK_SPLIT_RETRY",
+                            "code": _SPLIT_RETRY_CODE,
                             "severity": "warning",
                             "message": "Requête refusée puis redécoupée en deux requêtes plus petites.",
                             "rejected_codes": sorted(rejected),
@@ -1284,13 +1333,13 @@ async def translate_blocks(ir: dict, options: dict | None = None) -> dict:
             extra_ids = [block_id for block_id in result.translations if block_id not in chunk_ids]
             if (
                 (missing_ids or extra_ids)
-                and mode == "interim"
+                and mode in _SPLIT_CODES_BY_MODE
                 and len(active_blocks) > 1
                 and depth < _MAX_SPLIT_DEPTH
             ):
                 issues.append(
                     {
-                        "code": "INTERIM_CHUNK_SPLIT_RETRY",
+                        "code": _SPLIT_RETRY_CODE,
                         "severity": "warning",
                         "message": "Sortie incomplète puis requête redécoupée.",
                         "rejected_codes": ["INVALID_MODEL_OUTPUT"],

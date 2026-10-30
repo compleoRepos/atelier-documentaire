@@ -22,6 +22,16 @@ class SearchRequest(_Strict):
     limit: int = Field(default=10, ge=1, le=50)
 
 
+class LexicalSearchRequest(_Strict):
+    """LOT 2 : recherche BM25 (suggestions non injectables)."""
+
+    text: str = Field(min_length=1, max_length=2000)
+    source_language: str = Field(min_length=2, max_length=12)
+    target_language: str = Field(default="fr", min_length=2, max_length=12)
+    domain: str | None = Field(default=None, max_length=40)
+    limit: int = Field(default=10, ge=1, le=50)
+
+
 class DocumentContextRequest(_Strict):
     source_language: str | None = Field(default=None, max_length=12)
     target_language: str | None = Field(default=None, max_length=12)

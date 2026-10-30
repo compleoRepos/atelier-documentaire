@@ -317,6 +317,90 @@ class RagSearchLog(Base):
     __table_args__ = (Index("ix_rag_search_log_tenant_created", "tenant_id", "created_at"),)
 
 
+# --- LOT 2 (migration ``0004_rag_lot2``) : index lexical BM25 et imports. -----------------
+
+
+class RagLexicalIndex(Base):
+    """État de l'index lexical d'une version (idempotence, version du normaliseur)."""
+
+    __tablename__ = "rag_lexical_indexes"
+    version_id: Mapped[str] = mapped_column(
+        ForeignKey("rag_referential_versions.id", ondelete="CASCADE"), primary_key=True
+    )
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey(TENANT_FK, ondelete="CASCADE"), nullable=True
+    )
+    normalizer_version: Mapped[str] = mapped_column(String(40), nullable=False)
+    content_sha256: Mapped[str | None] = mapped_column(String(64))
+    entry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    posting_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # {"en>fr": [nombre d'entrées, somme des longueurs]} : statistiques BM25 précalculées.
+    pair_stats: Mapped[dict | None] = mapped_column(JSON)
+    built_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=now_utc, nullable=False
+    )
+
+
+class RagTermPosting(Base):
+    """Posting BM25 : un jeton normalisé d'une entrée publiée (terme, synonymes, variantes)."""
+
+    __tablename__ = "rag_term_postings"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    version_id: Mapped[str] = mapped_column(
+        ForeignKey("rag_referential_versions.id", ondelete="CASCADE"), nullable=False
+    )
+    entry_id: Mapped[str] = mapped_column(
+        ForeignKey("rag_term_entries.id", ondelete="CASCADE"), nullable=False
+    )
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey(TENANT_FK, ondelete="CASCADE"), nullable=True
+    )
+    source_language: Mapped[str] = mapped_column(String(12), nullable=False)
+    target_language: Mapped[str] = mapped_column(String(12), nullable=False)
+    token: Mapped[str] = mapped_column(String(200), nullable=False)
+    tf: Mapped[int] = mapped_column(Integer, nullable=False)
+    doc_len: Mapped[int] = mapped_column(Integer, nullable=False)
+    __table_args__ = (
+        Index(
+            "ix_rag_postings_lookup", "version_id", "source_language", "target_language", "token"
+        ),
+        Index("ix_rag_postings_entry", "entry_id"),
+    )
+
+
+class RagImportBatch(Base):
+    """Trace d'un import CSV/XLSX : empreinte du fichier, compteurs, codes par ligne, sans texte."""
+
+    __tablename__ = "rag_import_batches"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    tenant_id: Mapped[str] = mapped_column(
+        ForeignKey(TENANT_FK, ondelete="CASCADE"), nullable=False
+    )
+    referential_id: Mapped[str] = mapped_column(
+        ForeignKey("rag_referentials.id", ondelete="CASCADE"), nullable=False
+    )
+    version_id: Mapped[str | None] = mapped_column(
+        ForeignKey("rag_referential_versions.id", ondelete="SET NULL"), nullable=True
+    )
+    actor_id: Mapped[str | None] = mapped_column(String(36))
+    status: Mapped[str] = mapped_column(String(20), nullable=False)  # dry_run|applied|rejected
+    file_format: Mapped[str] = mapped_column(String(10), nullable=False)  # csv | xlsx
+    file_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    file_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    row_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    accepted_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    skipped_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    warning_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # Numéros de ligne et codes uniquement ; jamais le contenu des cellules.
+    report: Mapped[list | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=now_utc, nullable=False
+    )
+    __table_args__ = (Index("ix_rag_import_batches_tenant_created", "tenant_id", "created_at"),)
+
+
+# Les onze tables du LOT 1 (0003_rag) restent listées à part : leur contrat est figé.
 RAG_TABLES: tuple[str, ...] = (
     "rag_referentials",
     "rag_referential_versions",
@@ -330,7 +414,13 @@ RAG_TABLES: tuple[str, ...] = (
     "rag_role_assignments",
     "rag_search_log",
 )
+RAG_LOT2_TABLES: tuple[str, ...] = (
+    "rag_lexical_indexes",
+    "rag_term_postings",
+    "rag_import_batches",
+)
+RAG_ALL_TABLES: tuple[str, ...] = RAG_TABLES + RAG_LOT2_TABLES
 
 
 def rag_table_objects():
-    return [Base.metadata.tables[name] for name in RAG_TABLES]
+    return [Base.metadata.tables[name] for name in RAG_ALL_TABLES]

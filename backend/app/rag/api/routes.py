@@ -14,8 +14,9 @@ from ..audit.explanation import explain_document
 from ..audit.provenance import write_search_log
 from ..config import effective_mode, token_budget
 from ..core.engine import RagEngine
-from ..schemas import DocumentContextRequest, SearchRequest
+from ..schemas import DocumentContextRequest, LexicalSearchRequest, SearchRequest
 from ..storage import repository
+from ..terminology.normalizer import normalize_language
 from .deps import ANY_RAG_ROLE, CONTEXT_APP_ROLES, rag_errors, require_any
 
 
@@ -139,5 +140,51 @@ def create_rag_router(factory, settings) -> APIRouter:
             outcome={"decision": "SEARCH", "exclusion_reasons": result["exclusion_reasons"]},
         )
         return result
+
+    @router.post("/search/lexical")
+    def lexical_search(body: LexicalSearchRequest, user: User = Depends(get_user)):
+        """LOT 2 : suggestions BM25, jamais injectées dans une traduction."""
+        import hashlib
+
+        from ..core import lexical
+
+        started = time.perf_counter()
+        source = normalize_language(body.source_language)
+        target = normalize_language(body.target_language)
+        if not source or not target:
+            raise HTTPException(422, "RAG_ENTRY_LANGUAGE_INVALID")
+        with rag_errors(), factory() as db:
+            roles = repository.user_roles(db, user.tenant_id, user.id)
+            if not roles & ANY_RAG_ROLE and user.role not in CONTEXT_APP_ROLES:
+                raise HTTPException(403, "RAG_ROLE_REQUIRED")
+            result = lexical.search(
+                db,
+                user.tenant_id,
+                body.text,
+                source,
+                target,
+                limit=body.limit,
+                domain=body.domain,
+            )
+        digest = hashlib.sha256(body.text.encode("utf-8")).hexdigest()
+        write_search_log(
+            factory,
+            tenant_id=user.tenant_id,
+            document_id=None,
+            mode="LEXICAL",
+            origin="api",
+            query_sha256=digest,
+            filters={
+                "domain": body.domain,
+                "source_languages": [source],
+                "target_language": target,
+            },
+            result_ids=[item["entry_id"] for item in result["results"]],
+            result_count=len(result["results"]),
+            referential_versions=[],
+            latency_ms=round((time.perf_counter() - started) * 1000, 3),
+            outcome={"decision": "LEXICAL_SUGGESTIONS", "injectable": False},
+        )
+        return {**result, "query_sha256": digest, "human_review_required": True}
 
     return router

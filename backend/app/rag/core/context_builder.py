@@ -22,6 +22,7 @@ from collections.abc import Mapping, Sequence
 from datetime import date
 from typing import Any
 
+from ..terminology.normalizer import normalize_term
 from .ranking import Exclusion
 from .retrieval import NotionView, TermView
 
@@ -56,9 +57,20 @@ def clean_text(value: object, limit: int) -> tuple[str | None, str | None]:
 
 
 def terminology_items(terms: Sequence[TermView]) -> tuple[list[dict], list[Exclusion]]:
+    """Items {source, target}.
+
+    ``source`` est le terme du référentiel, sauf si le document l'écrit sous une
+    autre forme (synonyme, variante, accents, vocalisation, élision) : la forme
+    du document est alors envoyée, pour que le modèle relie la consigne au texte
+    qu'il lit et que le filtre de pertinence du constructeur gelé la retienne.
+    """
     items, rejected = [], []
     for view in terms:
-        source, why_source = clean_text(view.source_term, MAX_TERM_CHARS)
+        surface = getattr(view, "surface", "") or ""
+        wording = view.source_term
+        if surface and normalize_term(surface) != normalize_term(view.source_term):
+            wording = surface
+        source, why_source = clean_text(wording, MAX_TERM_CHARS)
         target, why_target = clean_text(view.target_term, MAX_TERM_CHARS)
         if source is None or target is None:
             rejected.append(Exclusion(view.id, why_source or why_target or "EMPTY"))

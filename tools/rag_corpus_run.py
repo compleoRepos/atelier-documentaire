@@ -17,7 +17,9 @@ SHA-256, compteurs, décisions, identifiants d'entrées de référentiel.
 Par défaut aucune traduction n'est demandée : seules les requêtes sont
 reconstruites à blanc (moteur de capture, sans réseau). ``--translate`` exécute
 la traduction avec le moteur configuré ; pour ``private``, il faut en plus
-``--allow-model-calls``. Ce lanceur ne mesure pas la qualité : aucun gain n'est
+``--allow-model-calls``. ``--dump-translations`` (dossier HORS dépôt, droits
+0700) conserve les traductions pour une évaluation privée ; le rapport, lui,
+reste sans texte. Ce lanceur ne mesure pas la qualité : aucun gain n'est
 déduit de ses résultats sans corpus annoté et relecture humaine.
 """
 
@@ -81,7 +83,7 @@ def _request_digest(ir: dict, options: dict) -> dict:
     tokenizer = rag_bridge.probe_tokenizer(options)
     requests = rag_bridge.capture_requests(ir, options, tokenizer)
     counter = ContextPackBuilder(tokenizer=tokenizer, max_tokens=10**9)
-    tokens = [counter.count_messages(request["messages"]) for request in requests]
+    tokens = [rag_bridge.message_tokens(counter, request["messages"]) for request in requests]
     return {
         "requests": len(requests),
         "requests_sha256": _sha([request["messages"] for request in requests]),
@@ -100,6 +102,7 @@ def run_variant(
     variant: str,
     *,
     translate: bool,
+    on_result: Any = None,
 ) -> dict:
     from app.application import rag_bridge
     from app.rag.workers.tasks import run_shadow
@@ -152,6 +155,19 @@ def run_variant(
 
         t0 = time.perf_counter()
         result = asyncio.run(translate_blocks(copy.deepcopy(ir), augmented))
+        telemetry = result.get("translation_telemetry") or {}
+        usage = telemetry.get("usage") or {}
+        chunks = telemetry.get("chunks") or []
+        row.update(
+            usage={
+                k: int(usage.get(k) or 0)
+                for k in ("prompt_tokens", "completion_tokens", "total_tokens")
+            },
+            engine_chunks=len(chunks),
+            engine_latency_ms=round(sum(float(c.get("latency_ms") or 0.0) for c in chunks), 3),
+        )
+        if on_result is not None:
+            on_result(variant, result)
         row.update(
             translation_ms=round((time.perf_counter() - t0) * 1000, 3),
             translations_sha256=_sha(result.get("translations")),
@@ -174,6 +190,11 @@ def compare(rows: dict[str, dict]) -> dict:
     if a and c:
         out["C_requests_identical_to_A"] = a["requests_sha256"] == c["requests_sha256"]
         out["C_prompt_tokens_delta"] = c["prompt_tokens_total"] - a["prompt_tokens_total"]
+        usage_a = (a.get("usage") or {}).get("prompt_tokens")
+        usage_c = (c.get("usage") or {}).get("prompt_tokens")
+        if usage_a is not None and usage_c is not None:
+            # Jetons d'entrée réellement facturés par le moteur (et non reconstruits).
+            out["C_engine_prompt_tokens_delta"] = usage_c - usage_a
         if "block_translation_sha256" in a and "block_translation_sha256" in c:
             blocks = set(a["block_translation_sha256"]) | set(c["block_translation_sha256"])
             out["C_blocks_changed"] = sum(
@@ -193,11 +214,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--target-language", default=None)
     parser.add_argument("--translate", action="store_true")
     parser.add_argument("--allow-model-calls", action="store_true")
+    parser.add_argument(
+        "--dump-translations",
+        type=Path,
+        default=None,
+        help="dossier HORS dépôt où écrire traductions et anomalies (évaluation privée)",
+    )
     args = parser.parse_args(argv)
 
     out_dir = args.out_dir.resolve()
     if out_dir == ROOT or ROOT in out_dir.parents:
         raise SystemExit("--out-dir doit être hors du dépôt (sorties de recette non versionnées)")
+    dump_dir = args.dump_translations.resolve() if args.dump_translations else None
+    if dump_dir is not None:
+        if dump_dir == ROOT or ROOT in dump_dir.parents:
+            raise SystemExit("--dump-translations doit être hors du dépôt (textes privés)")
+        if not args.translate:
+            raise SystemExit("--dump-translations exige --translate")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.chmod(0o700)
     variants = [v.strip().upper() for v in args.variants.split(",") if v.strip()]
     if not variants or any(v not in VARIANTS for v in variants):
         raise SystemExit("--variants : sous-ensemble de A,B,C")
@@ -216,9 +251,29 @@ def main(argv: list[str] | None = None) -> int:
         base = {"engine": engine_name, **options}
         if args.target_language:
             base["target_language"] = args.target_language
+
+        def dump(variant: str, result: dict, label: str = label) -> None:
+            if dump_dir is None:
+                return
+            payload = {
+                "translations": result.get("translations"),
+                "issues": _stable(result.get("issues")),
+                "untranslated_blocks": result.get("untranslated_blocks"),
+            }
+            target = dump_dir / f"{label}.{variant}.json"
+            target.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+            target.chmod(0o600)
+
         rows = {
             variant: run_variant(
-                settings, factory, args.tenant_id, ir, base, variant, translate=args.translate
+                settings,
+                factory,
+                args.tenant_id,
+                ir,
+                base,
+                variant,
+                translate=args.translate,
+                on_result=dump,
             )
             for variant in variants
         }

@@ -12,11 +12,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from starlette.concurrency import run_in_threadpool
 
 from ...core.models import User
 from ...core.security import current_user_factory
-from ..models import RagReferential, RagValidationEvent
+from ..models import RagImportBatch, RagLexicalIndex, RagReferential, RagValidationEvent
 from ..schemas import (
     ActiveRequest,
     DraftRequest,
@@ -199,6 +200,136 @@ def create_rag_admin_router(factory, settings) -> APIRouter:
                 }
                 for row in rows
             ]
+
+    # ------------------------------------------------- LOT 2 : import, historique
+    @router.post("/versions/{version_id}/import")
+    async def import_entries(
+        version_id: str,
+        request: Request,
+        file_format: str = Query("auto", alias="format", pattern="^(auto|csv|xlsx)$"),
+        dry_run: bool = Query(True),
+        user: User = Depends(get_user),
+    ):
+        """Import CSV/XLSX tout-ou-rien dans un brouillon ; essai à blanc par défaut."""
+        limit = settings.rag_import_max_bytes
+        declared = request.headers.get("content-length")
+        if declared and declared.isdigit() and int(declared) > limit:
+            raise HTTPException(413, "IMPORT_TOO_LARGE")
+        chunks, size = [], 0
+        async for chunk in request.stream():
+            size += len(chunk)
+            if size > limit:
+                raise HTTPException(413, "IMPORT_TOO_LARGE")
+            chunks.append(chunk)
+        data = b"".join(chunks)
+
+        def work():
+            from ..terminology import importer
+
+            with rag_errors(), factory() as db:
+                version = repository.writable_version(db, user.tenant_id, version_id)
+                referential = repository.writable_referential(
+                    db, user.tenant_id, version.referential_id
+                )
+                batch = importer.import_file(
+                    db,
+                    settings=settings,
+                    tenant_id=user.tenant_id,
+                    referential=referential,
+                    version=version,
+                    data=data,
+                    file_format=file_format,
+                    actor_id=user.id,
+                    roles=roles_of(db, user),
+                    dry_run=dry_run,
+                )
+                db.commit()
+                return {**importer.batch_view(batch), "version": _version(version)}
+
+        return await run_in_threadpool(work)
+
+    @router.get("/versions/{version_id}/imports")
+    def imports(version_id: str, user: User = Depends(get_user)):
+        from ..terminology.importer import batch_view
+
+        with rag_errors(), factory() as db:
+            require_any(roles_of(db, user), ANY_RAG_ROLE)
+            version = repository.writable_version(db, user.tenant_id, version_id)
+            rows = (
+                db.query(RagImportBatch)
+                .filter(
+                    RagImportBatch.tenant_id == user.tenant_id,
+                    RagImportBatch.version_id == version.id,
+                )
+                .order_by(RagImportBatch.created_at, RagImportBatch.id)
+                .all()
+            )
+            return [batch_view(row) for row in rows]
+
+    @router.get("/referentials/{referential_id}/history")
+    def referential_history(referential_id: str, user: User = Depends(get_user)):
+        with rag_errors(), factory() as db:
+            require_any(roles_of(db, user), ANY_RAG_ROLE)
+            row = repository.visible_referential(db, user.tenant_id, referential_id)
+            return versioning.history(db, row)
+
+    @router.get("/versions/{version_id}/diff")
+    def version_diff(
+        version_id: str,
+        against: str = Query(..., min_length=1, max_length=36),
+        user: User = Depends(get_user),
+    ):
+        """Différences ``against`` -> ``version_id`` (même référentiel)."""
+        with rag_errors(), factory() as db:
+            require_any(roles_of(db, user), ANY_RAG_ROLE)
+            other = repository.visible_version(db, user.tenant_id, version_id)
+            base = repository.visible_version(db, user.tenant_id, against)
+            return versioning.diff_versions(db, base, other)
+
+    @router.get("/lexical/status")
+    def lexical_status(user: User = Depends(get_user)):
+        from ..core.lexical import NORMALIZER_VERSION
+
+        with factory() as db:
+            require_any(roles_of(db, user), ANY_RAG_ROLE)
+            scope = repository.published_scope(db, user.tenant_id)
+            states = {
+                row.version_id: row
+                for row in db.query(RagLexicalIndex)
+                .filter(RagLexicalIndex.version_id.in_([i["version_id"] for i in scope] or [""]))
+                .all()
+            }
+            out = []
+            for item in scope:
+                state = states.get(item["version_id"])
+                fresh = (
+                    state is not None
+                    and state.normalizer_version == NORMALIZER_VERSION
+                    and state.content_sha256 == item["content_sha256"]
+                )
+                out.append(
+                    {
+                        "version_id": item["version_id"],
+                        "referential_id": item["referential_id"],
+                        "scope": item["scope"],
+                        "indexed": fresh,
+                        "entry_count": state.entry_count if state else 0,
+                        "posting_count": state.posting_count if state else 0,
+                        "normalizer_version": state.normalizer_version if state else None,
+                    }
+                )
+            return {"normalizer_version": NORMALIZER_VERSION, "versions": out}
+
+    @router.post("/lexical/rebuild")
+    def lexical_rebuild(force: bool = Query(False), user: User = Depends(get_user)):
+        """Reconstruit l'index des versions publiées du tenant (jamais la bibliothèque commune)."""
+        from ..core import lexical
+
+        with rag_errors(), factory() as db:
+            require_any(roles_of(db, user), {"rag_admin"})
+            result = lexical.rebuild_tenant_indexes(db, user.tenant_id, force=force)
+            db.commit()
+            return result
 
     # ---------------------------------------------------------- rôles et tenant
     @router.get("/roles")

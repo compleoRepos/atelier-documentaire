@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -11,6 +12,8 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _ROOT = Path(__file__).resolve().parents[3]
+# DICE (RAG) : modes ordonnés du plus restrictif au plus permissif.
+RAG_MODES = ("DISABLED", "SHADOW", "ASSISTED", "ACTIVE")
 
 
 class Settings(BaseSettings):
@@ -87,6 +90,19 @@ class Settings(BaseSettings):
     av_timeout_seconds: float = Field(default=30, ge=1, le=120)
     metrics_enabled: bool = True
     metrics_token: str | None = None
+    # DICE (RAG) — désactivé par défaut. En DISABLED aucun module app.rag n'est
+    # importé et les options de traduction ne sont pas modifiées.
+    rag_mode: Literal["DISABLED", "SHADOW", "ASSISTED", "ACTIVE"] = "DISABLED"
+    rag_admin_enabled: bool = False
+    rag_assisted_max_tokens: int = Field(default=800, ge=1, le=4000)
+    rag_active_max_tokens: int = Field(default=1500, ge=1, le=4000)
+    rag_max_entries: int = Field(default=16, ge=1, le=16)
+    rag_shadow_task_expires_seconds: int = Field(default=3600, ge=60, le=86400)
+
+    @field_validator("rag_mode", mode="before")
+    @classmethod
+    def normalize_rag_mode(cls, value):
+        return value.strip().upper() if isinstance(value, str) else value
 
     @field_validator(
         "paddle_model_dir", "quality_embedding_model_dir", "interim_owner_authorization_file", mode="before"
@@ -128,6 +144,7 @@ class Settings(BaseSettings):
     def configuration_contract(self):
         if self.target_input + self.max_output + self.safety_margin > self.max_context:
             raise ValueError("Budget entrée/sortie/marge supérieur au contexte maximal")
+        self._rag_contract()
         if self.environment.lower() == "private" and self.engine == "interim":
             raise ValueError("Environnement privé : provider Interim temporaire interdit")
         if self.interim_data_scope == "owner_authorized_document" and not self.interim_owner_authorization_file:
@@ -171,6 +188,21 @@ class Settings(BaseSettings):
             if "*" in self.origins or any(not x.startswith("https://") for x in self.origins):
                 raise ValueError("Production : origines HTTPS explicites uniquement")
         return self
+
+    def _rag_contract(self) -> None:
+        """Refuse une configuration RAG incohérente ou une variable RAG inconnue."""
+        if max(self.rag_assisted_max_tokens, self.rag_active_max_tokens) >= self.target_input:
+            raise ValueError("Budget RAG supérieur ou égal au budget d'entrée")
+        known = {f"TRANSLATOR_{name.upper()}" for name in type(self).model_fields if name.startswith("rag_")}
+        declared = {key.upper() for key in os.environ}
+        env_file = self.model_config.get("env_file")
+        if isinstance(env_file, str) and Path(env_file).is_file():
+            from dotenv import dotenv_values
+
+            declared |= {key.upper() for key in dotenv_values(env_file)}
+        unknown = sorted(k for k in declared if k.startswith("TRANSLATOR_RAG_") and k not in known)
+        if unknown:
+            raise ValueError("Variable RAG inconnue (jamais ignorée) : " + ", ".join(unknown))
 
     @property
     def origins(self):

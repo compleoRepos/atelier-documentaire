@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, pool
 from app.core import models  # noqa: F401
 from app.core.db import Base
 from app.core.settings import get_settings
+from app.rag import models as rag_models  # noqa: F401  (tables rag_* de 0003_rag)
 
 config = context.config
 if config.config_file_name:

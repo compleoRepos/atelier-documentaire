@@ -1,0 +1,5229 @@
+{
+ "status": "SYNTHETIC — corpus synthétique ; références candidates non humaines ; fidélité sémantique NON MESURÉE",
+ "documents": [
+  {
+   "document": "administratif-ar-fr",
+   "category": "administratif",
+   "domain": "ADMINISTRATION",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 77.14,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 261,
+      "prompt_tokens": 459,
+      "total_tokens": 720
+     },
+     "translation_ms": 54506.936,
+     "resolver_latency_ms": 0.081,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 4,
+     "terms": {
+      "total": 5,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 5,
+      "complied": 5
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 88.98,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 225,
+      "prompt_tokens": 530,
+      "total_tokens": 755
+     },
+     "translation_ms": 43891.365,
+     "resolver_latency_ms": 57.048,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "administratif-de-fr",
+   "category": "administratif",
+   "domain": "ADMINISTRATION",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": false,
+   "C_blocks_changed": 5,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 67.65,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 216,
+      "prompt_tokens": 592,
+      "total_tokens": 808
+     },
+     "translation_ms": 45747.841,
+     "resolver_latency_ms": 6.225,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 67.86,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 216,
+      "prompt_tokens": 592,
+      "total_tokens": 808
+     },
+     "translation_ms": 35859.64,
+     "resolver_latency_ms": 26.778,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 3,
+     "terms": {
+      "total": 5,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 4,
+      "complied": 4
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 83.94,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 217,
+      "prompt_tokens": 644,
+      "total_tokens": 861
+     },
+     "translation_ms": 47464.228,
+     "resolver_latency_ms": 58.152,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "administratif-en-fr",
+   "category": "administratif",
+   "domain": "ADMINISTRATION",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 80.78,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 263,
+      "prompt_tokens": 484,
+      "total_tokens": 747
+     },
+     "translation_ms": 60271.068,
+     "resolver_latency_ms": 0.076,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 4,
+     "terms": {
+      "total": 5,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 5,
+      "complied": 5
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 93.09,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 226,
+      "prompt_tokens": 544,
+      "total_tokens": 770
+     },
+     "translation_ms": 47080.219,
+     "resolver_latency_ms": 51.084,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "administratif-es-fr",
+   "category": "administratif",
+   "domain": "ADMINISTRATION",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 1,
+      "folded": 1
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 76.03,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 222,
+      "prompt_tokens": 535,
+      "total_tokens": 757
+     },
+     "translation_ms": 54749.412,
+     "resolver_latency_ms": 0.125,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 4,
+     "terms": {
+      "total": 5,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 5,
+      "complied": 4
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 1,
+      "date_ok": 1,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 88.53,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 222,
+      "prompt_tokens": 598,
+      "total_tokens": 820
+     },
+     "translation_ms": 46244.985,
+     "resolver_latency_ms": 66.198,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "administratif-fr-en",
+   "category": "administratif",
+   "domain": "ADMINISTRATION",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 0,
+      "date_total": 1,
+      "date_ok": 0,
+      "number_total": 1,
+      "number_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.078,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 0,
+      "date_total": 1,
+      "date_ok": 0,
+      "number_total": 1,
+      "number_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 280.112,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 5,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 5,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 0,
+      "date_total": 1,
+      "date_ok": 0,
+      "number_total": 1,
+      "number_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 16.511,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "attestation-ar-fr",
+   "category": "attestation",
+   "domain": "HR",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 5,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 70.22,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 298,
+      "prompt_tokens": 512,
+      "total_tokens": 810
+     },
+     "translation_ms": 61220.47,
+     "resolver_latency_ms": 0.108,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 7
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 70.71,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 695,
+      "prompt_tokens": 622,
+      "total_tokens": 1317
+     },
+     "translation_ms": 119026.601,
+     "resolver_latency_ms": 63.518,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "attestation-de-fr",
+   "category": "attestation",
+   "domain": "HR",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 66.09,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 278,
+      "prompt_tokens": 588,
+      "total_tokens": 866
+     },
+     "translation_ms": 66616.456,
+     "resolver_latency_ms": 0.095,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 7,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 6,
+      "complied": 5
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 66.55,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 265,
+      "prompt_tokens": 681,
+      "total_tokens": 946
+     },
+     "translation_ms": 55433.594,
+     "resolver_latency_ms": 60.479,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "attestation-en-fr",
+   "category": "attestation",
+   "domain": "HR",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": false,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 70.9,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 304,
+      "prompt_tokens": 611,
+      "total_tokens": 915
+     },
+     "translation_ms": 67698.709,
+     "resolver_latency_ms": 0.125,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 72.14,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 310,
+      "prompt_tokens": 611,
+      "total_tokens": 921
+     },
+     "translation_ms": 43452.904,
+     "resolver_latency_ms": 19.656,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 7
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 76.17,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 274,
+      "prompt_tokens": 708,
+      "total_tokens": 982
+     },
+     "translation_ms": 56393.541,
+     "resolver_latency_ms": 607.35,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "attestation-es-fr",
+   "category": "attestation",
+   "domain": "HR",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 2,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 76.44,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 303,
+      "prompt_tokens": 587,
+      "total_tokens": 890
+     },
+     "translation_ms": 68267.711,
+     "resolver_latency_ms": 0.097,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 6,
+      "complied": 6
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 75.66,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 268,
+      "prompt_tokens": 682,
+      "total_tokens": 950
+     },
+     "translation_ms": 56061.041,
+     "resolver_latency_ms": 68.217,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "attestation-fr-en",
+   "category": "attestation",
+   "domain": "HR",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.12,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 11.721,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 17.614,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "banque-ar-fr",
+   "category": "banque",
+   "domain": "BANKING",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 5,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 86.5,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 307,
+      "prompt_tokens": 544,
+      "total_tokens": 851
+     },
+     "translation_ms": 63785.505,
+     "resolver_latency_ms": 0.086,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 6,
+      "complied": 6
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 89.5,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 298,
+      "prompt_tokens": 639,
+      "total_tokens": 937
+     },
+     "translation_ms": 55825.352,
+     "resolver_latency_ms": 52.847,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "banque-de-fr",
+   "category": "banque",
+   "domain": "BANKING",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 84.43,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 289,
+      "prompt_tokens": 486,
+      "total_tokens": 775
+     },
+     "translation_ms": 58050.387,
+     "resolver_latency_ms": 0.082,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 4,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 4,
+      "complied": 4
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 83.6,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 293,
+      "prompt_tokens": 546,
+      "total_tokens": 839
+     },
+     "translation_ms": 52004.823,
+     "resolver_latency_ms": 43.612,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "banque-en-fr",
+   "category": "banque",
+   "domain": "BANKING",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": false,
+   "C_blocks_changed": 5,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 77.12,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 298,
+      "prompt_tokens": 650,
+      "total_tokens": 948
+     },
+     "translation_ms": 69717.381,
+     "resolver_latency_ms": 0.079,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 77.12,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 296,
+      "prompt_tokens": 650,
+      "total_tokens": 946
+     },
+     "translation_ms": 49495.178,
+     "resolver_latency_ms": 17.019,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 6,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 6,
+      "complied": 5
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 83.97,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 297,
+      "prompt_tokens": 730,
+      "total_tokens": 1027
+     },
+     "translation_ms": 66340.313,
+     "resolver_latency_ms": 73.156,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "banque-es-fr",
+   "category": "banque",
+   "domain": "BANKING",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 1,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 85.94,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 315,
+      "prompt_tokens": 535,
+      "total_tokens": 850
+     },
+     "translation_ms": 67370.515,
+     "resolver_latency_ms": 0.077,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 6,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 6,
+      "complied": 5
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 2,
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 4,
+      "amount_ok": 4
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 89.69,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 297,
+      "prompt_tokens": 624,
+      "total_tokens": 921
+     },
+     "translation_ms": 54821.432,
+     "resolver_latency_ms": 1646.218,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "banque-fr-en",
+   "category": "banque",
+   "domain": "BANKING",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 0,
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 4,
+      "amount_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.083,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 0,
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 4,
+      "amount_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 10.501,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 2,
+      "id_ok": 0,
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 4,
+      "amount_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 18.796,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "contrat-ar-fr",
+   "category": "contrat",
+   "domain": "HR",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": 5,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.42,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 386,
+      "prompt_tokens": 583,
+      "total_tokens": 969
+     },
+     "translation_ms": 78235.588,
+     "resolver_latency_ms": 0.1,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.42,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 383,
+      "prompt_tokens": 583,
+      "total_tokens": 966
+     },
+     "translation_ms": 103772.164,
+     "resolver_latency_ms": 24.459,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 12,
+      "strict": 12,
+      "folded": 12
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 9,
+      "complied": 9
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 84.61,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 352,
+      "prompt_tokens": 684,
+      "total_tokens": 1036
+     },
+     "translation_ms": 82336.14,
+     "resolver_latency_ms": 65.118,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "contrat-de-fr",
+   "category": "contrat",
+   "domain": "HR",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 5,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 76.27,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 336,
+      "prompt_tokens": 511,
+      "total_tokens": 847
+     },
+     "translation_ms": 72466.528,
+     "resolver_latency_ms": 0.084,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 9,
+     "terms": {
+      "total": 12,
+      "strict": 12,
+      "folded": 12
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 12,
+      "complied": 12
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 80.8,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 326,
+      "prompt_tokens": 637,
+      "total_tokens": 963
+     },
+     "translation_ms": 58803.256,
+     "resolver_latency_ms": 76.79,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "contrat-en-fr",
+   "category": "contrat",
+   "domain": "HR",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 7,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 73.84,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 338,
+      "prompt_tokens": 583,
+      "total_tokens": 921
+     },
+     "translation_ms": 76324.662,
+     "resolver_latency_ms": 0.08,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 8,
+     "terms": {
+      "total": 12,
+      "strict": 11,
+      "folded": 11
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 11,
+      "complied": 10
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 85.68,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 340,
+      "prompt_tokens": 688,
+      "total_tokens": 1028
+     },
+     "translation_ms": 64720.046,
+     "resolver_latency_ms": 53.855,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "contrat-es-fr",
+   "category": "contrat",
+   "domain": "HR",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 6,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 80.81,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 332,
+      "prompt_tokens": 511,
+      "total_tokens": 843
+     },
+     "translation_ms": 70505.683,
+     "resolver_latency_ms": 0.078,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 12,
+      "strict": 12,
+      "folded": 12
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 10,
+      "complied": 10
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 2,
+      "number_total": 3,
+      "number_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 84.69,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 330,
+      "prompt_tokens": 618,
+      "total_tokens": 948
+     },
+     "translation_ms": 58276.149,
+     "resolver_latency_ms": 67.681,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "contrat-fr-en",
+   "category": "contrat",
+   "domain": "HR",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 0,
+      "number_total": 3,
+      "number_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.079,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 0,
+      "number_total": 3,
+      "number_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 7.979,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 12,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 12,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 2,
+      "date_ok": 0,
+      "number_total": 3,
+      "number_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 13.826,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "juridique-ar-fr",
+   "category": "juridique",
+   "domain": "LEGAL",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 70.58,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 226,
+      "prompt_tokens": 425,
+      "total_tokens": 651
+     },
+     "translation_ms": 47391.671,
+     "resolver_latency_ms": 0.081,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 70.58,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 228,
+      "prompt_tokens": 425,
+      "total_tokens": 653
+     },
+     "translation_ms": 36488.821,
+     "resolver_latency_ms": 15.69,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 3,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 4,
+      "complied": 4
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 76.58,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 284,
+      "prompt_tokens": 469,
+      "total_tokens": 753
+     },
+     "translation_ms": 49435.628,
+     "resolver_latency_ms": 1805.843,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "juridique-de-fr",
+   "category": "juridique",
+   "domain": "LEGAL",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.52,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 251,
+      "prompt_tokens": 466,
+      "total_tokens": 717
+     },
+     "translation_ms": 54429.18,
+     "resolver_latency_ms": 0.086,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 5,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 6,
+      "complied": 6
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 73.19,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 223,
+      "prompt_tokens": 535,
+      "total_tokens": 758
+     },
+     "translation_ms": 43292.753,
+     "resolver_latency_ms": 282.804,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "juridique-en-fr",
+   "category": "juridique",
+   "domain": "LEGAL",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 1,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 88.4,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 224,
+      "prompt_tokens": 494,
+      "total_tokens": 718
+     },
+     "translation_ms": 50403.599,
+     "resolver_latency_ms": 0.086,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 3,
+     "terms": {
+      "total": 6,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 4,
+      "complied": 4
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 87.41,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 226,
+      "prompt_tokens": 537,
+      "total_tokens": 763
+     },
+     "translation_ms": 42770.177,
+     "resolver_latency_ms": 1689.329,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "juridique-es-fr",
+   "category": "juridique",
+   "domain": "LEGAL",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 2,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 84.01,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 241,
+      "prompt_tokens": 461,
+      "total_tokens": 702
+     },
+     "translation_ms": 52594.361,
+     "resolver_latency_ms": 0.079,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 5,
+     "terms": {
+      "total": 6,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 6,
+      "complied": 6
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 1
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 89.8,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 226,
+      "prompt_tokens": 526,
+      "total_tokens": 752
+     },
+     "translation_ms": 43821.252,
+     "resolver_latency_ms": 52.592,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "juridique-fr-en",
+   "category": "juridique",
+   "domain": "LEGAL",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.07,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 10.339,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 6,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 6,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 1,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 24.935,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "paie-ar-fr",
+   "category": "paie",
+   "domain": "PAYROLL",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 6,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 86.65,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 336,
+      "prompt_tokens": 521,
+      "total_tokens": 857
+     },
+     "translation_ms": 71331.554,
+     "resolver_latency_ms": 0.085,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 7
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 90.55,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 307,
+      "prompt_tokens": 638,
+      "total_tokens": 945
+     },
+     "translation_ms": 54865.768,
+     "resolver_latency_ms": 58.18,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "paie-de-fr",
+   "category": "paie",
+   "domain": "PAYROLL",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.56,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 310,
+      "prompt_tokens": 498,
+      "total_tokens": 808
+     },
+     "translation_ms": 65126.965,
+     "resolver_latency_ms": 0.095,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 2,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 2,
+      "complied": 2
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.56,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 334,
+      "prompt_tokens": 528,
+      "total_tokens": 862
+     },
+     "translation_ms": 56052.048,
+     "resolver_latency_ms": 51.438,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "paie-en-fr",
+   "category": "paie",
+   "domain": "PAYROLL",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 61.8,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 335,
+      "prompt_tokens": 513,
+      "total_tokens": 848
+     },
+     "translation_ms": 66347.36,
+     "resolver_latency_ms": 0.079,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 7
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 70.55,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 311,
+      "prompt_tokens": 609,
+      "total_tokens": 920
+     },
+     "translation_ms": 57555.557,
+     "resolver_latency_ms": 59.965,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "paie-es-fr",
+   "category": "paie",
+   "domain": "PAYROLL",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": 7,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 71.35,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 483,
+      "prompt_tokens": 519,
+      "total_tokens": 1002
+     },
+     "translation_ms": 109166.457,
+     "resolver_latency_ms": 0.083,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 71.35,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 483,
+      "prompt_tokens": 519,
+      "total_tokens": 1002
+     },
+     "translation_ms": 77135.82,
+     "resolver_latency_ms": 28.696,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 7
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 1,
+      "amount_total": 7,
+      "amount_ok": 7,
+      "number_total": 1,
+      "number_ok": 1,
+      "date_total": 1,
+      "date_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 89.19,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 313,
+      "prompt_tokens": 633,
+      "total_tokens": 946
+     },
+     "translation_ms": 73008.349,
+     "resolver_latency_ms": 216.563,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "paie-fr-en",
+   "category": "paie",
+   "domain": "PAYROLL",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 0,
+      "amount_total": 7,
+      "amount_ok": 0,
+      "number_total": 1,
+      "number_ok": 0,
+      "date_total": 1,
+      "date_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.081,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 0,
+      "amount_total": 7,
+      "amount_ok": 0,
+      "number_total": 1,
+      "number_ok": 0,
+      "date_total": 1,
+      "date_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 12.102,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "id_total": 1,
+      "id_ok": 0,
+      "amount_total": 7,
+      "amount_ok": 0,
+      "number_total": 1,
+      "number_ok": 0,
+      "date_total": 1,
+      "date_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 17.175,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "scanne-ar-fr",
+   "category": "scanne",
+   "domain": "HR",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": true,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 6,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 53.76,
+     "untranslated_blocks": 1,
+     "issues": 1,
+     "issue_codes": [
+      "PROTECTED_ENTITY_CHANGED"
+     ],
+     "usage": {
+      "completion_tokens": 299,
+      "prompt_tokens": 618,
+      "total_tokens": 917
+     },
+     "translation_ms": 66706.702,
+     "resolver_latency_ms": 0.09,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 6
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 58.44,
+     "untranslated_blocks": 1,
+     "issues": 1,
+     "issue_codes": [
+      "PROTECTED_ENTITY_CHANGED"
+     ],
+     "usage": {
+      "completion_tokens": 307,
+      "prompt_tokens": 749,
+      "total_tokens": 1056
+     },
+     "translation_ms": 61386.88,
+     "resolver_latency_ms": 1593.578,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "scanne-de-fr",
+   "category": "scanne",
+   "domain": "HR",
+   "pair": "de>fr",
+   "simulated_ocr_noise": true,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 66.45,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 314,
+      "prompt_tokens": 608,
+      "total_tokens": 922
+     },
+     "translation_ms": 68787.78,
+     "resolver_latency_ms": 0.09,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 7,
+      "strict": 6,
+      "folded": 6
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 6,
+      "complied": 5
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 66.84,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 288,
+      "prompt_tokens": 701,
+      "total_tokens": 989
+     },
+     "translation_ms": 59751.236,
+     "resolver_latency_ms": 49.695,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "scanne-en-fr",
+   "category": "scanne",
+   "domain": "HR",
+   "pair": "en>fr",
+   "simulated_ocr_noise": true,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 4,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 58.66,
+     "untranslated_blocks": 1,
+     "issues": 1,
+     "issue_codes": [
+      "PROTECTED_ENTITY_CHANGED"
+     ],
+     "usage": {
+      "completion_tokens": 273,
+      "prompt_tokens": 629,
+      "total_tokens": 902
+     },
+     "translation_ms": 61694.294,
+     "resolver_latency_ms": 0.086,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 7,
+     "terms": {
+      "total": 7,
+      "strict": 4,
+      "folded": 4
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 7,
+      "complied": 4
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 60.96,
+     "untranslated_blocks": 1,
+     "issues": 1,
+     "issue_codes": [
+      "PROTECTED_ENTITY_CHANGED"
+     ],
+     "usage": {
+      "completion_tokens": 277,
+      "prompt_tokens": 726,
+      "total_tokens": 1003
+     },
+     "translation_ms": 57207.748,
+     "resolver_latency_ms": 52.606,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "scanne-es-fr",
+   "category": "scanne",
+   "domain": "HR",
+   "pair": "es>fr",
+   "simulated_ocr_noise": true,
+   "B_identical_to_A": true,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 75.07,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 316,
+      "prompt_tokens": 603,
+      "total_tokens": 919
+     },
+     "translation_ms": 68974.917,
+     "resolver_latency_ms": 0.088,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 5,
+      "folded": 5
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 75.07,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 316,
+      "prompt_tokens": 603,
+      "total_tokens": 919
+     },
+     "translation_ms": 51976.438,
+     "resolver_latency_ms": 43.454,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 6,
+     "terms": {
+      "total": 7,
+      "strict": 7,
+      "folded": 7
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 6,
+      "complied": 6
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 3,
+      "amount_total": 1,
+      "amount_ok": 1,
+      "id_total": 1,
+      "id_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 77.01,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 270,
+      "prompt_tokens": 697,
+      "total_tokens": 967
+     },
+     "translation_ms": 63091.35,
+     "resolver_latency_ms": 240.194,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "scanne-fr-en",
+   "category": "scanne",
+   "domain": "HR",
+   "pair": "fr>en",
+   "simulated_ocr_noise": true,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.084,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 7.632,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 7,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 0,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 7,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "date_total": 3,
+      "date_ok": 0,
+      "amount_total": 1,
+      "amount_ok": 0,
+      "id_total": 1,
+      "id_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 23.191,
+     "prompt_tokens_total": 0
+    }
+   }
+  },
+  {
+   "document": "tableau-ar-fr",
+   "category": "tableau",
+   "domain": "PAYROLL",
+   "pair": "ar>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 82.85,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 333,
+      "prompt_tokens": 446,
+      "total_tokens": 779
+     },
+     "translation_ms": 67865.081,
+     "resolver_latency_ms": 0.104,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 3,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 3,
+      "complied": 3
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 87.05,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 383,
+      "prompt_tokens": 493,
+      "total_tokens": 876
+     },
+     "translation_ms": 64731.908,
+     "resolver_latency_ms": 59.768,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "tableau-de-fr",
+   "category": "tableau",
+   "domain": "PAYROLL",
+   "pair": "de>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": 3,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.36,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 216,
+      "prompt_tokens": 448,
+      "total_tokens": 664
+     },
+     "translation_ms": 46855.083,
+     "resolver_latency_ms": 0.101,
+     "prompt_tokens_total": 2
+    },
+    "B": {
+     "translated": true,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.36,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 213,
+      "prompt_tokens": 448,
+      "total_tokens": 661
+     },
+     "translation_ms": 38686.837,
+     "resolver_latency_ms": 20.524,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 2,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 2,
+      "complied": 2
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 74.36,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 363,
+      "prompt_tokens": 484,
+      "total_tokens": 847
+     },
+     "translation_ms": 65470.783,
+     "resolver_latency_ms": 64.446,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "tableau-en-fr",
+   "category": "tableau",
+   "domain": "PAYROLL",
+   "pair": "en>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 2,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 80.42,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 206,
+      "prompt_tokens": 444,
+      "total_tokens": 650
+     },
+     "translation_ms": 46773.189,
+     "resolver_latency_ms": 0.107,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 2,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 2,
+      "complied": 2
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 80.42,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 311,
+      "prompt_tokens": 473,
+      "total_tokens": 784
+     },
+     "translation_ms": 52745.13,
+     "resolver_latency_ms": 277.986,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "tableau-es-fr",
+   "category": "tableau",
+   "domain": "PAYROLL",
+   "pair": "es>fr",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": null,
+   "C_blocks_changed": 1,
+   "variants": {
+    "A": {
+     "translated": true,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 2,
+      "folded": 2
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 82.46,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 226,
+      "prompt_tokens": 439,
+      "total_tokens": 665
+     },
+     "translation_ms": 50676.22,
+     "resolver_latency_ms": 0.103,
+     "prompt_tokens_total": 2
+    },
+    "C": {
+     "translated": true,
+     "decision": "INJECTED",
+     "injected_terms": 3,
+     "terms": {
+      "total": 3,
+      "strict": 3,
+      "folded": 3
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 1,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 3,
+      "complied": 3
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 3,
+      "number_total": 1,
+      "number_ok": 1
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": 0,
+     "abnormal_length_blocks": 0,
+     "chrf_proxy": 86.57,
+     "untranslated_blocks": 0,
+     "issues": 0,
+     "issue_codes": [],
+     "usage": {
+      "completion_tokens": 272,
+      "prompt_tokens": 486,
+      "total_tokens": 758
+     },
+     "translation_ms": 47056.453,
+     "resolver_latency_ms": 47.072,
+     "prompt_tokens_total": 2
+    }
+   }
+  },
+  {
+   "document": "tableau-fr-en",
+   "category": "tableau",
+   "domain": "PAYROLL",
+   "pair": "fr>en",
+   "simulated_ocr_noise": false,
+   "B_identical_to_A": true,
+   "C_blocks_changed": null,
+   "variants": {
+    "A": {
+     "translated": false,
+     "decision": "UNCHANGED_DISABLED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 0,
+      "number_total": 1,
+      "number_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 0.101,
+     "prompt_tokens_total": 0
+    },
+    "B": {
+     "translated": false,
+     "decision": "SHADOW_DISPATCHED",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 0,
+      "number_total": 1,
+      "number_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 6.295,
+     "prompt_tokens_total": 0
+    },
+    "C": {
+     "translated": false,
+     "decision": "NOT_SENT",
+     "injected_terms": 0,
+     "terms": {
+      "total": 3,
+      "strict": 0,
+      "folded": 0
+     },
+     "glossary": {
+      "total": 1,
+      "respected": 0,
+      "rag_injected": 0
+     },
+     "selection": {
+      "expected": 3,
+      "injected": 0,
+      "complied": 0
+     },
+     "numbers": {
+      "amount_total": 3,
+      "amount_ok": 0,
+      "number_total": 1,
+      "number_ok": 0
+     },
+     "withheld": {
+      "ambiguous_injected": 0,
+      "sibling_injected": 0,
+      "unknown_ids": 0
+     },
+     "consistency": {
+      "repeated_terms": 0,
+      "all_correct": 0
+     },
+     "added_numbers": null,
+     "abnormal_length_blocks": null,
+     "chrf_proxy": null,
+     "untranslated_blocks": null,
+     "issues": null,
+     "issue_codes": [],
+     "usage": null,
+     "translation_ms": null,
+     "resolver_latency_ms": 11.8,
+     "prompt_tokens_total": 0
+    }
+   }
+  }
+ ]
+}

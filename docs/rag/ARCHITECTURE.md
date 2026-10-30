@@ -150,3 +150,25 @@ les versions publiées d'un référentiel actif sont utilisées.
 
 Les seuls fichiers existants modifiés le sont par **ajout** (aucune ligne
 supprimée) : voir le rapport du LOT 1.
+
+## 8. Extensions du LOT 2
+
+Détail : [LOT2-TERMINOLOGIE.md](LOT2-TERMINOLOGIE.md). Ajouts sans réécriture
+du LOT 1 :
+
+| Paquet | Rôle |
+|---|---|
+| `terminology/linguistic.py` | normalisation `rag-normalizer-2` (FR, AR, EN, ES, DE), clé pliée, jetons BM25 |
+| `terminology/domains.py` | taxonomie de 10 domaines avec parents (proposition à valider par le métier) |
+| `terminology/importer.py` | import CSV/XLSX sécurisé, tout ou rien, essai à blanc, doublons |
+| `core/lexical.py` | index et recherche BM25 sur PostgreSQL, suggestions **non injectables** |
+
+`core/retrieval.py`, `core/ranking.py`, `core/context_builder.py` et
+`core/engine.py` (`dice-engine-2`) gèrent synonymes, variantes et pliage non
+ambigu ; `storage/versioning.py` indexe à la publication et à la restauration
+et fournit historique et diff ; `workers/tasks.py` porte le correctif F-L2-01.
+
+Tables ajoutées par `0004_rag_lot2` : `rag_lexical_indexes`,
+`rag_term_postings`, `rag_import_batches` (les 11 tables du LOT 1 sont
+inchangées). En DISABLED, l'empreinte OpenAPI et l'empreinte de règle restent
+identiques à la référence de la phase 0 et aucun module `app.rag` n'est importé.

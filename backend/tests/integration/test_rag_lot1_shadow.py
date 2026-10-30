@@ -200,7 +200,9 @@ def test_celery_dispatch_uses_rag_queue_and_carries_no_text(monkeypatch):
         "engine": "offline",
     }
     options = {"glossary": [{"source": "secret term", "target": "x"}], "memory": {"a": "b"}}
+    tasks.reset_breaker()  # LOT 2 (F-L2-01) : publication asynchrone par le thread éditeur
     assert tasks.dispatch_shadow(Settings(execution_mode="celery"), None, job, options) == "celery"
+    assert tasks.wait_for_shadow(5)
     name, kwargs = sent[0]
     assert name == tasks.TASK_NAME
     assert kwargs["queue"] == "rag"

@@ -16,13 +16,13 @@ from typing import Any
 from ..audit.provenance import query_fingerprint
 from ..resolver import document_context as resolver
 from ..storage import repository
-from ..terminology.normalizer import VERSION as NORMALIZER_VERSION
+from ..terminology.linguistic import VERSION as NORMALIZER_VERSION
 from ..terminology.normalizer import normalize_language, normalize_term
 from . import context_builder, ranking, retrieval
 from .ranking import Exclusion
 from .retrieval import INDEX_CACHE, IndexCache, NotionView, TermView
 
-ENGINE_VERSION = "dice-engine-1"
+ENGINE_VERSION = "dice-engine-2"
 
 
 @dataclass
@@ -57,6 +57,15 @@ class RagPlan:
             "excluded_ids": sorted({item.entry_id for item in self.exclusions})[:200],
             **self.stats,
         }
+
+
+def _match_kinds(terms: list[TermView]) -> dict[str, int]:
+    """Nature des correspondances retenues (terme, synonyme, variante ; exacte ou pliée)."""
+    counts: dict[str, int] = {}
+    for view in terms:
+        name = f"{view.match_kind}_{view.matched_by}"
+        counts[name] = counts.get(name, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 class RagEngine:
@@ -108,7 +117,8 @@ class RagEngine:
             index, cache_hit = self.cache.get_or_build(key, build)
             filters = resolver.filters_for(context_row, domain)
             country = resolver.validated_country_context(context_row, mode)
-        term_hits, notion_hits = retrieval.match(index, units)
+        details = retrieval.match_details(index, units)
+        term_hits, notion_hits = details.term_hits, details.notion_hits
         selection = ranking.rank(
             index,
             term_hits,
@@ -116,6 +126,7 @@ class RagEngine:
             glossary=ranking.glossary_keys(options.get("glossary")),
             filters=filters,
             max_entries=int(getattr(self.settings, "rag_max_entries", 16)),
+            details=details,
         )
         terms = [view for view, _ in selection.terms]
         notions = [view for view, _ in selection.notions] if mode == "ACTIVE" else []
@@ -154,6 +165,7 @@ class RagEngine:
             "target_language": target_language,
             "matched_keys": len(term_hits) + len(notion_hits),
             "ambiguous_keys": selection.ambiguous_keys,
+            "match_kinds": _match_kinds(plan.terms),
             "index_entries": sum(len(v) for v in index.terms.values()),
             "cache_hit": cache_hit,
             "latency_ms": round((time.perf_counter() - started) * 1000, 3),
@@ -195,14 +207,15 @@ class RagEngine:
                 return retrieval.build_index(scope, entries, [])
 
             index, cache_hit = self.cache.get_or_build(key, build)
-        term_hits, _ = retrieval.match(index, units)
+        details = retrieval.match_details(index, units)
         selection = ranking.rank(
             index,
-            term_hits,
+            details.term_hits,
             Counter(),
             glossary=ranking.glossary_keys(glossary),
             filters=ranking.DocumentFilters(domain=domain),
             max_entries=limit,
+            details=details,
         )
         reasons: dict[str, int] = dict(selection.reasons)
         return {
@@ -219,6 +232,8 @@ class RagEngine:
                     "domain": view.domain,
                     "country": view.country,
                     "occurrences": count,
+                    "match_kind": view.match_kind,
+                    "matched_by": view.matched_by,
                 }
                 for view, count in selection.terms
             ],

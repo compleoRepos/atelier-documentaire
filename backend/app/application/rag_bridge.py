@@ -126,6 +126,23 @@ def _canonical(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True)
 
 
+def message_tokens(counter: ContextPackBuilder, messages: Sequence[Mapping[str, Any]]) -> int:
+    """Jetons réels du gabarit de conversation rendu par le tokenizer du moteur.
+
+    LOT 2, F-L2-02 : avec transformers 5, ``apply_chat_template(tokenize=True)`` renvoie un
+    ``BatchEncoding`` ; ``ContextPackBuilder.count_messages`` (fichier gelé) en prend ``len()``,
+    soit le nombre de CLÉS (2) quel que soit le contenu, et le surcoût RAG était mesuré nul.
+    Le décompte réutilise ici ``service._token_count`` (correctif RUN29 F47 du préflight 32K) ;
+    toute forme inconnue lève ``ValueError`` et la sonde refuse l'injection."""
+    tokenizer = getattr(counter, "tokenizer", None)
+    if tokenizer is not None and hasattr(tokenizer, "apply_chat_template"):
+        rendered = tokenizer.apply_chat_template(
+            list(messages), tokenize=True, add_generation_prompt=True
+        )
+        return service._token_count(rendered)
+    return counter.count_messages(messages)
+
+
 def compare_requests(
     base: list[dict], candidate: list[dict], counter: ContextPackBuilder, budget: int
 ) -> dict[str, Any]:
@@ -181,9 +198,13 @@ def compare_requests(
                 return {"ok": False, "reason": "UNEXPECTED_CHANNEL_CHANGE", "channel": channel}
             if channel not in context_a and isinstance(context_b[channel], list):
                 sent.update(_canonical(x) for x in context_b[channel])
-        overheads.append(
-            counter.count_messages(after["messages"]) - counter.count_messages(before["messages"])
-        )
+        try:
+            overheads.append(
+                message_tokens(counter, after["messages"])
+                - message_tokens(counter, before["messages"])
+            )
+        except (TypeError, ValueError):
+            return {"ok": False, "reason": "PROBE_FAILED", "requests": len(candidate)}
     peak = max(overheads, default=0)
     verdict: dict[str, Any] = {
         "requests": len(candidate),

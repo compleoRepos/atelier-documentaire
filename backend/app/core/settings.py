@@ -98,6 +98,17 @@ class Settings(BaseSettings):
     rag_active_max_tokens: int = Field(default=1500, ge=1, le=4000)
     rag_max_entries: int = Field(default=16, ge=1, le=16)
     rag_shadow_task_expires_seconds: int = Field(default=3600, ge=60, le=86400)
+    # Publication SHADOW hors du chemin critique (thread éditeur, file bornée) :
+    # délai court vers le courtier, disjoncteur, et stratégie si le courtier est
+    # indisponible (« drop » : observation perdue et comptée ; « local » : recherche
+    # exécutée dans le thread local borné du processus).
+    rag_shadow_broker_timeout_seconds: float = Field(default=2.0, ge=0.1, le=30.0)
+    rag_shadow_breaker_seconds: int = Field(default=60, ge=1, le=3600)
+    rag_shadow_queue_max: int = Field(default=64, ge=1, le=10000)
+    rag_shadow_on_broker_failure: Literal["drop", "local"] = "drop"
+    # LOT 2 : import CSV/XLSX de référentiels (tout ou rien, dans un brouillon).
+    rag_import_max_bytes: int = Field(default=5_000_000, ge=1024, le=50_000_000)
+    rag_import_max_rows: int = Field(default=5000, ge=1, le=100_000)
 
     @field_validator("rag_mode", mode="before")
     @classmethod

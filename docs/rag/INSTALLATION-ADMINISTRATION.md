@@ -161,3 +161,28 @@ B (SHADOW) et C (ASSISTED) à travers le point d'intégration de production, ave
 des bases et un stockage temporaires, une sortie hors dépôt et un résumé sans
 texte. Il échoue (code 2) si B diffère de A. Les appels de modèle réels exigent
 `--allow-model-calls`.
+
+## 11. LOT 2 : migration, réglages et retour arrière
+
+* migration : `alembic upgrade head` applique `0004_rag_lot2` (trois tables
+  `rag_*` ajoutées, rien d'autre) ;
+* réglages ajoutés : délai, disjoncteur, file et stratégie de la publication
+  SHADOW ; limites d'import (voir [LOT2-TERMINOLOGIE.md](LOT2-TERMINOLOGIE.md)
+  §9) ;
+* index lexical : construit automatiquement à la publication et à la
+  restauration ; après une mise à jour du normaliseur, `POST
+  /api/rag-admin/lexical/rebuild?force=true` (rôle `rag_admin`) ;
+* import : toujours un essai à blanc avant application, puis le circuit humain
+  habituel (soumission, validation par une autre personne, publication).
+
+| Niveau | Action | Effet |
+|---|---|---|
+| schéma LOT 2 | sauvegarde `pg_dump -t 'rag_*'`, retour au code du LOT 1, puis `alembic downgrade 0003_rag` | supprime uniquement les trois tables du LOT 2 |
+
+## 12. Recette du LOT 2
+
+`tools/rag_lot2_corpus.py` génère hors dépôt un corpus synthétique (8 catégories,
+5 paires de langues) ; `tools/rag_corpus_run.py --dump-translations` conserve
+hors dépôt les traductions ; `tools/rag_lot2_eval.py` calcule les mesures
+objectives et produit le paquet d'annotation aveugle
+([ANNOTATION-HUMAINE.md](ANNOTATION-HUMAINE.md)).

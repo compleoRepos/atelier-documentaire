@@ -356,9 +356,140 @@ def transition(
         version.published_by = actor_id
         version.published_at = now
         version.retired_at = None
+        # LOT 2 : index lexical BM25 de la version publiée, dans la même transaction
+        # (idempotent : une restauration réutilise l'index si le contenu est inchangé).
+        from ..core import lexical
+
+        lexical.index_version(db, version, entries)
     elif action == "retire":
         version.retired_at = now
     version.status = target
     referential.updated_at = now
     _event(db, referential, version, action, actor_id, roles & needed, comment)
     return version
+
+
+# --- LOT 2 : historique et comparaison de versions (lecture seule). ------------------------
+
+DIFF_FIELDS = tuple(name for name in ENTRY_FIELDS if name not in {"source_language", "source_term"})
+
+
+def entry_identity(entry: RagTermEntry) -> tuple:
+    """Identité métier d'une entrée : paire de langues, clé source, contexte d'emploi."""
+    return (
+        entry.source_language,
+        entry.target_language,
+        entry.normalized_source,
+        (entry.domain or "").upper(),
+        entry.country or "",
+        entry.jurisdiction or "",
+    )
+
+
+def diff_versions(db: Session, base: RagReferentialVersion, other: RagReferentialVersion) -> dict:
+    """Différences ``base`` -> ``other`` d'un même référentiel (ajouts, retraits, champs modifiés)."""
+    if base.referential_id != other.referential_id:
+        raise RagAccessError("RAG_VERSION_NOT_FOUND", 404)
+
+    def grouped(version):
+        out: dict[tuple, list[RagTermEntry]] = {}
+        for entry in version_entries(db, version):
+            out.setdefault(entry_identity(entry), []).append(entry)
+        return out
+
+    before, after = grouped(base), grouped(other)
+    added, removed, changed = [], [], []
+    unchanged = 0
+    for key in sorted(set(before) | set(after)):
+        old, new = before.get(key, []), after.get(key, [])
+        if not old:
+            added.extend(new)
+            continue
+        if not new:
+            removed.extend(old)
+            continue
+        # Appariement déterministe dans l'ordre des cibles (une identité porte souvent 1 entrée).
+        old_sorted = sorted(old, key=lambda e: (e.target_term, e.id))
+        new_sorted = sorted(new, key=lambda e: (e.target_term, e.id))
+        for left, right in zip(old_sorted, new_sorted, strict=False):
+            fields = [n for n in DIFF_FIELDS if getattr(left, n) != getattr(right, n)]
+            if fields:
+                changed.append((left, right, fields))
+            else:
+                unchanged += 1
+        added.extend(new_sorted[len(old_sorted) :])
+        removed.extend(old_sorted[len(new_sorted) :])
+
+    def view(entry):
+        return {
+            "entry_id": entry.id,
+            "source_language": entry.source_language,
+            "source_term": entry.source_term,
+            "target_language": entry.target_language,
+            "target_term": entry.target_term,
+            "domain": entry.domain,
+            "country": entry.country,
+        }
+
+    return {
+        "base_version_id": base.id,
+        "base_number": base.number,
+        "other_version_id": other.id,
+        "other_number": other.number,
+        "counts": {
+            "added": len(added),
+            "removed": len(removed),
+            "changed": len(changed),
+            "unchanged": unchanged,
+        },
+        "added": [view(e) for e in added],
+        "removed": [view(e) for e in removed],
+        "changed": [
+            {"before": view(a), "after": view(b), "fields": fields} for a, b, fields in changed
+        ],
+    }
+
+
+def history(db: Session, referential: RagReferential) -> dict:
+    """Versions et événements de validation d'un référentiel, du plus ancien au plus récent."""
+    versions = versions_of(db, referential)
+    ids = [referential.id, *(v.id for v in versions)]
+    events = db.scalars(
+        select(RagValidationEvent)
+        .where(
+            RagValidationEvent.object_id.in_(ids),
+            RagValidationEvent.object_type.in_(("referential", "referential_version")),
+        )
+        .order_by(RagValidationEvent.created_at, RagValidationEvent.id)
+    ).all()
+    return {
+        "referential_id": referential.id,
+        "versions": [
+            {
+                "version_id": v.id,
+                "number": v.number,
+                "status": v.status,
+                "entry_count": v.entry_count,
+                "content_sha256": v.content_sha256,
+                "created_by": v.created_by,
+                "submitted_by": v.submitted_by,
+                "validated_by": v.validated_by,
+                "published_by": v.published_by,
+                "published_at": v.published_at.isoformat() if v.published_at else None,
+                "retired_at": v.retired_at.isoformat() if v.retired_at else None,
+            }
+            for v in versions
+        ],
+        "events": [
+            {
+                "object_type": e.object_type,
+                "object_id": e.object_id,
+                "action": e.action,
+                "actor_id": e.actor_id,
+                "actor_role": e.actor_role,
+                "comment": e.comment,
+                "created_at": e.created_at.isoformat() if e.created_at else None,
+            }
+            for e in events
+        ],
+    }

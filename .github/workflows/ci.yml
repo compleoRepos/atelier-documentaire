@@ -91,6 +91,18 @@ jobs:
           command.upgrade(config, 'head')
           PY
       - run: PYTHONPATH=backend pytest backend/tests/integration -q --junitxml=test-report/integration.xml
+      - name: RAG LOT 2 migration and BM25 on a dedicated PostgreSQL database
+        env:
+          RAG_TEST_POSTGRES_URL: postgresql+psycopg://translator_ci:translator_ci_only@127.0.0.1:5432/translator_ci_rag
+        run: |
+          PYTHONPATH=backend python - <<'PY'
+          import psycopg
+          dsn = "postgresql://translator_ci:translator_ci_only@127.0.0.1:5432/translator_ci"
+          with psycopg.connect(dsn, autocommit=True) as connection:
+              connection.execute("DROP DATABASE IF EXISTS translator_ci_rag")
+              connection.execute("CREATE DATABASE translator_ci_rag")
+          PY
+          PYTHONPATH=backend pytest backend/tests/integration/test_rag_lot2_migration.py backend/tests/integration/test_rag_lot2_postgres.py -q -rs --junitxml=test-report/rag-lot2-postgres.xml
       - uses: actions/upload-artifact@v4
         if: always()
         with:

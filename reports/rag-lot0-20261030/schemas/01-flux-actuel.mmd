@@ -1,0 +1,28 @@
+flowchart TD
+  A["POST /api/documents<br/>validation format + antivirus + empreinte SHA"] --> B["Document UPLOADED<br/>original conservé en stockage"]
+  B --> C["run_analyze (application/jobs.py)"]
+  C --> D{"Format"}
+  D -->|"PDF natif"| E["_native_blocks"]
+  D -->|"PDF scanné, image, TIFF"| F["preprocess_image puis OCR<br/>Tesseract (défaut) ou Paddle local"]
+  D -->|"DOCX"| G["_docx_ir (OOXML + LibreOffice)"]
+  D -->|"XLSX, PPTX"| H["_office_ir (OOXML)"]
+  E --> I["layout et tableaux candidats"]
+  F --> I
+  I --> J["detect_language + classify_document<br/>6 types, 6 domaines"]
+  G --> J
+  H --> J
+  J --> K["protect_ir, segment_ir, run_line_verification"]
+  K --> L["analysis.json (IR versionnée) : ANALYZED"]
+  L --> M["run_translate (application/jobs.py)<br/>glossaire + mémoire validée du tenant -> options"]
+  M --> N["translate_document -> translate_blocks"]
+  N --> O["filtres avant envoi<br/>OCR incertain, formulaire, identifiants, références"]
+  O --> P["ContextPackBuilder<br/>lots + contexte borné"]
+  P --> Q["Moteur offline / private / interim<br/>marqueurs protégés, budget 32K"]
+  Q --> R["restauration + contrôles IDs, entités, chiffres"]
+  R --> S["reconstruct_document<br/>render_pdf, DOCX, OOXML"]
+  S --> T["contrôles de rendu + evaluate_document"]
+  T --> U["classify_blocks -> translation.json<br/>DocumentVersion : REVIEW_REQUIRED"]
+  U --> V{"Revue humaine obligatoire"}
+  V -->|"approuver"| W["document final : APPROVED"]
+  V -->|"rejeter"| X["REJECTED"]
+  V -->|"corriger"| S

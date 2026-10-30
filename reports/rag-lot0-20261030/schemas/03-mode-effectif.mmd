@@ -1,0 +1,21 @@
+flowchart TD
+  A["TRANSLATOR_RAG_MODE (global)"] --> B{"DISABLED ?"}
+  B -->|"oui : défaut après installation"| Z["module RAG non importé<br/>options strictement identiques"]
+  B -->|"non"| C{"tenant activé ?<br/>table rag_tenant_settings"}
+  C -->|"non"| Z
+  C -->|"oui"| D["mode effectif = le plus bas des deux<br/>(global, tenant)"]
+  D --> E["Resolver : contexte déclaré, sinon inféré et marqué incertain"]
+  E --> F{"pays ou domaine incertain ?"}
+  F -->|"pays incertain"| G1["couche réglementaire coupée<br/>incertitude signalée"]
+  F -->|"domaine incertain"| G2["couche métier coupée<br/>incertitude signalée"]
+  F -->|"les deux"| G3["repli SHADOW<br/>incertitude signalée"]
+  F -->|"non"| H["mode conservé"]
+  G1 --> I{"erreur, délai dépassé,<br/>résultat invalide ou budget menacé ?"}
+  G2 --> I
+  G3 --> I
+  H --> I
+  I -->|"oui"| Z2["options inchangées (= DISABLED)<br/>avertissement de télémétrie sans contenu"]
+  I -->|"non"| J["SHADOW : sidecar seul<br/>ASSISTED / ACTIVE : options enrichies et tracées"]
+  J --> K["Revue humaine obligatoire, quel que soit le score"]
+  Z2 --> K
+  Z --> K

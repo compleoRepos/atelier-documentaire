@@ -1,0 +1,24 @@
+flowchart TD
+  subgraph EX["EXISTANT : inchangé"]
+    A["run_analyze -> IR"] --> B["run_translate : construit les options<br/>(glossaire, mémoire, budgets)"]
+    B --> H{"Point d'accroche unique<br/>rag_mode effectif"}
+    H -->|"DISABLED (défaut) : aucun import RAG"| T["translate_document<br/>moteur, filtres, budget, rendu inchangés"]
+    T --> Q["contrôles qualité et score existants (gelés)"]
+    Q --> RV["Revue humaine : REVIEW_REQUIRED, toujours"]
+  end
+  subgraph DICE["NOUVEAU MODULE backend/app/rag : Documentary Intelligence & Context Engine"]
+    C["Country & Legal Context Resolver<br/>langues, pays origine/destination,<br/>domaine, type, dates"] --> S["Recherche hybride<br/>termes exacts, BM25, vectorielle (LOT 3)<br/>filtres pays, langue, domaine, validité"]
+    S --> K["Contexte compact<br/>données non fiables, provenance obligatoire"]
+    K --> E["Sidecars rag-evidence.json et rag-explanation.json<br/>score RAG distinct"]
+  end
+  H -->|"SHADOW : tâche Celery file rag, sans retour"| C
+  H -->|"ASSISTED / ACTIVE"| C
+  K -->|"ASSISTED : termes validés<br/>ACTIVE : + fiches de notions juridiques<br/>via les canaux d'options existants"| T
+  E --> RV
+  subgraph REF["RÉFÉRENTIELS"]
+    P[("PostgreSQL existant<br/>nouvelles tables rag_* (migration 0003)")]
+    VQ[("Qdrant + BGE-M3 local<br/>option, LOT 3, si gain mesuré")]
+  end
+  S --- P
+  S -.- VQ
+  BO["Back-office /rag-admin<br/>route Angular paresseuse, API /api/rag-admin"] --> P

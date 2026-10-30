@@ -45,6 +45,11 @@ def create_app() -> FastAPI:
             allow_headers=["Authorization", "Content-Type", "X-CSRF-Token"],
         )
     app.include_router(create_router(factory, storage, settings))
+    if settings.rag_mode != "DISABLED" or settings.rag_admin_enabled:
+        # DICE (RAG) : rien n'est importé ni monté en DISABLED sans administration.
+        from .rag.api.mount import mount_rag
+
+        mount_rag(app, factory, engine, settings)
 
     @app.get("/health")
     def root_health():

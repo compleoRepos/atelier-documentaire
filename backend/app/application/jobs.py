@@ -467,6 +467,14 @@ def run_translate(
             from ..ai.quality.runtime import quality_options
 
             options.update(quality_options(settings, ir))
+            if getattr(settings, "rag_mode", "DISABLED") != "DISABLED":
+                # DICE (RAG) : importé seulement hors DISABLED ; renvoie options
+                # inchangé en cas d'erreur ou en SHADOW.
+                from .rag_bridge import augment_translation_options
+
+                options = augment_translation_options(
+                    settings, factory, tenant_id, doc_id, ir, options
+                )
             result = _call_translate(ir, work, options)
             if not isinstance(result, dict):
                 raise ValueError("TRANSLATION_RESULT_INVALID")

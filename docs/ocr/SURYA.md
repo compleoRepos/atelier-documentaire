@@ -209,8 +209,24 @@ identique sur les 6 pages et sans ralentissement mesuré (48,2 s contre 50,4 s p
 et la limite ci-dessus (5 Gio et 6 Gio) sont conservées par prudence : aucune mesure n’a été faite
 sur de grandes images (la borne est de 40 Mpx) ni en charge. Elles s’ajoutent à celles du worker.
 L’entrypoint a été exécuté de bout en bout hors conteneur, avec les vrais poids Q8_0 : contrôle
-d’empreinte et chargement en 6 s, une page lue, arrêt propre sur SIGTERM. La construction de
-l’image, son autotest hors réseau et son refus de démarrer sans poids sont vérifiés par la CI.
+d’empreinte et chargement en 6 s, une page lue, arrêt propre sur SIGTERM.
+
+Validation de l’image. La CI prévoit la construction de l’image, son autotest hors réseau et son
+refus de démarrer sans poids (job `container-and-manifest-validation`). Ce job est aujourd’hui
+**sauté** : il dépend des jobs `backend` et `frontend`, qui échouent sur des audits pip et npm
+antérieurs à cette branche et traités séparément. Ces contrôles ont donc été rejoués **localement**
+sur l’image construite depuis cette branche (0,47 Go, UID 10001) :
+
+- refus de démarrer sans poids (code 78) et autotest hors réseau ;
+- exécution de bout en bout sans réseau, système de fichiers en lecture seule, sans capacités, poids
+  montés en lecture seule : service sain en 12 s, une page lue avec la provenance
+  `surya-ocr-2.5:surya-2.5-Q8_0`, aucune connexion sortante possible, 1,63 Gio.
+
+Arrêt du service. Après avoir servi une requête, llama-server ne se termine pas toujours sur
+SIGTERM : il est resté vivant 20 s dans un essai, jusqu’au SIGKILL de Docker (code 137). L’entrypoint
+borne donc l’arrêt : SIGTERM aux deux processus, puis SIGKILL de ce qui survit après 5 s. C’est sans
+perte, car le moteur ne garde aucun état persistant. Vérifié : arrêt en 0,2 s après une lecture
+(code 143), et en 5,1 s face à un moteur factice qui ignore SIGTERM, sans processus survivant.
 
 ## 9. Mesures (synthétiques uniquement)
 
@@ -349,6 +365,12 @@ analyse est nécessaire pour obtenir une lecture Tesseract.
 - **Confiance non calibrée** (§9.1) : l’absence d’avertissement ne garantit rien.
 - **Capacité** (§9.3) : environ 50 s par page sur 5 cœurs. Avec les délais de tâche par défaut, un
   scan au-delà d’environ 35 pages échoue en mode `celery`. Aucune mesure de charge n’a été faite.
+- **Arrêt d’un worker pendant l’OCR.** La tâche Celery est acquittée dès sa réception (configuration
+  existante, inchangée), et aucun mécanisme ne reprend un document interrompu. Un redémarrage ou un
+  déploiement du pod worker pendant l’OCR laisse donc le document en cours sans résultat. Ce
+  comportement existait déjà avec Tesseract, mais à environ 50 s par page, la fenêtre d’exposition
+  est beaucoup plus large. Il faut vider les workers avant tout déploiement, puis relancer les
+  documents concernés.
 - Lignes estimées et non natives ; récupération F25 désactivée.
 - Le golden historique reste exécuté avec Tesseract épinglé : il garantit la non-régression du
   mode Tesseract, il ne mesure pas Surya.

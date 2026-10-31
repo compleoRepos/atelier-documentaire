@@ -275,6 +275,8 @@ docker compose --env-file .env up -d api worker frontend
 
 N’utilisez **jamais** `docker compose down -v` sur une pile qui contient des données : cette commande supprime `postgres-data`, `minio-data`, `runtime-data` et les autres volumes nommés. Sauvegardez avant toute mise à jour (§ 10.1).
 
+Avant `down`, attendez qu’aucun document ne soit en cours d’analyse : une tâche interrompue n’est pas reprise automatiquement, et le document reste sans résultat jusqu’à ce qu’il soit relancé. Avec Surya (environ 50 s par page), cette fenêtre est longue (`docs/ocr/SURYA.md` § 12).
+
 ### 5.11 Environnements Docker restreints
 
 Certains noyaux (sandbox, conteneurs imbriqués) n’exposent pas la table iptables `raw` que Docker ≥ 28 utilise pour les réseaux bridge non internes. Le symptôme est `Unable to enable DIRECT ACCESS FILTERING … can't initialize iptables table 'raw'`, à la construction comme au démarrage. Les réseaux `internal` et le réseau `host` fonctionnent toujours. Pour un **test** uniquement, un fichier d’override hors dépôt peut construire les images sur le réseau hôte et retirer le réseau `gateway` du frontend. Les requêtes HTTP se font alors depuis un conteneur attaché au réseau interne :
@@ -447,6 +449,7 @@ kubectl -n atelier-documentaire logs job/atelier-documentaire-migrate-a4a86eb   
 ```
 
 ### 6.7 Installer ou mettre à jour
+Avant une mise à jour, attendez qu’aucun document ne soit en cours d’analyse sur les workers : le remplacement d’un pod interrompt la tâche en cours, qui n’est pas reprise automatiquement (`docs/ocr/SURYA.md` § 12).
 
 ```bash
 helm upgrade --install atelier infrastructure/helm/atelier-documentaire \

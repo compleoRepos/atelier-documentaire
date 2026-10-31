@@ -190,9 +190,20 @@ def _docx_rendered_pages(
     return [], [], warnings
 
 
+def _configured_ocr_backend() -> str:
+    """Moteur OCR configuré (Surya par défaut) quand l'appelant n'en impose pas."""
+    from app.core.settings import get_settings
+
+    return get_settings().ocr_backend
+
+
 def _make_ocr(options: dict):
-    backend = str(options.get("ocr_backend", "tesseract")).casefold()
+    backend = str(options.get("ocr_backend") or _configured_ocr_backend()).casefold()
     languages = options.get("ocr_languages") or options.get("languages")
+    if backend in {"surya", "surya-local"}:
+        from app.ai.ocr.surya_client import SuryaOCRClient
+
+        return SuryaOCRClient.from_options(options)
     if backend in {"paddle", "paddleocr", "paddleocr-local"}:
         assets = options.get("ocr_assets") or options.get("paddle_assets")
         return PaddleOCRLocal(
@@ -813,6 +824,8 @@ def analyze_document(source_path: str, work_dir: str, options: dict | None = Non
     from .preprocessing import VERSION, protected_candidates
 
     ocr = _make_ocr(options)
+    if hasattr(ocr, "adjust_options"):
+        options = ocr.adjust_options(options)
     warnings, pages, tables, all_text, protected = [], [], [], [], []
     max_pages = int(options.get("max_pages", 200))
     metadata = {}
@@ -1045,7 +1058,7 @@ def run_line_verification(ir, source):
     from .line_verification import verify_lines
 
     try:
-        return verify_lines(ir, source)
+        return verify_lines(ir, source, **_line_verification_kwargs(ir))
     except Exception as exc:  # noqa: BLE001 - recorded, never hidden
         ir["line_verification"] = {"status": "NOT_EXECUTED", "error": type(exc).__name__}
         ir.setdefault("warnings", []).append(
@@ -1056,6 +1069,20 @@ def run_line_verification(ir, source):
             }
         )
         return ir["line_verification"]
+
+
+def _line_verification_kwargs(ir):
+    """Lecteur de double lecture selon le moteur OCR réellement utilisé (provenance)."""
+    surya = any(
+        str(block.get("provenance", "")).startswith("ocr:surya")
+        for page in ir.get("pages", [])
+        for block in page.get("blocks", [])
+    )
+    if not surya:
+        return {}
+    from app.ai.ocr.surya_client import SuryaOCRClient
+
+    return SuryaOCRClient.line_verification_kwargs()
 
 
 def _all_blocks(ir):

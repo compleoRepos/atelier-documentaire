@@ -44,7 +44,7 @@ jobs:
           cache-dependency-path: backend/requirements.txt
       - run: sudo apt-get update && sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-fra fonts-dejavu-core fonts-dejavu-extra libreoffice-writer
       - run: python -m pip install -r backend/requirements.txt 'pytest==9.1.1' 'pytest-asyncio==1.4.0' 'ruff==0.16.10' pip-audit
-      - run: ruff check backend tools
+      - run: ruff check backend tools services
       - run: PYTHONPATH=backend pytest backend/tests/unit backend/tests/integration backend/tests/e2e backend/tests/regression backend/tests/security --junitxml=test-report/ci.xml
       - run: pip-audit -r backend/requirements.txt --strict
       - uses: actions/upload-artifact@v4
@@ -150,10 +150,28 @@ jobs:
           docker compose --env-file /tmp/compose-ci.env config --quiet
       - run: helm lint infrastructure/helm/atelier-documentaire
       - run: helm template ci infrastructure/helm/atelier-documentaire >/tmp/atelier-documentaire.yaml
+      - name: Render the OCR variants (inline sidecar, explicit Tesseract)
+        run: |
+          helm template ci infrastructure/helm/atelier-documentaire --set external.executionMode=inline >/tmp/atelier-inline.yaml
+          helm template ci infrastructure/helm/atelier-documentaire --set ocr.backend=tesseract >/tmp/atelier-tesseract.yaml
       - name: Build runtime images with Docker
         run: |
           docker build --pull=false --tag atelier-documentaire-api:ci -f backend/Dockerfile .
           docker build --pull=false --tag atelier-documentaire-frontend:ci -f frontend/Dockerfile .
+          docker build --pull=false --tag atelier-documentaire-ocr-surya:ci -f services/ocr-surya/Dockerfile .
+      - name: OCR Surya image refuses to start without verified weights (fail-closed)
+        run: |
+          set +e
+          docker run --rm --network none --read-only --tmpfs /tmp --cap-drop ALL \
+            --security-opt no-new-privileges:true atelier-documentaire-ocr-surya:ci
+          code=$?
+          set -e
+          test "$code" -eq 78
+      - name: OCR Surya service self-test inside the image (no network, no weights)
+        run: |
+          docker run --rm --network none --read-only --tmpfs /tmp --cap-drop ALL \
+            --security-opt no-new-privileges:true --entrypoint /opt/surya/bin/python \
+            atelier-documentaire-ocr-surya:ci /opt/ocr-surya/selftest.py
 
   private-acceptance:
     if: github.event_name == 'workflow_dispatch' && inputs.private_acceptance

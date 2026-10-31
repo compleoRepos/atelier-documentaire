@@ -67,7 +67,17 @@ class Settings(BaseSettings):
     target_input: int = Field(default=22000, ge=1)
     max_output: int = Field(default=8000, ge=1)
     safety_margin: int = Field(default=2768, ge=1)
-    ocr_backend: Literal["tesseract", "paddle"] = "tesseract"
+    # OCR : Surya par défaut (service local services/ocr-surya). Tesseract ne
+    # sert plus que sur sélection explicite (référence historique des tests de
+    # non-régression) ; aucun repli automatique d'un moteur vers l'autre.
+    ocr_backend: Literal["surya", "tesseract", "paddle"] = "surya"
+    surya_ocr_url: str | None = None
+    surya_ocr_allowed_hosts: str = "127.0.0.1,localhost,::1"
+    surya_ocr_token: str | None = None
+    surya_ocr_timeout_seconds: float = Field(default=900, ge=10, le=3600)
+    # Les poids Surya sont sous licence OpenRAIL-M modifiée (seuil de chiffre
+    # d'affaires/financement) : l'exploitant doit attester son éligibilité.
+    surya_weights_license_acknowledged: bool = False
     image_preprocessing_profile: Literal["auto", "clean_scan", "noisy_scan", "old_document", "mobile_photo", "complex_document"] = "auto"
     paddle_model_dir: Path | None = None
     soffice_path: str = "/usr/bin/soffice"
@@ -162,6 +172,8 @@ class Settings(BaseSettings):
             raise ValueError("Périmètre Interim propriétaire : fichier d'autorisation serveur requis")
         if self.job_hard_timeout_seconds <= self.job_soft_timeout_seconds:
             raise ValueError("Le timeout dur doit dépasser le timeout souple")
+        if self.ocr_backend == "surya" and self.surya_ocr_url:
+            self._surya_contract()
         if self.environment.lower() in {"prod", "production"}:
             if (
                 self.engine != "private"
@@ -198,7 +210,31 @@ class Settings(BaseSettings):
                 )
             if "*" in self.origins or any(not x.startswith("https://") for x in self.origins):
                 raise ValueError("Production : origines HTTPS explicites uniquement")
+            if self.ocr_backend == "surya":
+                if not self.surya_ocr_url:
+                    raise ValueError(
+                        "Production : TRANSLATOR_SURYA_OCR_URL requis pour l'OCR Surya"
+                    )
+                if not self.surya_weights_license_acknowledged:
+                    raise ValueError(
+                        "Production : éligibilité à la licence des poids Surya non attestée "
+                        "(TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED)"
+                    )
         return self
+
+    def _surya_contract(self) -> None:
+        """URL OCR : hôte explicitement autorisé ; HTTP clair seulement en boucle locale."""
+        parsed = urlparse(self.surya_ocr_url)
+        host = (parsed.hostname or "").lower()
+        if parsed.scheme not in {"http", "https"} or not host or host not in self.surya_hosts:
+            raise ValueError(
+                "TRANSLATOR_SURYA_OCR_URL : hôte absent de TRANSLATOR_SURYA_OCR_ALLOWED_HOSTS"
+            )
+        if parsed.username or parsed.password:
+            raise ValueError("TRANSLATOR_SURYA_OCR_URL : identifiants interdits dans l'URL")
+        if parsed.scheme == "http" and self.environment.lower() in {"prod", "production"}:
+            if host not in {"127.0.0.1", "localhost", "::1"}:
+                raise ValueError("Production : OCR Surya en HTTPS requis hors boucle locale")
 
     def _rag_contract(self) -> None:
         """Refuse une configuration RAG incohérente ou une variable RAG inconnue."""
@@ -222,6 +258,10 @@ class Settings(BaseSettings):
     @property
     def private_hosts(self):
         return [x.strip().lower() for x in self.private_ai_allowed_hosts.split(",") if x.strip()]
+
+    @property
+    def surya_hosts(self):
+        return [x.strip().lower() for x in self.surya_ocr_allowed_hosts.split(",") if x.strip()]
 
     @property
     def translation_budgets(self):

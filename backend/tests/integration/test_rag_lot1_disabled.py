@@ -17,7 +17,13 @@ import textwrap
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-RULER_REFERENCE = "b0b0261eaabecda8"  # empreinte de référence Phase 0 (d8bb59a)
+# Règle v2 : bascule OCR Surya. Seuls pipeline.py (sélection du moteur, une lecture par
+# page, lecteur de double lecture) et line_verification.py (option recovery, défaut
+# historique) changent ; aucun fichier ajouté ni retiré de la fermeture (29 + 5).
+RULER_REFERENCE = "d5c31e6d701c1c9d"
+# Règle v1 (Phase 0, d8bb59a) : les scores RUN26/27/29 ont été mesurés sous cette règle ;
+# ils ne sont PAS comparables à des scores Surya sans nouvelle base de référence.
+RULER_REFERENCE_HISTORICAL = "b0b0261eaabecda8"
 
 _SCRIPT = textwrap.dedent(
     """
@@ -136,6 +142,7 @@ def test_ruler_fingerprint_is_unchanged_and_excludes_rag():
     finally:
         sys.path.pop(0)
     result = ruler_fingerprint.fingerprint()
+    assert RULER_REFERENCE != RULER_REFERENCE_HISTORICAL  # changement de règle assumé
     assert result["ruler_sha256"][:16] == RULER_REFERENCE
     assert (result["product_files"], result["tool_files"]) == (29, 5)
     paths = [entry["path"] for entry in result["files"]]

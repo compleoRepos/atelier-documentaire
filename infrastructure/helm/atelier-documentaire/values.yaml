@@ -47,6 +47,25 @@ scratch:
   storageClassName: private-rwx
   size: 50Gi
 
+ocr:
+  # surya (défaut) | tesseract (référence historique, sélection explicite) ; aucun repli automatique.
+  backend: surya
+  surya:
+    # Image construite depuis services/ocr-surya/Dockerfile (aucun poids inclus).
+    image: registry.private.example/atelier-documentaire-ocr-surya
+    tag: "0.1.0"
+    # PVC fourni par l'exploitant : surya-2.5-Q8_0.gguf (défaut ; ou surya-2.5.gguf bf16) + surya-2.5-mmproj.gguf,
+    # contrôlés au démarrage par leurs empreintes SHA-256 officielles.
+    modelClaim: atelier-documentaire-surya-models
+    modelFile: surya-2.5-Q8_0.gguf
+    threads: 4
+    timeoutSeconds: 900
+    # Licence des poids (OpenRAIL-M modifiée) : l'exploitant atteste son éligibilité ; sinon refus en production.
+    weightsLicenseAcknowledged: false
+    # Mesuré LOT 2.2 : moteur bf16 ≈ 4,0 Go RSS (poids + tampons vision) + client Python.
+    resources:
+      requests: { cpu: "2", memory: 5Gi }
+      limits: { cpu: "4", memory: 6Gi }
 model:
   enabled: false
   # Activer uniquement après validation de l’image et des poids hors ligne.

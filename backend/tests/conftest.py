@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+
+# Suite historique de non-régression : Tesseract reste la référence EXPLICITE.
+# Le défaut produit est Surya ; il est couvert par des tests dédiés (transport
+# HTTP simulé) et par la recette réelle sur le service local, jamais en silence.
+os.environ.setdefault("TRANSLATOR_OCR_BACKEND", "tesseract")
 
 
 @pytest.fixture

@@ -985,6 +985,7 @@ def verify_lines(
     reader: Callable[[Any], str | None] | None = None,
     rasters: dict[int, Any] | None = None,
     scale: float = SCALE,
+    recovery: bool = True,
 ) -> dict[str, Any]:
     """Annotate scanned blocks with highlight evidence and entity double reading."""
     reader = reader or _tesseract_line
@@ -1087,7 +1088,13 @@ def verify_lines(
                 strip_checkbox_tokens(ir, block, line_boxes, stats)
                 flag_misread_checkbox_tokens(block, line_boxes, stats)
                 # F25 (run26): re-read low-confidence lines on a preprocessed copy.
-                recover_block(block, page.get("blocks", []), rgb, scale, doc_languages, stats)
+                # Disabled for engines it was not calibrated on (Surya): counted, never silent.
+                if recovery:
+                    recover_block(block, page.get("blocks", []), rgb, scale, doc_languages, stats)
+                else:
+                    stats["ocr_recovery_disabled_blocks"] = (
+                        stats.get("ocr_recovery_disabled_blocks", 0) + 1
+                    )
                 flag_bidi_number_runs(block, stats)
                 _normalize_block_brackets(block, stats)
             lines = block.get("source_lines") or [block]

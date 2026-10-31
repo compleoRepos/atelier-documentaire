@@ -82,6 +82,33 @@ services:
     security_opt: [no-new-privileges:true]
     networks: [private]
 
+  ocr-surya:
+    # Moteur OCR par défaut. Aucun poids dans l'image : volume surya-models (lecture seule),
+    # empreintes SHA-256 officielles contrôlées au démarrage (docs/ocr/SURYA.md).
+    build:
+      context: .
+      dockerfile: services/ocr-surya/Dockerfile
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: ${OCR_SURYA_MEMORY_LIMIT:-6g}
+    cpus: ${OCR_SURYA_CPUS:-4.0}
+    volumes:
+      - surya-models:/models:ro
+    environment:
+      OCR_SURYA_MODEL_FILE: ${OCR_SURYA_MODEL_FILE:-surya-2.5-Q8_0.gguf}
+      OCR_SURYA_THREADS: ${OCR_SURYA_THREADS:-4}
+      OCR_SURYA_TOKEN: ${OCR_SURYA_TOKEN:-}
+    healthcheck:
+      test: ["CMD", "/opt/surya/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8093/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 600s
+    networks: [private]
+
   api:
     build:
       context: .
@@ -123,7 +150,11 @@ services:
       TRANSLATOR_AUTH_MODE: ${TRANSLATOR_AUTH_MODE:-hybrid}
       TRANSLATOR_COOKIE_SECURE: ${TRANSLATOR_COOKIE_SECURE:-false}
       TRANSLATOR_METRICS_TOKEN: ${TRANSLATOR_METRICS_TOKEN:-}
-      TRANSLATOR_OCR_BACKEND: ${TRANSLATOR_OCR_BACKEND:-tesseract}
+      TRANSLATOR_OCR_BACKEND: ${TRANSLATOR_OCR_BACKEND:-surya}
+      TRANSLATOR_SURYA_OCR_URL: ${TRANSLATOR_SURYA_OCR_URL:-http://ocr-surya:8093}
+      TRANSLATOR_SURYA_OCR_ALLOWED_HOSTS: ${TRANSLATOR_SURYA_OCR_ALLOWED_HOSTS:-ocr-surya}
+      TRANSLATOR_SURYA_OCR_TOKEN: ${OCR_SURYA_TOKEN:-}
+      TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED: ${TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED:-false}
       TRANSLATOR_PADDLE_MODEL_DIR: ${TRANSLATOR_PADDLE_MODEL_DIR:-}
       TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR:-}
       TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION:-}
@@ -190,7 +221,11 @@ services:
       TRANSLATOR_AUTH_MODE: ${TRANSLATOR_AUTH_MODE:-hybrid}
       TRANSLATOR_COOKIE_SECURE: ${TRANSLATOR_COOKIE_SECURE:-false}
       TRANSLATOR_METRICS_TOKEN: ${TRANSLATOR_METRICS_TOKEN:-}
-      TRANSLATOR_OCR_BACKEND: ${TRANSLATOR_OCR_BACKEND:-tesseract}
+      TRANSLATOR_OCR_BACKEND: ${TRANSLATOR_OCR_BACKEND:-surya}
+      TRANSLATOR_SURYA_OCR_URL: ${TRANSLATOR_SURYA_OCR_URL:-http://ocr-surya:8093}
+      TRANSLATOR_SURYA_OCR_ALLOWED_HOSTS: ${TRANSLATOR_SURYA_OCR_ALLOWED_HOSTS:-ocr-surya}
+      TRANSLATOR_SURYA_OCR_TOKEN: ${OCR_SURYA_TOKEN:-}
+      TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED: ${TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED:-false}
       TRANSLATOR_PADDLE_MODEL_DIR: ${TRANSLATOR_PADDLE_MODEL_DIR:-}
       TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR:-}
       TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION: ${TRANSLATOR_QUALITY_EMBEDDING_MODEL_VERSION:-}
@@ -213,6 +248,7 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
       minio-provision: { condition: service_completed_successfully }
+      ocr-surya: { condition: service_healthy }
     entrypoint: ["celery"]
     command: ["-A", "app.workers.tasks", "worker", "--loglevel=INFO", "--queues=documents", "--concurrency=2", "--prefetch-multiplier=1"]
     networks: [private]
@@ -242,6 +278,7 @@ volumes:
   runtime-data:
   expected-data:
   model-data:
+  surya-models:
   clamav-data:
 
 networks:

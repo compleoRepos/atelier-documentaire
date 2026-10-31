@@ -72,6 +72,16 @@ trap 'kill "$SERVICE_PID" "$LLAMA_PID" 2>/dev/null || true' TERM INT
 set +e
 wait -n "$LLAMA_PID" "$SERVICE_PID"
 status=$?
-kill "$SERVICE_PID" "$LLAMA_PID" 2>/dev/null || true
+# Arrêt borné : TERM aux deux processus, puis KILL de ce qui survit après 5 s. Mesuré sous Docker :
+# après avoir servi une requête, llama-server ne se termine pas sur TERM (encore vivant 20 s plus
+# tard, puis SIGKILL du moteur de conteneurs). Il ne détient aucun état persistant (cache de prompts
+# désactivé) : le KILL est sans perte. Une page en cours échoue côté worker (OCR_SURYA_UNAVAILABLE).
+kill -TERM "$SERVICE_PID" "$LLAMA_PID" 2>/dev/null || true
+ticks=50
+while [ "$ticks" -gt 0 ] && { kill -0 "$SERVICE_PID" 2>/dev/null || kill -0 "$LLAMA_PID" 2>/dev/null; }; do
+  sleep 0.1
+  ticks=$((ticks - 1))
+done
+kill -KILL "$SERVICE_PID" "$LLAMA_PID" 2>/dev/null || true
 wait
 exit "$status"

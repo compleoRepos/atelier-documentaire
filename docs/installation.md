@@ -3,6 +3,7 @@
 ## Prérequis
 
 - Python 3.12, Tesseract et langues `ara`, `deu`, `eng`, `fra`, `ita`, `nld`, `spa`.
+- OCR par défaut : service `ocr-surya` (Surya OCR 2.5, `services/ocr-surya`) et ses poids GGUF vérifiés par SHA-256 — voir `docs/ocr/SURYA.md`. Tesseract n’est utilisé que sur sélection explicite (`TRANSLATOR_OCR_BACKEND=tesseract`).
 - Node 22 et npm pour compiler Angular.
 - Docker Compose v2 pour le laboratoire.
 - Helm 3 et un cluster privé uniquement pour une validation d’installation réelle.

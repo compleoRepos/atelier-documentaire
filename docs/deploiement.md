@@ -46,14 +46,15 @@ flowchart LR
 | --- | --- | --- | --- | --- |
 | frontend | `frontend/Dockerfile` (Node 22 → `nginxinc/nginx-unprivileged:1.27-alpine`) | 8080 | 101 | Fichiers Angular statiques, proxy `/api` en Compose, sonde `/healthz`. Les en-têtes de sécurité (CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) sont déclarés, mais **ne sont effectivement servis que sur `/healthz`** (écart G11). |
 | api | `backend/Dockerfile` (`python:3.12-slim-bookworm`) | 8000 | 10001 | API REST sous `/api` (dont `/api/health`, qui vérifie les dépendances), `/health` (vivacité statique), `/metrics`, validation des dépôts, antivirus, mise en file des jobs. |
-| worker | même image que l’API, commande `celery` | — | 10001 | Analyse, OCR Tesseract, traduction, reconstruction, conversions LibreOffice (DOCX/XLSX/PPTX). File `documents`, concurrence 2, prefetch 1. |
+| worker | même image que l’API, commande `celery` | — | 10001 | Analyse, OCR (client du service Surya par défaut ; Tesseract uniquement sur sélection explicite), traduction, reconstruction, conversions LibreOffice (DOCX/XLSX/PPTX). File `documents`, concurrence 2, prefetch 1. |
+| ocr-surya | `services/ocr-surya/Dockerfile` (`python:3.12-slim-bookworm`, llama.cpp b11700 vérifié par SHA-256) | 8093 (Compose : réseau interne ; Helm : conteneur annexe en boucle locale) | 10001 | OCR des pages scannées par Surya OCR 2.5 sur CPU. Aucun poids dans l’image : volume en lecture seule contrôlé par empreintes au démarrage. Guide dédié : `docs/ocr/SURYA.md`. |
 | PostgreSQL | `postgres:16-bookworm` (Compose) ou service externe | 5432 | — | Métadonnées, audit, utilisateurs, tenants. Schéma géré par Alembic (`0001_baseline`, `0002_industrial`). |
 | Redis | `redis:7.4-alpine` (Compose) ou service externe | 6379 | — | Broker et backend de résultats Celery (identifiants uniquement). |
 | S3 | MinIO construit depuis une source épinglée (Compose) ou S3 privé avec KMS | 9000 | 10001 | Originaux immuables et artefacts (préfixe `documents`). |
 | ClamAV | `clamav/clamav:1.4.3` (profil Compose `antivirus`) ou service privé | 3310 | — | Analyse INSTREAM des dépôts, sans fichier temporaire. |
 | IA privée | endpoint OpenAI-compatible privé (vLLM/Qwen) | 8000 (chart) | — | Traduction. Budget dur de 32 768 jetons (entrée ≤ 22 000, sortie ≤ 8 000, marge 2 768). |
 
-L’image backend contient Tesseract (ara, deu, eng, fra, ita, nld, spa), les polices DejaVu et LibreOffice Writer/Calc/Impress. Les variables `HF_HUB_OFFLINE=1` et `TRANSFORMERS_OFFLINE=1` y sont fixées : aucun poids n’est téléchargé à l’exécution.
+L’image backend contient Tesseract (ara, deu, eng, fra, ita, nld, spa) — conservé uniquement pour la sélection explicite `TRANSLATOR_OCR_BACKEND=tesseract` (référence historique, retour arrière) —, les polices DejaVu et LibreOffice Writer/Calc/Impress. Les variables `HF_HUB_OFFLINE=1` et `TRANSFORMERS_OFFLINE=1` y sont fixées : aucun poids n’est téléchargé à l’exécution.
 
 Formats acceptés au dépôt (`backend/app/infrastructure/validation.py`) : PDF, DOCX, XLSX, PPTX, PNG, JPG/JPEG, TIF/TIFF, dans la limite de 25 Mio et de 200 pages par défaut. Les fichiers Office contenant des macros, des contrôles ActiveX, des connexions ou liens externes ou des objets incorporés sont refusés.
 
@@ -76,6 +77,7 @@ Le moteur `interim` est un fournisseur **temporaire**, réservé aux fixtures sy
 | api | 2 vCPU, 2 Gio (`API_CPUS`, `API_MEMORY_LIMIT`) | 250 m / 512 Mio → 2 vCPU / 2 Gio, 2 réplicas |
 | worker | 2 vCPU, 4 Gio (`WORKER_CPUS`, `WORKER_MEMORY_LIMIT`) | 250 m / 512 Mio → 2 vCPU / 4 Gio, 1 réplica |
 | frontend | 1 vCPU, 512 Mio | 100 m / 128 Mio → 1 vCPU / 512 Mio, 2 réplicas |
+| ocr-surya | 4 vCPU, 6 Gio (`OCR_SURYA_CPUS`, `OCR_SURYA_MEMORY_LIMIT`) | conteneur annexe du worker : 2 vCPU / 5 Gio → 4 vCPU / 6 Gio ; pic mesuré ≈ 1,8 Gio en Q8_0 sur pages synthétiques (`docs/ocr/SURYA.md` § 8) |
 | volume partagé | volume nommé `runtime-data` | PVC RWX 50 Gio (`scratch.size`) |
 | IA privée | hors Compose | 1 GPU par défaut (`model.gpuCount`), **dimensionnement non mesuré** |
 
@@ -145,7 +147,10 @@ Toutes les variables applicatives portent le préfixe `TRANSLATOR_` (`backend/ap
 
 | Variable | Défaut du code | Production | Remarques |
 | --- | --- | --- | --- |
-| `TRANSLATOR_OCR_BACKEND` | `tesseract` | — | `paddle` exige `TRANSLATOR_PADDLE_MODEL_DIR` et `backend/requirements-ocr.txt` (non qualifié). |
+| `TRANSLATOR_OCR_BACKEND` | `surya` | `surya` (licence attestée) ou `tesseract` | `surya` : service `ocr-surya` (`docs/ocr/SURYA.md`) ; `tesseract` : sélection explicite, aucun repli automatique entre moteurs ; `paddle` exige `TRANSLATOR_PADDLE_MODEL_DIR` et `backend/requirements-ocr.txt` (non qualifié). |
+| `TRANSLATOR_SURYA_OCR_URL` | — | obligatoire avec `surya` | Hôte présent dans `TRANSLATOR_SURYA_OCR_ALLOWED_HOSTS` (défaut boucle locale) ; HTTP clair refusé en production hors boucle locale. |
+| `TRANSLATOR_SURYA_OCR_TOKEN`, `TRANSLATOR_SURYA_OCR_TIMEOUT_SECONDS` | — , `900` | jeton recommandé hors boucle locale | Délai borné de 10 à 3 600 s. |
+| `TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED` | `false` | `true` après décision juridique | Licence des poids OpenRAIL-M modifiée (seuils de 5 M USD, clause de concurrence) : démarrage refusé en production sans attestation. |
 | `TRANSLATOR_IMAGE_PREPROCESSING_PROFILE` | `auto` | — | `clean_scan`, `noisy_scan`, `old_document`, `mobile_photo` ou `complex_document`. |
 | `TRANSLATOR_QUALITY_EMBEDDING_MODEL_DIR` / `_VERSION` / `_DEVICE` | — / — / `cpu` | — | Modèle local optionnel. |
 | `TRANSLATOR_QUALITY_PRIVATE_JUDGE_ENABLED` | `false` | — | |
@@ -304,8 +309,11 @@ Ne redémarrez pas le démon Docker pour contourner ce problème sans vérifier 
 REG=registry.private.example ; TAG=0.1.0-a4a86eb
 docker build --pull -f backend/Dockerfile  -t $REG/atelier-documentaire:$TAG .
 docker build --pull -f frontend/Dockerfile -t $REG/atelier-documentaire-frontend:$TAG .
+docker build --pull -f services/ocr-surya/Dockerfile -t $REG/atelier-documentaire-ocr-surya:$TAG .   # sans poids
+docker run --rm --network none --entrypoint /opt/surya/bin/python $REG/atelier-documentaire-ocr-surya:$TAG /opt/ocr-surya/selftest.py
 # Analyse de vulnérabilités recommandée (outil de la plateforme : non fourni par le dépôt)
 docker push $REG/atelier-documentaire:$TAG && docker push $REG/atelier-documentaire-frontend:$TAG
+docker push $REG/atelier-documentaire-ocr-surya:$TAG   # référencée par ocr.surya.image / ocr.surya.tag
 ```
 
 Le chart utilise **un seul** `image.tag` pour l’API, le worker et le frontend : publiez les deux images avec le même tag. Pour la production, préférez un tag immuable ou un digest, consigné dans le ticket de changement.
@@ -501,6 +509,9 @@ La production n’est envisageable qu’une fois **toutes** les lignes vérifié
 | Sauvegarde et restauration testées en quarantaine (§ 10.1) | opérateur |
 | Attestation privée acceptée par `tools/release_gate.py --environment production` | release gate (`docs/release.md`) |
 | Endpoint Qwen qualifié sur données autorisées et validation humaine des sorties | humain : **non réalisé à ce jour** |
+| OCR Surya : URL autorisée, `TRANSLATOR_SURYA_WEIGHTS_LICENSE_ACKNOWLEDGED=true`, HTTPS hors boucle locale | code (`Settings`) |
+| Poids Surya présents et conformes aux empreintes officielles | entrypoint du service `ocr-surya` (arrêt, code 78) |
+| Décision juridique sur la licence des poids Surya et qualification OCR sur documents autorisés | humain : **non réalisé à ce jour** |
 
 ## 9. Vérifications après déploiement
 
@@ -531,6 +542,7 @@ Le manifeste `atelier-backup/v1` enregistre la taille et le SHA-256 du dump et d
 
 - Sauvegardez, migrez (§ 5.5 / § 6.6), puis déployez la nouvelle image. Les migrations sont **en avant uniquement** : aucun downgrade destructeur automatique.
 - Retour arrière applicatif : `helm rollback atelier <révision> -n atelier-documentaire`, uniquement si le schéma reste compatible avec l’image précédente. Sinon, restaurez en quarantaine et suivez la procédure approuvée.
+- Retour arrière OCR : `TRANSLATOR_OCR_BACKEND=tesseract` (Compose) ou `--set ocr.backend=tesseract` (Helm) ; aucune migration de données (`docs/ocr/SURYA.md` § 10).
 - Arrêtez l’admission de nouveaux jobs avant une mise à jour du worker. Les originaux sont immuables, et une reprise écrit une nouvelle version candidate.
 
 ### 10.3 Secrets, capacité et incidents
@@ -562,6 +574,7 @@ Le manifeste `atelier-backup/v1` enregistre la taille et le SHA-256 du dump et d
 - Qwen/vLLM n’a été exécuté sur aucun endpoint réel : capacité, latence et qualité non mesurées.
 - Mise à jour des signatures ClamAV sur réseau interne, scan d’images de conteneurs et capacité en charge : non outillés ou non testés.
 - Qualité du moteur (RUN28) : 8/8 documents `REVIEW_REQUIRED`, score officiel v2 65,7 pour un seuil de 94, défauts critiques et réserves de lisibilité ouverts (`reports/run28-20261014/RUN28-OPEN-ISSUES.md`).
+- OCR Surya (moteur par défaut, poids Q8_0) : non qualifié ; mesures uniquement sur 72 pages synthétiques ; environ 21 fois plus lent que Tesseract en temps écoulé (médiane 53 s/page avec 5 threads, contre 2,6 s/page en mono-thread) ; confiance déclarée non calibrée (≈ 0,99 sur des pages lues à F1 0,59) ; arabe droit moins bien lu que par Tesseract (F1 0,822 contre 0,851) ; orientation non corrigée, avec une forte perte en arabe sur page tournée (F1 0,48 à 0,75) (`docs/ocr/SURYA.md` § 9 et § 12).
 - XLSX/PPTX : la vérification native est faite, mais aucune preuve visuelle n’est disponible (`visual_proof=NOT_AVAILABLE`).
 
 ## 13. Preuves de validation

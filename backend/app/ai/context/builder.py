@@ -8,9 +8,20 @@ sélectionnés avant le comptage du tokenizer.
 from __future__ import annotations
 
 import json
+import unicodedata
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
+
+
+def _strip_edge_punctuation(token: str) -> str:
+    """Retire la ponctuation Unicode (catégories P*) en début et fin de jeton."""
+    start, end = 0, len(token)
+    while start < end and unicodedata.category(token[start]).startswith("P"):
+        start += 1
+    while end > start and unicodedata.category(token[end - 1]).startswith("P"):
+        end -= 1
+    return token[start:end]
 
 
 @dataclass(frozen=True)
@@ -275,7 +286,11 @@ class ContextPackBuilder:
         """Select small relevant context; never serialize the full IR/document."""
         options = options or {}
         source = " ".join(str(b.get("text", "")) for b in chunk.get("blocks", []))
-        terms = set(source.lower().split())
+        raw_terms = source.lower().split()
+        # F-L2-03 : un jeton collé à une ponctuation (« Bruttogehalt: ») doit aussi
+        # être cherché sans elle. Union seulement : tout élément retenu auparavant
+        # le reste (comportement historique préservé, rappel strictement accru).
+        terms = set(raw_terms) | {_strip_edge_punctuation(term) for term in raw_terms}
         document_memory = DocumentMemory.from_mapping(options.get("document_memory"))
         domain = ir.get("domain") or (document_memory.domain if document_memory else None)
 

@@ -261,6 +261,73 @@ def _failure(db: Session, tenant_id: str, doc_id: str, actor_id: str | None, cod
         db.commit()
 
 
+# --- LOT 2.3 D-OPS-01: a document whose task died is never left in progress ---
+#
+# Celery acknowledges a task on receipt and nothing resumes it: if the worker is
+# killed (deployment, eviction, OOM), the document stayed ANALYZING/TRANSLATING
+# forever, with no alert (measured: 2 + 4 documents frozen during the campaign).
+# Only the worker sets these two statuses, and every write refreshes
+# ``updated_at``; a live task never outlives the hard time limit after it claimed
+# the document. A document still in progress after the hard limit + a margin can
+# therefore no longer have a live task: it becomes FAILED / TASK_LOST, visible and
+# relaunchable through the existing routes. Nothing is retried automatically.
+
+TASK_LOST_CODE = "TASK_LOST"
+TASK_LOST_MARGIN_SECONDS = 120
+IN_PROGRESS = ("ANALYZING", "TRANSLATING")
+
+
+def recover_lost_tasks(factory, settings, *, now=None) -> list[str]:
+    """Passe en FAILED / TASK_LOST les documents orphelins ; renvoie leurs identifiants."""
+    from datetime import timedelta
+
+    from sqlalchemy import select
+
+    limit = int(settings.job_hard_timeout_seconds) + TASK_LOST_MARGIN_SECONDS
+    cutoff = (now or now_utc()) - timedelta(seconds=limit)
+    recovered: list[str] = []
+    with factory() as db:
+        rows = db.execute(
+            select(Document.id, Document.tenant_id, Document.status).where(
+                Document.status.in_(IN_PROGRESS), Document.updated_at < cutoff
+            )
+        ).all()
+        for doc_id, tenant_id, status in rows:
+            changed = db.execute(
+                update(Document)
+                .where(
+                    Document.id == doc_id,
+                    Document.status == status,
+                    Document.updated_at < cutoff,
+                )
+                .values(
+                    status="FAILED",
+                    issues_json=[
+                        {
+                            "code": TASK_LOST_CODE,
+                            "severity": "error",
+                            "message": "Traitement interrompu (tâche perdue) : relancer le traitement",
+                        }
+                    ],
+                    updated_at=now_utc(),
+                )
+            ).rowcount
+            if changed:
+                recovered.append(doc_id)
+                audit(
+                    db,
+                    tenant_id,
+                    "DOCUMENT_TASK_LOST",
+                    None,
+                    doc_id,
+                    {"status": "FAILED", "issue_codes": [TASK_LOST_CODE], "kind": status},
+                )
+        db.commit()
+    if recovered:
+        logging.getLogger("translator.jobs").warning("TASK_LOST documents=%d", len(recovered))
+    return recovered
+
+
 def run_analyze(
     doc_id: str, tenant_id: str, factory, storage: Storage, settings, actor_id: str | None = None
 ) -> None:
@@ -362,6 +429,115 @@ def run_analyze(
             shutil.rmtree(work, ignore_errors=True)
 
 
+FRENCH_LABEL_ISSUE = "FRENCH_LABEL_UNVERIFIED"
+_FRENCH_LABELS = {"fr", "fra", "fre", "french"}
+
+
+def _reconcile_french_alerts(ir: dict, result: dict) -> list[str]:
+    """Retire les fausses alertes « non traduit » des blocs français, et seulement d'eux.
+
+    Le moteur conserve légitimement le français source ; une évaluation historique le
+    signalait à tort comme inconnu. Jusqu'au LOT 2.3, l'alerte était retirée pour
+    **tout** bloc étiqueté français : un bloc étranger mal étiqueté n'était alors ni
+    traduit ni signalé (D-DET-02, perte silencieuse). Désormais l'étiquette est
+    vérifiée (``french_label_unverified``) : un bloc conservé tel quel, qui demande une
+    traduction et porte une preuve claire de langue étrangère, garde ses alertes et
+    reçoit un signalement explicite ``FRENCH_LABEL_UNVERIFIED`` pour la revue humaine.
+    Rien n'est traduit, réécrit ni envoyé au moteur par cette fonction.
+
+    Renvoie les identifiants des blocs signalés.
+    """
+    from ..ai.translation.typography import typography_equivalent
+    from ..documents.language_evidence import french_label_unverified
+    from ..documents.pipeline import _requires_translation
+
+    languages = [
+        item.get("code") if isinstance(item, dict) else item for item in ir.get("languages") or []
+    ]
+    translations = result.get("translations")
+    translations = translations if isinstance(translations, dict) else {}
+    french_ids: set[str] = set()
+    unverified: list[str] = []
+    for page in ir.get("pages", []):
+        for block in page.get("blocks", []):
+            if str(block.get("language", "")).lower() not in _FRENCH_LABELS:
+                continue
+            block_id = str(block.get("id"))
+            source = str(block.get("text") or "")
+            target = translations.get(block_id, translations.get(block.get("id")))
+            kept = (
+                target is None
+                or str(target).strip() == source.strip()
+                or typography_equivalent(source, str(target))
+            )
+            if (
+                kept
+                and not block.get("protected")
+                and not block.get("no_linguistic_content")
+                and _requires_translation(source)
+                and french_label_unverified(source, [block.get("language"), *languages])
+            ):
+                unverified.append(block_id)
+            else:
+                french_ids.add(block_id)
+
+    def _false_french_unknown(issue: Any) -> bool:
+        if not isinstance(issue, dict) or issue.get("code") != "UNTRANSLATED":
+            return False
+        ids = issue.get("block_ids", []) or []
+        return str(issue.get("block_id")) in french_ids or any(
+            str(item) in french_ids for item in ids
+        )
+
+    result["untranslated_blocks"] = [
+        block_id
+        for block_id in result.get("untranslated_blocks", [])
+        if str(block_id) not in french_ids
+    ]
+    result["issues"] = [
+        issue for issue in result.get("issues", []) if not _false_french_unknown(issue)
+    ]
+    quality = result.get("quality")
+    if isinstance(quality, dict):
+        quality["untranslated_blocks"] = [
+            block_id
+            for block_id in quality.get("untranslated_blocks", [])
+            if str(block_id) not in french_ids
+        ]
+        quality["issues"] = [
+            issue
+            for issue in quality.get("issues", [])
+            if not (
+                isinstance(issue, dict)
+                and issue.get("code") == "UNTRANSLATED"
+                and any(str(block_id) in french_ids for block_id in issue.get("block_ids", []))
+            )
+        ]
+    if not unverified:
+        return unverified
+    message = (
+        "Bloc étiqueté français conservé sans traduction alors qu'il contient des mots "
+        "étrangers : vérification humaine requise."
+    )
+    targets = [result] + ([quality] if isinstance(quality, dict) else [])
+    for holder in targets:
+        listed = {str(item) for item in holder.get("untranslated_blocks", [])}
+        holder["untranslated_blocks"] = list(holder.get("untranslated_blocks", [])) + [
+            block_id for block_id in unverified if block_id not in listed
+        ]
+        holder["issues"] = list(holder.get("issues", [])) + [
+            {
+                "code": FRENCH_LABEL_ISSUE,
+                "severity": "error",
+                "message": message,
+                "block_id": block_id,
+                "block_ids": [block_id],
+            }
+            for block_id in unverified
+        ]
+    return unverified
+
+
 def run_translate(
     doc_id: str, tenant_id: str, factory, storage: Storage, settings, actor_id: str | None = None
 ) -> None:
@@ -423,6 +599,8 @@ def run_translate(
                 "source_sha256": source_sha,
                 "review_version": ir["review_version"],
                 **settings.translation_budgets,
+                # D-ENG-01 : délai moteur réglable (défaut 60 s, valeur historique).
+                "timeout": float(getattr(settings, "private_ai_timeout_seconds", 60.0)),
                 "glossary": glossary,
                 "memory": memory,
                 "glossary_version": max((x.version for x in glossary_entries), default=0),
@@ -478,50 +656,7 @@ def run_translate(
             result = _call_translate(ir, work, options)
             if not isinstance(result, dict):
                 raise ValueError("TRANSLATION_RESULT_INVALID")
-            # Le moteur conserve légitimement le français source en mode offline.
-            # Une évaluation legacy le signalait à tort comme inconnu : ne retirer
-            # que cette fausse alerte, jamais les blocs étrangers non traduits.
-            blocks = [block for page in ir.get("pages", []) for block in page.get("blocks", [])]
-            french_ids = {
-                str(block.get("id"))
-                for block in blocks
-                if str(block.get("language", "")).lower() in {"fr", "fra", "fre", "french"}
-            }
-            result["untranslated_blocks"] = [
-                block_id
-                for block_id in result.get("untranslated_blocks", [])
-                if str(block_id) not in french_ids
-            ]
-
-            def _false_french_unknown(issue: Any) -> bool:
-                if not isinstance(issue, dict) or issue.get("code") != "UNTRANSLATED":
-                    return False
-                ids = issue.get("block_ids", []) or []
-                return str(issue.get("block_id")) in french_ids or any(
-                    str(item) in french_ids for item in ids
-                )
-
-            result["issues"] = [
-                issue for issue in result.get("issues", []) if not _false_french_unknown(issue)
-            ]
-            quality = result.get("quality")
-            if isinstance(quality, dict):
-                quality["untranslated_blocks"] = [
-                    block_id
-                    for block_id in quality.get("untranslated_blocks", [])
-                    if str(block_id) not in french_ids
-                ]
-                quality["issues"] = [
-                    issue
-                    for issue in quality.get("issues", [])
-                    if not (
-                        isinstance(issue, dict)
-                        and issue.get("code") == "UNTRANSLATED"
-                        and any(
-                            str(block_id) in french_ids for block_id in issue.get("block_ids", [])
-                        )
-                    )
-                ]
+            _reconcile_french_alerts(ir, result)
             vnum = _next_version(db, doc_id)
             key = f"{tenant_id}/{doc_id}/versions/{vnum}"
             telemetry = (

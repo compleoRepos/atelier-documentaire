@@ -36,7 +36,16 @@ import unicodedata
 from .normalizer import tokens as base_tokens
 
 VERSION = "rag-normalizer-2"
-SUPPORTED_LANGUAGES = ("fr", "ar", "en", "es", "de")
+# Langues historiques du LOT 2 (ordre conservé), puis les 20 autres langues officielles de l'Union
+# européenne (LOT 2.4, référentiels UE). Les clés de recherche sont calculées de la même façon
+# pour toutes les langues : seule l'acceptation à l'import change.
+EU_OFFICIAL_LANGUAGES = (
+    "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "ga", "hr",
+    "hu", "it", "lt", "lv", "mt", "nl", "pl", "pt", "ro", "sk", "sl", "sv",
+)  # fmt: skip
+SUPPORTED_LANGUAGES = ("fr", "ar", "en", "es", "de") + tuple(
+    code for code in EU_OFFICIAL_LANGUAGES if code not in {"fr", "en", "es", "de"}
+)
 
 # Contrôles de direction (LRM, RLM, ALM, incorporations, isolats) et liants.
 _INVISIBLE = dict.fromkeys(
@@ -124,12 +133,40 @@ def fold_key(key: str) -> str:
 
 
 def alias_keys(text: object, language: str | None) -> set[str]:
-    """Clés pliées supplémentaires d'une entrée (translittération allemande)."""
+    """Clés pliées supplémentaires d'une entrée (translittération allemande, article maltais)."""
     keys = set()
     if language == "de":
         alias = " ".join(_fold_word(word.translate(_GERMAN_ALIAS)) for word in search_tokens(text))
         keys.add(alias)
+    elif language == "mt":
+        keys.update(_maltese_article_keys(text))
     return {key for key in keys if key}
+
+
+# LOT 2.4 — maltais : l'article défini s'attache au nom par un trait d'union et s'assimile aux
+# consonnes « solaires » (« ix-xogħol », « id-dritt ») ; « l- » devant voyelle, « h » ou « għ »
+# (« l-impjegat », « l-għalliem ») ; « il- » sinon (« il-ħlas »). Les contractions usuelles avec
+# préposition suivent la même règle (« tal-ħlas », « fix-xogħol »). Clés ajoutées aux seules
+# entrées maltaises : aucune autre langue n'est affectée et le texte n'est jamais redécoupé.
+_MALTESE_SUN = frozenset("ċdnrstxżz")
+_MALTESE_PREPOSITIONS = ("ta", "fi", "bi", "mi", "għa", "li", "sa", "ma")
+
+
+def _maltese_article_keys(text: object) -> set[str]:
+    words = search_tokens(text)
+    if not words or "-" in words[0]:
+        return set()
+    first, rest = words[0], words[1:]
+    initial = first[0]
+    if initial in _MALTESE_SUN:
+        prefixes = [f"i{initial}"] + [f"{p}{initial}" for p in _MALTESE_PREPOSITIONS]
+    elif initial in "aeiouh" or first.startswith("għ"):
+        prefixes = ["l", "tal", "fl", "bl", "mill", "għall", "lill", "sal", "mal"]
+    else:
+        prefixes = ["il", "tal", "fil", "bil", "mill", "għall", "lill", "sal", "mal"]
+    return {
+        " ".join(_fold_word(word) for word in [f"{prefix}-{first}", *rest]) for prefix in prefixes
+    }
 
 
 def _arabic_stem(word: str) -> str:

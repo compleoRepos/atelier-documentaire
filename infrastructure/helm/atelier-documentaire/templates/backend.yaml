@@ -31,6 +31,7 @@ spec:
             - { name: TRANSLATOR_DATA_DIR, value: "/app/runtime" }
             - { name: TRANSLATOR_EXPECTED_DIR, value: {{ .Values.external.expectedDir | quote }} }
             - { name: TRANSLATOR_TOKENIZER_PATH, value: {{ .Values.external.tokenizerPath | quote }} }
+            - { name: TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS, value: {{ .Values.external.privateAiTimeoutSeconds | default 60 | quote }} }
             - { name: TRANSFORMERS_OFFLINE, value: "1" }
             - { name: HF_HUB_OFFLINE, value: "1" }
             - { name: TRANSLATOR_AV_SCAN_ENABLED, value: {{ .Values.external.avScanEnabled | quote }} }
@@ -85,6 +86,8 @@ spec:
     spec:
       serviceAccountName: {{ include "atelier.serviceAccountName" . }}
       automountServiceAccountToken: false
+      # LOT 2.3 D-OPS-01 : grâce > délai dur de tâche (défaut Kubernetes 30 s).
+      terminationGracePeriodSeconds: {{ .Values.worker.terminationGracePeriodSeconds | default 1900 }}
       securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: worker
@@ -103,6 +106,7 @@ spec:
             - { name: TRANSLATOR_DATA_DIR, value: "/app/runtime" }
             - { name: TRANSLATOR_EXPECTED_DIR, value: {{ .Values.external.expectedDir | quote }} }
             - { name: TRANSLATOR_TOKENIZER_PATH, value: {{ .Values.external.tokenizerPath | quote }} }
+            - { name: TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS, value: {{ .Values.external.privateAiTimeoutSeconds | default 60 | quote }} }
             - { name: TRANSFORMERS_OFFLINE, value: "1" }
             - { name: HF_HUB_OFFLINE, value: "1" }
             - { name: TRANSLATOR_AV_SCAN_ENABLED, value: {{ .Values.external.avScanEnabled | quote }} }

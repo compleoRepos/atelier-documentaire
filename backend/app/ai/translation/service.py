@@ -349,11 +349,43 @@ QwenTranslationEngine = PrivateQwenEngine
 QwenEngine = PrivateQwenEngine
 
 
+# LOT 2.3 D-PERF-TOK: the tokenizer was loaded again for every document (measured
+# 2.75-4.17 s per load on the real path). It is now kept per process, keyed by its
+# real path and by the name, size and modification time of every asset file: any
+# change on disk loads it again. Loading stays local-only and the reported
+# tokenizer hash is still computed from the files for every engine.
+_TOKENIZER_CACHE: dict[tuple, Any] = {}
+_TOKENIZER_CACHE_MAX = 4
+
+
+def _tokenizer_files_key(path: str) -> tuple:
+    root = os.path.realpath(path)
+    entries: list[tuple[str, int, int]] = []
+    if os.path.isfile(root):
+        stat = os.stat(root)
+        entries.append((os.path.basename(root), stat.st_size, stat.st_mtime_ns))
+    else:
+        for directory, _, files in os.walk(root):
+            for filename in files:
+                full = os.path.join(directory, filename)
+                stat = os.stat(full)
+                entries.append((os.path.relpath(full, root), stat.st_size, stat.st_mtime_ns))
+    return root, tuple(sorted(entries))
+
+
 def _load_local_tokenizer(path: str) -> Any:
     # Explicitly local-only: transformers cannot fetch a model/tokenizer.
     from transformers import AutoTokenizer
 
-    return AutoTokenizer.from_pretrained(path, local_files_only=True, trust_remote_code=False)
+    key = _tokenizer_files_key(path)
+    cached = _TOKENIZER_CACHE.get(key)
+    if cached is not None:
+        return cached
+    tokenizer = AutoTokenizer.from_pretrained(path, local_files_only=True, trust_remote_code=False)
+    if len(_TOKENIZER_CACHE) >= _TOKENIZER_CACHE_MAX:
+        _TOKENIZER_CACHE.clear()
+    _TOKENIZER_CACHE[key] = tokenizer
+    return tokenizer
 
 
 def _tokenizer_hash(tokenizer: Any, name: str) -> str:

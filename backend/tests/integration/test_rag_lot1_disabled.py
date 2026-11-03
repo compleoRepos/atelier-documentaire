@@ -17,10 +17,19 @@ import textwrap
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+# Règle v3 : corrections LOT 2.3 Phase B. Quatre fichiers de la fermeture changent, aucun
+# fichier ajouté ni retiré (29 + 5) :
+# - block_status.py et language_evidence.py (D-DET-02) : un bloc étiqueté français sans
+#   preuve lexicale est « incertain » au lieu de « déjà français » ; les comptes de statuts de
+#   blocs et de signalements « non traduit » mesurés sous v2 ne sont PAS comparables ;
+# - builder.py (F-L2-03) : terme de glossaire collé à une ponctuation reconnu ; les mesures
+#   de conformité au glossaire sous v2 ne sont PAS comparables ;
+# - service.py (D-PERF-TOK) : cache du tokenizer par processus, sorties inchangées (neutre).
+RULER_REFERENCE = "6c50972530ecc214"
 # Règle v2 : bascule OCR Surya. Seuls pipeline.py (sélection du moteur, une lecture par
 # page, lecteur de double lecture) et line_verification.py (option recovery, défaut
 # historique) changent ; aucun fichier ajouté ni retiré de la fermeture (29 + 5).
-RULER_REFERENCE = "d5c31e6d701c1c9d"
+RULER_REFERENCE_V2 = "d5c31e6d701c1c9d"
 # Règle v1 (Phase 0, d8bb59a) : les scores RUN26/27/29 ont été mesurés sous cette règle ;
 # ils ne sont PAS comparables à des scores Surya sans nouvelle base de référence.
 RULER_REFERENCE_HISTORICAL = "b0b0261eaabecda8"
@@ -142,7 +151,8 @@ def test_ruler_fingerprint_is_unchanged_and_excludes_rag():
     finally:
         sys.path.pop(0)
     result = ruler_fingerprint.fingerprint()
-    assert RULER_REFERENCE != RULER_REFERENCE_HISTORICAL  # changement de règle assumé
+    # changements de règle assumés et documentés ci-dessus
+    assert len({RULER_REFERENCE, RULER_REFERENCE_V2, RULER_REFERENCE_HISTORICAL}) == 3
     assert result["ruler_sha256"][:16] == RULER_REFERENCE
     assert (result["product_files"], result["tool_files"]) == (29, 5)
     paths = [entry["path"] for entry in result["files"]]

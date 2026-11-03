@@ -146,6 +146,7 @@ services:
       TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS: ${TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS:-}
       TRANSLATOR_PRIVATE_AI_MODEL: ${TRANSLATOR_PRIVATE_AI_MODEL:-}
       TRANSLATOR_PRIVATE_AI_MODEL_VERSION: ${TRANSLATOR_PRIVATE_AI_MODEL_VERSION:-}
+      TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS: ${TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS:-60}
       TRANSLATOR_AUTO_CREATE_SCHEMA: ${TRANSLATOR_AUTO_CREATE_SCHEMA:-true}
       TRANSLATOR_AUTH_MODE: ${TRANSLATOR_AUTH_MODE:-hybrid}
       TRANSLATOR_COOKIE_SECURE: ${TRANSLATOR_COOKIE_SECURE:-false}
@@ -217,6 +218,7 @@ services:
       TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS: ${TRANSLATOR_PRIVATE_AI_ALLOWED_HOSTS:-}
       TRANSLATOR_PRIVATE_AI_MODEL: ${TRANSLATOR_PRIVATE_AI_MODEL:-}
       TRANSLATOR_PRIVATE_AI_MODEL_VERSION: ${TRANSLATOR_PRIVATE_AI_MODEL_VERSION:-}
+      TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS: ${TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS:-60}
       TRANSLATOR_AUTO_CREATE_SCHEMA: ${TRANSLATOR_AUTO_CREATE_SCHEMA:-true}
       TRANSLATOR_AUTH_MODE: ${TRANSLATOR_AUTH_MODE:-hybrid}
       TRANSLATOR_COOKIE_SECURE: ${TRANSLATOR_COOKIE_SECURE:-false}
@@ -251,6 +253,9 @@ services:
       ocr-surya: { condition: service_healthy }
     entrypoint: ["celery"]
     command: ["-A", "app.workers.tasks", "worker", "--loglevel=INFO", "--queues=documents", "--concurrency=2", "--prefetch-multiplier=1"]
+    # LOT 2.3 D-OPS-01 : grâce d'arrêt > délai dur de tâche (1860 s) ; défaut Docker 10 s
+    # = tâche en cours tuée. Arrêt à chaud Celery : la tâche en cours se termine.
+    stop_grace_period: ${WORKER_STOP_GRACE_PERIOD:-1900s}
     networks: [private]
 
   frontend:

@@ -1,0 +1,870 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix lime: <http://www.w3.org/ns/lemon/lime#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix mdr: <https://w3id.org/mdr#> .
+@prefix stmdr: <http://semanticturkey.uniroma2.it/ns/stmdr#> .
+@prefix : <http://eurovoc.europa.eu/void.ttl#> .
+
+# Simplified EuroVoc DCAT / VoID / LIME descriptor
+# Catalog records, metadata-generation PROV activities, deployment objects and nested UUID linksets have been removed.
+
+<http://eurovoc.europa.eu/void.ttl>
+    a void:DatasetDescription ;
+    foaf:primaryTopic :EuroVoc_4.24 .
+
+:catalog
+    a dcat:Catalog ;
+    dcterms:title "EuroVoc catalogue description"@en ;
+    dcat:dataset :dataset_eurovoc-abs .
+
+:dataset_eurovoc-abs
+    a dcat:Dataset, mdr:DatasetArchetype ;
+    dcterms:title "EuroVoc"@en ;
+    rdfs:label "EuroVoc"@en ;
+    dcterms:description "EuroVoc is a multilingual, multidisciplinary thesaurus covering the activities of the EU"@en ;
+    foaf:homepage <https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc> ;
+    dcterms:creator <http://publications.europa.eu/resource/authority/corporate-body/PUBL> ;
+    dcterms:publisher <http://publications.europa.eu/resource/authority/corporate-body/PUBL> ;
+    dcterms:created "1982"^^xsd:gYear ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcat:landingPage <https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc> ;
+    void:uriSpace "http://eurovoc.europa.eu/" ;
+    dcat:currentVersion :dataset_eurovoc-20260709 .
+
+:dataset_eurovoc-20260709
+    a dcat:Dataset, mdr:DatasetRealization ;
+    dcterms:title "EuroVoc 4.24"@en ;
+    dcat:version "4.24" ;
+    dcterms:issued "2026-07-09"^^xsd:date ;
+    dcterms:modified "2026-07-09"^^xsd:date ;
+    dcat:distribution :eurovoc-dump-skos_4.24, :eurovoc-dump-skos-ap-act_4.24, :eurovoc-dump-xml_4.24, :EuroVoc_4.24 .
+
+:eurovoc-dump-skos_4.24
+    a dcat:Distribution ;
+    dcterms:title "EuroVoc 4.24 SKOS distribution"@en ;
+    dcat:downloadURL <https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Feurovoc%2F20260709-0%2Fzip%2Fskos_xl%2Feurovoc_skos.zip&fileName=eurovoc_skos.zip> ;
+    dcat:mediaType <https://www.iana.org/assignments/media-types/application/rdf+xml> ;
+    dcat:compressFormat <https://www.iana.org/assignments/media-types/application/zip> .
+
+:eurovoc-dump-skos-ap-act_4.24
+    a dcat:Distribution ;
+    dcterms:title "EuroVoc 4.24 SKOS-AP-ACT distribution"@en ;
+    dcat:downloadURL <https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Feurovoc%2F20260709-0%2Fzip%2Fskos_ap_eu%2Feurovoc_skos_ap.zip&fileName=eurovoc_skos_ap.zip> ;
+    dcat:mediaType <https://www.iana.org/assignments/media-types/application/rdf+xml> ;
+    dcat:compressFormat <https://www.iana.org/assignments/media-types/application/zip> .
+
+:eurovoc-dump-xml_4.24
+    a dcat:Distribution ;
+    dcterms:title "EuroVoc 4.24 XML distribution"@en ;
+    dcat:downloadURL <https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Feurovoc%2F20260709-0%2Fzip%2Feurovoc_dtd%2Feurovoc_xml.zip&fileName=eurovoc_xml.zip> ;
+    dcat:mediaType <https://www.iana.org/assignments/media-types/application/xml> ;
+    dcat:compressFormat <https://www.iana.org/assignments/media-types/application/zip> .
+
+:europa-showvoc
+    a dcat:DataService, stmdr:SemanticTurkeyInstance ;
+    dcterms:type stmdr:ShowVocInstance ;
+    dcterms:conformsTo stmdr:semantic-turkey_api ;
+    dcterms:title "ShowVoc installation at the Publications Office of the EU"@en ;
+    dcterms:description "ShowVoc installation at the Publications Office of the EU"@en ;
+    dcat:endpointURL <https://showvoc.op.europa.eu/> .
+
+:EuroVoc_4.24
+    a dcat:Distribution, void:Dataset, mdr:RDFDataset ;
+    dcterms:title "EuroVoc"@en ;
+    rdfs:label "EuroVoc"@en ;
+    dcterms:description "EuroVoc is a multilingual, multidisciplinary thesaurus covering the activities of the EU"@en ;
+    foaf:homepage <https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc> ;
+    dcterms:creator <http://publications.europa.eu/resource/authority/corporate-body/PUBL> ;
+    dcterms:publisher <http://publications.europa.eu/resource/authority/corporate-body/PUBL> ;
+    dcterms:issued "2026-07-09"^^xsd:date ;
+    dcterms:modified "2026-07-09"^^xsd:date ;
+    dcterms:conformsTo skos: ;
+    dcat:accessService :europa-showvoc ;
+    void:dataDump <https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Feurovoc%2F20260709-0%2Fzip%2Fskos_ap_eu%2Feurovoc_skos_ap.zip&fileName=eurovoc_skos_ap.zip> ;
+    void:uriSpace "http://eurovoc.europa.eu/" ;
+    void:triples 4211719 ;
+    void:distinctSubjects 472321 ;
+    void:distinctObjects 956233 ;
+    void:entities 7615 ;
+    void:classPartition
+        [ void:class skos:Concept ; void:entities 7486 ],
+        [ void:class skos:Collection ; void:entities 0 ],
+        [ void:class skos:ConceptScheme ; void:entities 129 ] ;
+    void:subset
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_de_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_it_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_da_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_sr_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_bg_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_sv_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_hr_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_mk_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_sk_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_pl_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_el_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_ga_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_es_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_en_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_ro_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_lv_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_nl_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_cs_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_fi_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_sl_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_mt_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_lt_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_pt_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_et_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_fr_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_hu_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_sq_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_bs_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_no_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_tr_lexicalization_set>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_AGROVOC_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_AGROVOC_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_AGROVOC_LEGACY_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_AGROVOC_LEGACY_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BIOTECH_GLOSSARY_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BKC_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BKC_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BNF_CATALOGUE_HTTP_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BNF_CATALOGUE_HTTP_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BNF_CATALOGUE_HTTPS_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BNF_CATALOGUE_HTTPS_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BNF_DATA_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_BNF_DATA_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_EIGE_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_EIGE_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_ESCO_ISCO_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_ESCO_OCCUPATION_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_EU_COUNTRIES_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_GEMET_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_GEMET_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_GND_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_GND_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_INSPIRE_FEATURE_CONCEPTS_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_INSPIRE_THEMES_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_LCSH_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_LCSH_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_MESH_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_MESH_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_STW_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_STW_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_THESOZ_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_THESOZ_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UMT_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UMTHES_HTTP_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UMTHES_HTTPS_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UNBIS_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UNBIS_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UNESCO_BROWSER_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UNESCO_THESAURUS_closeMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_UNESCO_THESAURUS_exactMatch_Linkset>,
+        <http://eurovoc.europa.eu/void.ttl#EuroVoc_WIKIDATA_closeMatch_Linkset> .
+
+
+# LIME lexicalization sets
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_de_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 18368;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.413;
+  lime:percentage 1.0;
+  lime:language "de";
+  dcterms:language <http://lexvo.org/id/iso639-3/deu>, <http://id.loc.gov/vocabulary/iso639-1/de> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_it_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 19466;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.557;
+  lime:percentage 1.0;
+  lime:language "it";
+  dcterms:language <http://lexvo.org/id/iso639-3/ita>, <http://id.loc.gov/vocabulary/iso639-1/it> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_da_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 16542;
+  lime:references 7612;
+  lime:avgNumOfLexicalizations 2.173;
+  lime:percentage 1.0;
+  lime:language "da";
+  dcterms:language <http://lexvo.org/id/iso639-3/dan>, <http://id.loc.gov/vocabulary/iso639-1/da> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_sr_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 8696;
+  lime:references 7092;
+  lime:avgNumOfLexicalizations 1.142;
+  lime:percentage 0.932;
+  lime:language "sr";
+  dcterms:language <http://lexvo.org/id/iso639-3/srp>, <http://id.loc.gov/vocabulary/iso639-1/sr> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_bg_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 10413;
+  lime:references 7576;
+  lime:avgNumOfLexicalizations 1.368;
+  lime:percentage 0.995;
+  lime:language "bg";
+  dcterms:language <http://lexvo.org/id/iso639-3/bul>, <http://id.loc.gov/vocabulary/iso639-1/bg> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_sv_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 16206;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.129;
+  lime:percentage 1.0;
+  lime:language "sv";
+  dcterms:language <http://lexvo.org/id/iso639-3/swe>, <http://id.loc.gov/vocabulary/iso639-1/sv> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_hr_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 15832;
+  lime:references 7595;
+  lime:avgNumOfLexicalizations 2.08;
+  lime:percentage 0.998;
+  lime:language "hr";
+  dcterms:language <http://lexvo.org/id/iso639-3/hrv>, <http://id.loc.gov/vocabulary/iso639-1/hr> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_mk_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 19563;
+  lime:references 7304;
+  lime:avgNumOfLexicalizations 2.57;
+  lime:percentage 0.96;
+  lime:language "mk";
+  dcterms:language <http://lexvo.org/id/iso639-3/mkd>, <http://id.loc.gov/vocabulary/iso639-1/mk> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_sk_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 15671;
+  lime:references 7605;
+  lime:avgNumOfLexicalizations 2.058;
+  lime:percentage 0.999;
+  lime:language "sk";
+  dcterms:language <http://lexvo.org/id/iso639-3/slk>, <http://id.loc.gov/vocabulary/iso639-1/sk> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_pl_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 10404;
+  lime:references 7595;
+  lime:avgNumOfLexicalizations 1.367;
+  lime:percentage 0.998;
+  lime:language "pl";
+  dcterms:language <http://lexvo.org/id/iso639-3/pol>, <http://id.loc.gov/vocabulary/iso639-1/pl> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_el_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 16876;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.217;
+  lime:percentage 1.0;
+  lime:language "el";
+  dcterms:language <http://lexvo.org/id/iso639-3/ell>, <http://id.loc.gov/vocabulary/iso639-1/el> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_ga_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 8811;
+  lime:references 7571;
+  lime:avgNumOfLexicalizations 1.158;
+  lime:percentage 0.995;
+  lime:language "ga";
+  dcterms:language <http://lexvo.org/id/iso639-3/gle>, <http://id.loc.gov/vocabulary/iso639-1/ga> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_es_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 17602;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.312;
+  lime:percentage 1.0;
+  lime:language "es";
+  dcterms:language <http://lexvo.org/id/iso639-3/spa>, <http://id.loc.gov/vocabulary/iso639-1/es> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_en_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 17441;
+  lime:references 7615;
+  lime:avgNumOfLexicalizations 2.291;
+  lime:percentage 1.0;
+  lime:language "en";
+  dcterms:language <http://lexvo.org/id/iso639-3/eng>, <http://id.loc.gov/vocabulary/iso639-1/en> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_ro_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 14798;
+  lime:references 7595;
+  lime:avgNumOfLexicalizations 1.944;
+  lime:percentage 0.998;
+  lime:language "ro";
+  dcterms:language <http://lexvo.org/id/iso639-3/ron>, <http://id.loc.gov/vocabulary/iso639-1/ro> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_lv_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 15807;
+  lime:references 7595;
+  lime:avgNumOfLexicalizations 2.076;
+  lime:percentage 0.998;
+  lime:language "lv";
+  dcterms:language <http://lexvo.org/id/iso639-3/lav>, <http://id.loc.gov/vocabulary/iso639-1/lv> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_nl_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 16963;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.228;
+  lime:percentage 1.0;
+  lime:language "nl";
+  dcterms:language <http://lexvo.org/id/iso639-3/nld>, <http://id.loc.gov/vocabulary/iso639-1/nl> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_cs_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 22737;
+  lime:references 7605;
+  lime:avgNumOfLexicalizations 2.986;
+  lime:percentage 0.999;
+  lime:language "cs";
+  dcterms:language <http://lexvo.org/id/iso639-3/ces>, <http://id.loc.gov/vocabulary/iso639-1/cs> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_fi_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 15754;
+  lime:references 7612;
+  lime:avgNumOfLexicalizations 2.069;
+  lime:percentage 1.0;
+  lime:language "fi";
+  dcterms:language <http://lexvo.org/id/iso639-3/fin>, <http://id.loc.gov/vocabulary/iso639-1/fi> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_sl_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 10423;
+  lime:references 7604;
+  lime:avgNumOfLexicalizations 1.369;
+  lime:percentage 0.999;
+  lime:language "sl";
+  dcterms:language <http://lexvo.org/id/iso639-3/slv>, <http://id.loc.gov/vocabulary/iso639-1/sl> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_mt_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 10223;
+  lime:references 7565;
+  lime:avgNumOfLexicalizations 1.343;
+  lime:percentage 0.994;
+  lime:language "mt";
+  dcterms:language <http://lexvo.org/id/iso639-3/mlt>, <http://id.loc.gov/vocabulary/iso639-1/mt> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_lt_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 17108;
+  lime:references 7605;
+  lime:avgNumOfLexicalizations 2.247;
+  lime:percentage 0.999;
+  lime:language "lt";
+  dcterms:language <http://lexvo.org/id/iso639-3/lit>, <http://id.loc.gov/vocabulary/iso639-1/lt> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_pt_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 16780;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.204;
+  lime:percentage 1.0;
+  lime:language "pt";
+  dcterms:language <http://lexvo.org/id/iso639-3/por>, <http://id.loc.gov/vocabulary/iso639-1/pt> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_et_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 15541;
+  lime:references 7573;
+  lime:avgNumOfLexicalizations 2.041;
+  lime:percentage 0.995;
+  lime:language "et";
+  dcterms:language <http://lexvo.org/id/iso639-3/est>, <http://id.loc.gov/vocabulary/iso639-1/et> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_fr_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 16986;
+  lime:references 7613;
+  lime:avgNumOfLexicalizations 2.231;
+  lime:percentage 1.0;
+  lime:language "fr";
+  dcterms:language <http://lexvo.org/id/iso639-3/fra>, <http://id.loc.gov/vocabulary/iso639-1/fr> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_hu_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 18463;
+  lime:references 7605;
+  lime:avgNumOfLexicalizations 2.425;
+  lime:percentage 0.999;
+  lime:language "hu";
+  dcterms:language <http://lexvo.org/id/iso639-3/hun>, <http://id.loc.gov/vocabulary/iso639-1/hu> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_sq_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 14405;
+  lime:references 7156;
+  lime:avgNumOfLexicalizations 1.892;
+  lime:percentage 0.94;
+  lime:language "sq";
+  dcterms:language <http://lexvo.org/id/iso639-3/sqi>, <http://id.loc.gov/vocabulary/iso639-1/sq> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_bs_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 2;
+  lime:references 1;
+  lime:avgNumOfLexicalizations 0.001;
+  lime:percentage 0.001;
+  lime:language "bs";
+  dcterms:language <http://lexvo.org/id/iso639-3/bos>, <http://id.loc.gov/vocabulary/iso639-1/bs> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_no_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 8;
+  lime:references 8;
+  lime:avgNumOfLexicalizations 0.002;
+  lime:percentage 0.002;
+  lime:language "no";
+  dcterms:language <http://lexvo.org/id/iso639-3/nor>, <http://id.loc.gov/vocabulary/iso639-1/no> .
+
+<http://eurovoc.europa.eu/void.ttl#EuroVoc_tr_lexicalization_set> a lime:LexicalizationSet;
+  lime:lexicalizationModel <http://www.w3.org/2008/05/skos-xl>;
+  lime:referenceDataset <http://eurovoc.europa.eu/void.ttl#EuroVoc_4.24>;
+  lime:lexicalizations 2;
+  lime:references 2;
+  lime:avgNumOfLexicalizations 0.001;
+  lime:percentage 0.001;
+  lime:language "tr";
+  dcterms:language <http://lexvo.org/id/iso639-3/tur>, <http://id.loc.gov/vocabulary/iso639-1/tr> .
+
+
+# External datasets used as VoID linkset targets
+
+:AGROVOC
+    a void:Dataset ;
+    void:uriSpace "http://aims.fao.org/aos/agrovoc/" .
+
+:AGROVOC_LEGACY
+    a void:Dataset ;
+    void:uriSpace "http://agrovoc.uniroma2.it/agrovoc/agrovoc/en/page/" .
+
+:BIOTECH_GLOSSARY
+    a void:Dataset ;
+    void:uriSpace "http://aims.fao.org/aos/biotechglossary/" .
+
+:BKC
+    a void:Dataset ;
+    void:uriSpace "http://data.europa.eu/bkc/" .
+
+:BNF_CATALOGUE_HTTP
+    a void:Dataset ;
+    void:uriSpace "http://catalogue.bnf.fr/ark:/12148/" .
+
+:BNF_CATALOGUE_HTTPS
+    a void:Dataset ;
+    void:uriSpace "https://catalogue.bnf.fr/ark:/12148/" .
+
+:BNF_DATA
+    a void:Dataset ;
+    void:uriSpace "http://data.bnf.fr/ark:/12148/" .
+
+:EIGE
+    a void:Dataset ;
+    void:uriSpace "http://eige.europa.eu/taxonomy/term/" .
+
+:ESCO_ISCO
+    a void:Dataset ;
+    void:uriSpace "http://data.europa.eu/esco/isco/" .
+
+:ESCO_OCCUPATION
+    a void:Dataset ;
+    void:uriSpace "http://data.europa.eu/esco/occupation/" .
+
+:EU_COUNTRIES
+    a void:Dataset ;
+    void:uriSpace "http://publications.europa.eu/resource/authority/country/" .
+
+:GEMET
+    a void:Dataset ;
+    void:uriSpace "http://www.eionet.europa.eu/gemet/concept/" .
+
+:GND
+    a void:Dataset ;
+    void:uriSpace "http://d-nb.info/gnd/" .
+
+:INSPIRE_FEATURE_CONCEPTS
+    a void:Dataset ;
+    void:uriSpace "http://inspire.ec.europa.eu/featureconcept/" .
+
+:INSPIRE_THEMES
+    a void:Dataset ;
+    void:uriSpace "http://inspire.ec.europa.eu/theme/" .
+
+:LCSH
+    a void:Dataset ;
+    void:uriSpace "http://id.loc.gov/authorities/subjects/" .
+
+:MESH
+    a void:Dataset ;
+    void:uriSpace "http://id.nlm.nih.gov/mesh/" .
+
+:STW
+    a void:Dataset ;
+    void:uriSpace "http://zbw.eu/stw/descriptor/" .
+
+:THESOZ
+    a void:Dataset ;
+    void:uriSpace "http://lod.gesis.org/thesoz/" .
+
+:UMT
+    a void:Dataset ;
+    void:uriSpace "http://data.uba.de/umt/" .
+
+:UMTHES_HTTP
+    a void:Dataset ;
+    void:uriSpace "http://sns.uba.de/umthes/" .
+
+:UMTHES_HTTPS
+    a void:Dataset ;
+    void:uriSpace "https://sns.uba.de/umthes/" .
+
+:UNBIS
+    a void:Dataset ;
+    void:uriSpace "http://metadata.un.org/thesaurus/" .
+
+:UNESCO_BROWSER
+    a void:Dataset ;
+    void:uriSpace "http://vocabularies.unesco.org/browser/thesaurus/" .
+
+:UNESCO_THESAURUS
+    a void:Dataset ;
+    void:uriSpace "http://vocabularies.unesco.org/thesaurus/" .
+
+:WIKIDATA
+    a void:Dataset ;
+    void:uriSpace "http://www.wikidata.org/entity/" .
+
+
+# Simplified VoID linksets
+
+:EuroVoc_AGROVOC_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :AGROVOC ;
+    void:triples 30 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_AGROVOC_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :AGROVOC ;
+    void:triples 1779 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_AGROVOC_LEGACY_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :AGROVOC_LEGACY ;
+    void:triples 1 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_AGROVOC_LEGACY_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :AGROVOC_LEGACY ;
+    void:triples 1 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_BIOTECH_GLOSSARY_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BIOTECH_GLOSSARY ;
+    void:triples 1 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_BKC_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BKC ;
+    void:triples 381 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_BKC_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BKC ;
+    void:triples 3617 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_BNF_CATALOGUE_HTTP_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BNF_CATALOGUE_HTTP ;
+    void:triples 39 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_BNF_CATALOGUE_HTTP_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BNF_CATALOGUE_HTTP ;
+    void:triples 255 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_BNF_CATALOGUE_HTTPS_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BNF_CATALOGUE_HTTPS ;
+    void:triples 7 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_BNF_CATALOGUE_HTTPS_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BNF_CATALOGUE_HTTPS ;
+    void:triples 3 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_BNF_DATA_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BNF_DATA ;
+    void:triples 1 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_BNF_DATA_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :BNF_DATA ;
+    void:triples 8 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_EIGE_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :EIGE ;
+    void:triples 26 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_EIGE_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :EIGE ;
+    void:triples 49 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_ESCO_ISCO_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :ESCO_ISCO ;
+    void:triples 1 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_ESCO_OCCUPATION_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :ESCO_OCCUPATION ;
+    void:triples 1 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_EU_COUNTRIES_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :EU_COUNTRIES ;
+    void:triples 246 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_GEMET_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :GEMET ;
+    void:triples 116 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_GEMET_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :GEMET ;
+    void:triples 1919 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_GND_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :GND ;
+    void:triples 19 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_GND_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :GND ;
+    void:triples 196 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_INSPIRE_FEATURE_CONCEPTS_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :INSPIRE_FEATURE_CONCEPTS ;
+    void:triples 8 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_INSPIRE_THEMES_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :INSPIRE_THEMES ;
+    void:triples 6 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_LCSH_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :LCSH ;
+    void:triples 99 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_LCSH_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :LCSH ;
+    void:triples 1904 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_MESH_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :MESH ;
+    void:triples 1 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_MESH_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :MESH ;
+    void:triples 9 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_STW_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :STW ;
+    void:triples 371 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_STW_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :STW ;
+    void:triples 2276 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_THESOZ_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :THESOZ ;
+    void:triples 1 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_THESOZ_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :THESOZ ;
+    void:triples 2 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_UMT_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UMT ;
+    void:triples 8 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_UMTHES_HTTP_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UMTHES_HTTP ;
+    void:triples 4 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_UMTHES_HTTPS_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UMTHES_HTTPS ;
+    void:triples 11 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_UNBIS_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UNBIS ;
+    void:triples 411 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_UNBIS_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UNBIS ;
+    void:triples 2379 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_UNESCO_BROWSER_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UNESCO_BROWSER ;
+    void:triples 1 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_UNESCO_THESAURUS_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UNESCO_THESAURUS ;
+    void:triples 3 ;
+    void:linkPredicate skos:closeMatch .
+
+:EuroVoc_UNESCO_THESAURUS_exactMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :UNESCO_THESAURUS ;
+    void:triples 1365 ;
+    void:linkPredicate skos:exactMatch .
+
+:EuroVoc_WIKIDATA_closeMatch_Linkset
+    a void:Linkset ;
+    void:subjectsTarget :EuroVoc_4.24 ;
+    void:objectsTarget :WIKIDATA ;
+    void:triples 3050 ;
+    void:linkPredicate skos:closeMatch .

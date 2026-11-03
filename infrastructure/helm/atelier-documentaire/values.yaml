@@ -11,6 +11,9 @@ api:
     limits: { cpu: "2", memory: 2Gi }
 worker:
   replicas: 1
+  # LOT 2.3 D-OPS-01 : > délai dur de tâche (1860 s). Le conteneur OCR du pod reçoit le
+  # signal en même temps : une tâche OCR en cours échoue explicitement (FAILED).
+  terminationGracePeriodSeconds: 1900
   resources:
     requests: { cpu: 250m, memory: 512Mi }
     limits: { cpu: "2", memory: 4Gi }
@@ -28,6 +31,8 @@ external:
   s3Secret: atelier-documentaire-s3
   privateAiSecret: atelier-documentaire-private-ai
   privateAiAllowedHosts: []
+  # LOT 2.3 D-ENG-01 : délai d'un appel moteur (s), < délai souple de tâche (1800 s).
+  privateAiTimeoutSeconds: 60
   tokenizerClaim: atelier-documentaire-tokenizer
   modelClaim: atelier-documentaire-model
   tokenizerPath: /models/qwen-tokenizer

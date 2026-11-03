@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from celery import Celery
+import logging
+import time
 
-from ..application.jobs import run_analyze, run_translate
+from celery import Celery
+from celery.signals import worker_ready
+
+from ..application.jobs import recover_lost_tasks, run_analyze, run_translate
 from ..core.db import init_db, make_engine, make_session_factory
 from ..core.settings import get_settings
 from ..infrastructure.storage import make_storage
@@ -33,12 +37,39 @@ def enqueue(name: str, document_id: str, tenant_id: str, actor_id: str | None = 
     )
 
 
+# LOT 2.3 D-OPS-01 : documents orphelins (tâche perdue) passés en FAILED / TASK_LOST,
+# au démarrage du worker puis au plus une fois toutes les 5 minutes par processus.
+LOST_TASK_SWEEP_INTERVAL_SECONDS = 300
+_last_sweep = [float("-inf")]
+
+
+def sweep_lost_tasks(factory) -> list[str]:
+    if time.monotonic() - _last_sweep[0] < LOST_TASK_SWEEP_INTERVAL_SECONDS:
+        return []
+    _last_sweep[0] = time.monotonic()
+    try:
+        return recover_lost_tasks(factory, settings)
+    except Exception as exc:  # never blocks the task itself
+        logging.getLogger("translator.jobs").warning(
+            "TASK_LOST_SWEEP_FAILED %s", type(exc).__name__
+        )
+        return []
+
+
+@worker_ready.connect
+def _sweep_on_worker_ready(**_kwargs):
+    engine = make_engine(settings)
+    init_db(engine, settings)
+    sweep_lost_tasks(make_session_factory(engine))
+
+
 @celery_app.task(name="app.workers.tasks.execute")
 def execute(name: str, document_id: str, tenant_id: str, actor_id: str | None = None):
     engine = make_engine(settings)
     init_db(engine, settings)
     factory = make_session_factory(engine)
     storage = make_storage(settings)
+    sweep_lost_tasks(factory)
     fn = {"run_analyze": run_analyze, "run_translate": run_translate}.get(name)
     if not fn:
         raise ValueError("job inconnu")

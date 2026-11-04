@@ -49,6 +49,18 @@ _ISO = {
     "pol": "pl",
     "ron": "ro",
     "tur": "tr",
+    # LOT 2.3 : autres langues de l'UE détectées, quand wordfreq a un lexique
+    # (pas d'estonien, d'irlandais ni de maltais). Table utilisée seulement pour
+    # les langues du document : sans effet sur les documents existants.
+    "bul": "bg",
+    "ces": "cs",
+    "ell": "el",
+    "hrv": "sh",
+    "hun": "hu",
+    "lav": "lv",
+    "lit": "lt",
+    "slk": "sk",
+    "slv": "sl",
 }
 
 

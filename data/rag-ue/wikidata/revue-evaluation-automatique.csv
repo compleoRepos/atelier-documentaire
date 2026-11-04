@@ -1,0 +1,71 @@
+descriptor;source_term;target_term;evaluateur;verdict;motif
+105;إجازة الأبوة;congé parental;gpt-6.1-sol;incorrect;L’arabe désigne le congé de paternité, distinct du congé parental accessible aux parents.
+238;نقابوية;corporatisme;gpt-5.5;incorrect;« نقابوية » renvoie au syndicalisme ou trade-unionisme, non au corporatisme au sens socio-politique.
+294;مقايضة مالية;crédit croisé;gpt-5.5;incorrect;"« مقايضة مالية » signifie swap financier ; « crédit croisé » est une autre notion ou traduction inadéquate."
+297;الاعتماد المالي;crédit documentaire;gpt-6.1-sol;incorrect;L’expression arabe désigne un crédit ou une allocation financière, sans la composante documentaire caractérisant le crédit documentaire.
+298;رهن عقاري;crédit immobilier;gpt-6.1-sol;incorrect;L’arabe désigne une hypothèque, sûreté immobilière, et non le crédit immobilier qu’elle peut garantir.
+367;خسائر اقتصادية;déficit;gpt-6.1-sol;incorrect;Le terme arabe signifie « pertes économiques », et non « déficit », lequel désigne un solde négatif.
+408;حساب إيداع;dépôt bancaire;gpt-6.1-sol;incorrect;Le terme arabe désigne un compte de dépôt, non le dépôt bancaire lui-même.
+724;نزوح;émigration;gpt-6.1-sol;incorrect;"L’arabe désigne un déplacement ou un exode, souvent interne ; l’émigration implique le départ vers un autre pays."
+884;سجل مدني;état civil;gpt-6.1-sol;incorrect;"L’arabe désigne un registre civil ; « état civil » désigne la situation juridique des personnes ou le service correspondant."
+902;أدوات سوق المال;eurodollar;gpt-6.1-sol;incorrect;Le terme arabe signifie « instruments du marché monétaire », et non « eurodollar ».
+903;يوروبوند;euro-émission;gpt-6.1-sol;incorrect;« يوروبوند » désigne une euro-obligation, non l’opération d’euro-émission.
+924;تجنب ضريبي;évasion fiscale;gpt-5.5;incorrect;تجنب ضريبي signifie évitement/optimisation fiscale, généralement légal. Évasion fiscale en français renvoie souvent à fraude ou dissimulation illicite.
+1004;رفاهية;aide sociale;gpt-6.1-sol;incorrect;"« رفاهية » signifie bien-être, aisance ou luxe ; il ne désigne pas spécifiquement l’aide sociale."
+1051;مؤسسة;fondation;gpt-5.5;incorrect;"مؤسسة signifie généralement institution, établissement ou entreprise ; « fondation » se dit plutôt مؤسسة خيرية/وقف selon contexte."
+1057;رأس مال متداول;fonds de roulement;gpt-6.1-sol;incorrect;"Le terme arabe désigne le capital circulant ; le fonds de roulement est un solde financier distinct."
+1074;تطوير مهني;formation professionnelle;gpt-6.1-sol;incorrect;"Le développement professionnel englobe davantage que la formation professionnelle ; les deux notions ne sont pas équivalentes."
+1083;تكلفة ثابتة;frais généraux;gpt-6.1-sol;incorrect;Le terme arabe signifie « coût fixe ». Les frais généraux sont des coûts indirects, pas nécessairement fixes.
+1155;محاسبة إدارية;gestion comptable;gpt-6.1-sol;incorrect;Le terme arabe désigne la comptabilité de gestion, non la gestion comptable.
+1302;هجرة;immigration;gpt-5.5;incorrect;"هجرة signifie migration ou émigration/immigration selon contexte ; « immigration » se dit هجرة وافدة/هجرة إلى بلد."
+1452;القطاع المالي;institution financière;gpt-6.1-sol;incorrect;"القطاع المالي signifie secteur financier, non institution financière ; il désigne un ensemble d’activités et d’acteurs."
+1689;إغلاق;lockout;gpt-6.1-sol;incorrect;"إغلاق signifie simplement fermeture ; il n’exprime pas la fermeture patronale liée à un conflit collectif caractérisant le lockout."
+1787;عقد آجل;marché à terme;gpt-6.1-sol;incorrect;Le terme arabe désigne un contrat à terme, non le marché sur lequel ces contrats sont négociés.
+1815;إجمالي الهامش الربحي;marge commerciale;gpt-6.1-sol;incorrect;Le terme désigne la marge bénéficiaire brute, non spécifiquement la marge commerciale calculée sur les ventes de marchandises.
+1825;عملة متداولة;masse monétaire;gpt-6.1-sol;incorrect;"Le terme désigne la monnaie en circulation ; la masse monétaire comprend aussi des dépôts et d'autres actifs monétaires."
+1858;بريتون وودز;accord de Bretton Woods;gpt-6.1-sol;incorrect;Le terme arabe donne seulement le nom Bretton Woods, sans désigner explicitement un accord.
+1910;تنقل;migration alternante;gpt-6.1-sol;incorrect;تنقل signifie déplacement ou mobilité, sans préciser les trajets réguliers entre domicile et lieu de travail.
+1918;مقاصة;accord de compensation;gpt-5.5;incorrect;مقاصة signifie « compensation/clearing », le procédé. « Accord de compensation » désigne plutôt une convention, pas la notion décrite.
+1970;احتياطي العملة;monnaie de réserve;gpt-6.1-sol;incorrect;Le terme arabe désigne une réserve de monnaie, non une monnaie servant de réserve.
+2046;مفاوضة مشتركة;négociation collective;gpt-6.1-sol;incorrect;"Le terme signifie négociation conjointe ; la négociation collective se dit habituellement « مفاوضة جماعية »."
+2161;جمعية مهنية;ordre professionnel;gpt-6.1-sol;incorrect;Une association professionnelle n’est pas nécessairement un ordre professionnel doté de compétences légales de réglementation.
+2284;تأهيل تدريبي مهني;apprentissage professionnel;gpt-6.1-sol;incorrect;Le terme désigne une qualification ou préparation par formation professionnelle, sans identifier le dispositif spécifique d’apprentissage.
+2371;نموذج المراجحة;arbitrage financier;gpt-6.1-sol;incorrect;Le terme arabe désigne un modèle d’arbitrage, non l’opération d’arbitrage financier elle-même.
+2504;سياسة مالية;politique fiscale;gpt-6.1-sol;incorrect;"سياسة مالية désigne généralement la politique budgétaire ou financière ; la politique fiscale, centrée sur l’impôt, se dit سياسة ضريبية."
+2605;دعم حماية اجتماعية;prestation sociale;gpt-6.1-sol;incorrect;L’expression arabe désigne un soutien à la protection sociale, sans identifier une prestation sociale versée à un bénéficiaire.
+2660;ثمن أصلي;prix de revient;gpt-6.1-sol;incorrect;ثمن أصلي signifie « prix original » ou « prix initial », non le coût total constituant le prix de revient.
+2676;تكلفة مستهدفة;prix indicatif;gpt-6.1-sol;incorrect;تكلفة مستهدفة désigne un coût cible, notion distincte d’un prix indicatif.
+2678;مجان;prix libre;gpt-6.1-sol;incorrect;مجان évoque la gratuité, non un prix librement fixé.
+2684;تمييز في الأسعار;prix préférentiel;gpt-6.1-sol;incorrect;Le terme arabe désigne la discrimination par les prix, non un prix préférentiel en particulier.
+2943;تعبئة;recrutement;gpt-6.1-sol;incorrect;تعبئة signifie mobilisation ou remplissage, non recrutement de personnel, qui se dit توظيف ou استقدام.
+3240;مالية الشركات;financement de l'entreprise;gpt-6.1-sol;incorrect;مالية الشركات désigne la finance d’entreprise, comprenant investissement et gestion financière, et non spécifiquement le financement de l’entreprise.
+3248;بنوك الإنترنت;bancatique;gpt-6.1-sol;incorrect;بنوك الإنترنت désigne les banques sur Internet, non l’ensemble des services bancaires automatisés couvert par la bancatique.
+3272;سعر زراعي;prix des produits agricoles;gpt-5.5;incorrect;"« سعر زراعي » est au singulier « prix agricole »; le contexte distingue ce terme de « prix des produits agricoles »."
+3273;التقاص;rémunération du travail;gpt-6.1-sol;incorrect;التقاص désigne la compensation de créances ou d’obligations, non la rémunération du travail.
+3332;إعانات البطالة;assurance chômage;gpt-6.1-sol;incorrect;إعانات البطالة désigne les allocations de chômage, non le régime d’assurance chômage qui peut les financer.
+3446;حساب المخصص;réserve comptable;gpt-6.1-sol;incorrect;"حساب المخصص désigne un compte de provision ; une provision ne constitue pas une réserve comptable."
+3529;توظيف الشباب;travail des jeunes;gpt-5.5;incorrect;"« توظيف الشباب » signifie emploi/embauche des jeunes; « travail des jeunes » vise le travail effectué par les jeunes, notion différente."
+3545;عامل لحسابه الخاص;profession indépendante;gpt-6.1-sol;incorrect;"L’arabe désigne un travailleur indépendant, donc une personne ; le français désigne une profession ou une activité."
+3562;مدة اختبار;période de stage;gpt-6.1-sol;incorrect;"L’arabe désigne une période d’essai, non une période de stage ; les deux statuts ne se confondent pas."
+3575;اتحاد نقابة عمال;syndicat;gpt-5.5;incorrect;اتحاد نقابة عمال signifie plutôt fédération/union de syndicats ouvriers, pas le concept générique de syndicat.
+3896;شركة محدودة;société à responsabilité limitée;gpt-6.1-sol;incorrect;"« Société limitée » ne précise pas la responsabilité et peut couvrir plusieurs formes sociales ; elle n’identifie pas spécifiquement une SARL."
+4118;دويتشه بوست بنك;services financiers de la poste;gpt-6.1-sol;incorrect;Le terme arabe nomme Deutsche Postbank, établissement particulier, et non l'ensemble des services financiers postaux.
+4189;منظمة;société;gpt-6.1-sol;incorrect;Le terme arabe signifie organisation, sans désigner spécifiquement une société au sens du droit des sociétés.
+4202;المجتمع الأوروبي;société européenne;gpt-6.1-sol;incorrect;L'expression arabe signifie communauté ou société européenne au sens collectif, non la forme juridique de société européenne.
+4401;دمغة;droits de timbre;gpt-6.1-sol;incorrect;"دمغة désigne un timbre ou une estampille ; les droits de timbre se disent رسوم الدمغة ou ضريبة الدمغة."
+4641;قيمة إضافية;valeur ajoutée;gpt-6.1-sol;incorrect;"قيمة إضافية signifie « valeur supplémentaire » ; le terme économique usuel pour « valeur ajoutée » est قيمة مضافة."
+4646;سند ضمان;valeur mobilière;gpt-6.1-sol;incorrect;سند ضمان désigne un titre ou acte de garantie, non la catégorie générale des valeurs mobilières.
+4661;حساب جارٍ;balance des invisibles;gpt-6.1-sol;incorrect;"حساب جارٍ signifie « compte courant » ; la balance des invisibles ne correspond ni au compte bancaire ni au compte courant extérieur."
+4749;الحجم (اقتصاد);volume des transactions;gpt-6.1-sol;incorrect;"Le terme signifie seulement « volume (économie) » ; il ne précise ni transactions ni échanges boursiers."
+5079;تسجيل الأراضي;registre foncier;gpt-6.1-sol;incorrect;تسجيل الأراضي désigne l’enregistrement des terres, opération juridique, et non le registre foncier qui en conserve les inscriptions.
+5080;منفذ;cadre;gpt-6.1-sol;incorrect;"منفذ signifie notamment « exécutant » ou « exécuteur » ; il ne désigne pas usuellement un cadre professionnel."
+5092;محاسبة تكاليف;calcul des coûts;gpt-6.1-sol;incorrect;"محاسبة تكاليف désigne la comptabilité des coûts ; le calcul des coûts est une opération de cette discipline, non son équivalent."
+5329;سن التقاعد;condition de la retraite;gpt-6.1-sol;incorrect;Le terme arabe désigne uniquement l'âge de la retraite, non l'ensemble des conditions permettant de la prendre.
+5339;الغياب;absentéisme;gpt-6.1-sol;incorrect;"Le terme arabe signifie « absence » ; il ne désigne pas spécifiquement le phénomène d'absentéisme."
+5475;تطوير وظيفي;carrière professionnelle;gpt-6.1-sol;incorrect;Le terme arabe désigne le développement professionnel ou l'évolution de carrière, non la carrière professionnelle elle-même.
+5559;شكوى;créance;gpt-6.1-sol;incorrect;شكوى signifie « plainte » ou « réclamation », non « créance ».
+5964;إيراد;chiffre d'affaires;gpt-6.1-sol;incorrect;إيراد désigne un revenu ou produit comptable, pas spécifiquement le chiffre d'affaires issu des ventes.
+5982;تحجيم;chômage technique;gpt-6.1-sol;incorrect;Le terme arabe signifie réduction ou limitation, sans désigner la réduction involontaire du temps de travail constitutive du chômage technique.
+6013;بيان مالي;clôture des comptes;gpt-6.1-sol;incorrect;Le terme arabe désigne un état financier, non l’opération comptable de clôture des comptes.
+6026;التعاون (حوكمة الشركات);cogestion;gpt-6.1-sol;incorrect;Le terme arabe désigne la coopération en gouvernance d’entreprise, non la participation institutionnelle des salariés à la gestion.
+31828;رعاية غير مؤسسية;désinstitutionnalisation;gpt-6.1-sol;incorrect;L’arabe signifie « prise en charge non institutionnelle », non le processus de désinstitutionnalisation.

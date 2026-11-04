@@ -6,8 +6,12 @@ orientation auditable, jamais une validation sémantique ou une traduction.
 
 from __future__ import annotations
 
+import re
 import unicodedata
 from collections import Counter
+
+from app.domain.eu_lang_markers import EU_LANGUAGE_MARKERS
+from app.domain.eu_type_lexicons import EU_TYPE_LEXICONS
 
 try:
     from langdetect import DetectorFactory, detect_langs
@@ -25,6 +29,111 @@ _LANG_MAP = {
     "nl": "nld",
     "ar": "ara",
 }
+
+# LOT 2.3 : les 18 autres langues officielles de l'UE (24 au total, plus l'arabe).
+# Les 7 langues historiques ci-dessus gardent exactement leur traitement : une
+# langue ajoutée n'est retenue que sur preuve forte (probabilité du détecteur
+# élevée sur un texte assez long, écriture grecque, ou indices lexicaux pour
+# l'irlandais et le maltais, absents des profils de langdetect). Sans preuve
+# forte, le résultat reste celui d'origine (souvent "unknown").
+EU_LANGUAGE_VERSION = "eu-languages-1"
+_EU_LANG_MAP = {
+    "bg": "bul",
+    "cs": "ces",
+    "da": "dan",
+    "el": "ell",
+    "et": "est",
+    "fi": "fin",
+    "hr": "hrv",
+    "hu": "hun",
+    "lt": "lit",
+    "lv": "lav",
+    "pl": "pol",
+    "pt": "por",
+    "ro": "ron",
+    "sk": "slk",
+    "sl": "slv",
+    "sv": "swe",
+}
+# Codes ISO 639-3 des 18 langues ajoutées (16 via langdetect, irlandais et maltais).
+ADDED_LANGUAGES = frozenset(_EU_LANG_MAP.values()) | {"gle", "mlt"}
+EU_MIN_PROB = 0.90
+EU_MIN_LETTERS = 20
+EU_WEIGHT = 0.75
+# Indices pliés (sans diacritiques) ; il en faut au moins deux occurrences.
+_EU_HINTS = {
+    "gle": (
+        " agus ",
+        " bhfuil ",
+        " chun ",
+        " faoi ",
+        " leis ",
+        " gach ",
+        " airteagal ",
+        " beidh ",
+        " mbeidh ",
+        " ata ",
+        " sna ",
+        " seo ",
+        " ar an ",
+        " maidir ",
+        " le haghaidh ",
+        " ballstait ",
+        " treoir ",
+    ),
+    "mlt": (
+        " il-",
+        " tal-",
+        " ta' ",
+        " fil-",
+        " mill-",
+        " ghall-",
+        " li ",
+        " jew ",
+        " huwa ",
+        " minn ",
+        " biex ",
+        " skont ",
+        " ghandu ",
+        " ghandhom ",
+        " ikun ",
+        " tkun ",
+    ),
+}
+EU_MIN_HINTS = 2
+EU_HINT_WEIGHT = 0.35
+# Densité minimale d'indices (part des mots) : un document long d'une autre langue
+# accumule quelques faux indices, jamais une telle densité (mesure LOT 2.3 :
+# irlandais p10 = 0,095, maltais p10 = 0,286, autres langues p95 = 0).
+EU_MIN_HINT_DENSITY = {"gle": 0.05, "mlt": 0.10}
+# Marqueurs distinctifs générés depuis EUR-Lex (voir ``eu_lang_markers``) : au moins
+# deux marqueurs et une densité minimale, ou un seul dans un fragment très court.
+# Une collision isolée dans un long document d'une autre langue reste sans effet.
+EU_MARKER_MIN_DENSITY = 0.05
+EU_MARKER_STRONG = 1.2
+EU_MARKER_SINGLE = 0.9
+EU_MARKER_SHORT_WORDS = 12
+# Gardes de non-régression de la voie statistique (langdetect) des langues ajoutées :
+# un fragment d'un seul mot, ou dont tous les mots sont des mots courants d'une langue
+# historique (fréquence zipf >= EU_COMMON_ZIPF dans wordfreq), garde le comportement
+# d'origine. Exemples mesurés : « minimum paid annual leave; » n'est plus estonien,
+# « geldmarktinstrumenten, » n'est plus danois.
+EU_STAT_MIN_WORDS = 2
+EU_COMMON_ZIPF = 3.0
+_HISTORIC_WORDFREQ = ("en", "fr", "de", "it", "es", "nl")
+_WORD = re.compile(r"\w+")
+_MALTESE_LETTERS = frozenset("ħĦġĠċĊ")
+# Mutations initiales de l'irlandais (lénition, éclipse) : rares en début de mot
+# dans les autres langues de l'UE.
+_IRISH_MUTATION = re.compile(
+    r"(?<![\w'-])(?:bh|mh|dh|fh|gh|gc|bp|dt|n-|t-)[aeiouáéíóú]", re.IGNORECASE
+)
+# Article défini maltais soudé au nom (il-, tal-, tax-, fl-...).
+_MALTESE_ARTICLE = re.compile(
+    r"(?<![\w'-])(?:il|l|tal|fil|fl|mill|bil|lill|sal|mal|għall|ghall|ix|is|it|id|in|ir|iż|iċ|"
+    r"tad|tat|tas|tar|tax|taż|taċ|tan|fid|fit|fis|fix|bid|bit|bis|bix|mid|mit|mis|mix)-\w",
+    re.IGNORECASE,
+)
 
 
 def _fold(text: str) -> str:
@@ -129,6 +238,75 @@ def _script_evidence(text: str) -> Counter[str]:
     return counts
 
 
+def _greek_ratio(text: str) -> float:
+    letters = [c for c in text if c.isalpha()]
+    if not letters:
+        return 0.0
+    greek = sum(1 for c in letters if 0x0370 <= ord(c) <= 0x03FF or 0x1F00 <= ord(c) <= 0x1FFF)
+    return greek / len(letters)
+
+
+def _historic_lookalike(text: str) -> bool:
+    """Vrai si la voie statistique ne doit pas attribuer une langue ajoutée."""
+    words = [w for w in _WORD.findall(text.lower()) if not w.isdigit()]
+    if len(words) < EU_STAT_MIN_WORDS:
+        return True
+    try:
+        from wordfreq import zipf_frequency
+    except Exception:  # pragma: no cover - dépendance épinglée du backend
+        return False
+    return any(
+        all(zipf_frequency(w, lang) >= EU_COMMON_ZIPF for w in words) for lang in _HISTORIC_WORDFREQ
+    )
+
+
+def _eu_evidence(
+    text: str,
+    folded: str,
+    eu_guesses: list[tuple[str, float]],
+    scores: Counter[str],
+    detector_scores: dict[str, float],
+) -> None:
+    """Preuves fortes des langues de l'UE ajoutées (voir ``_EU_LANG_MAP``)."""
+    letters = sum(c.isalpha() for c in text)
+    if letters < EU_MIN_LETTERS:
+        return
+    strong = [(code, prob) for code, prob in eu_guesses if prob >= EU_MIN_PROB]
+    if strong and detect_langs and not _historic_lookalike(text):
+        # Un titre en capitales trompe le détecteur : la langue ajoutée doit être
+        # confirmée par la détection du même texte en minuscules.
+        try:
+            lowered = {
+                _EU_LANG_MAP.get(g.lang): float(g.prob) for g in detect_langs(text[:12000].lower())
+            }
+        except Exception:
+            lowered = {}
+        for code, prob in strong:
+            if lowered.get(code, 0.0) >= EU_MIN_PROB:
+                detector_scores[code] = max(detector_scores.get(code, 0.0), prob)
+                scores[code] += prob * EU_WEIGHT
+    greek = _greek_ratio(text)
+    if greek >= 0.5:
+        scores["ell"] += min(0.85, 0.45 + greek * 0.5)
+    for code, hints in _EU_HINTS.items():
+        count = sum(folded.count(hint) for hint in hints)
+        if code == "gle":
+            count += len(_IRISH_MUTATION.findall(text))
+        if code == "mlt":
+            count += sum(1 for c in text if c in _MALTESE_LETTERS)
+            count += len(_MALTESE_ARTICLE.findall(text))
+        words = max(1, len(_WORD.findall(text)))
+        if count >= EU_MIN_HINTS and count / words >= EU_MIN_HINT_DENSITY[code]:
+            scores[code] += min(1.2, count * EU_HINT_WEIGHT)
+    tokens = [w for w in _WORD.findall(folded) if not w.isdigit()]
+    for code, markers in EU_LANGUAGE_MARKERS.items():
+        hits = sum(1 for w in tokens if w in markers)
+        if hits >= 2 and hits / max(1, len(tokens)) >= EU_MARKER_MIN_DENSITY:
+            scores[code] += EU_MARKER_STRONG
+        elif hits == 1 and len(tokens) <= EU_MARKER_SHORT_WORDS:
+            scores[code] += EU_MARKER_SINGLE
+
+
 def detect_language(text: str) -> tuple[str, list[str], float]:
     """Return primary language, detected languages and evidence confidence.
 
@@ -155,6 +333,7 @@ def detect_language(text: str) -> tuple[str, list[str], float]:
         if lexical_counts[code]:
             scores[code] += min(0.7, lexical_counts[code] / 10)
     detector_scores: dict[str, float] = {}
+    eu_guesses: list[tuple[str, float]] = []
     if detect_langs:
         try:
             for guess in detect_langs(text[:12000]):
@@ -162,8 +341,12 @@ def detect_language(text: str) -> tuple[str, list[str], float]:
                 if code:
                     detector_scores[code] = max(detector_scores.get(code, 0.0), float(guess.prob))
                     scores[code] += float(guess.prob) * 0.75
+                elif guess.lang in _EU_LANG_MAP:
+                    eu_guesses.append((_EU_LANG_MAP[guess.lang], float(guess.prob)))
         except Exception:
             detector_scores = {}
+            eu_guesses = []
+    _eu_evidence(text, folded, eu_guesses, scores, detector_scores)
     if not scores:
         return "unknown", [], 0.0
     ordered = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
@@ -418,14 +601,35 @@ _TYPE_SPECS = {
 }
 
 
-def _score(text: str, spec: dict, languages: list[str]) -> tuple[float, list[dict[str, object]]]:
+def _score(
+    text: str,
+    spec: dict,
+    languages: list[str],
+    eu_lexicons: dict[str, tuple[str, ...]] | None = None,
+) -> tuple[float, list[dict[str, object]]]:
     low = _fold(text)
     score = 0.0
     hits: list[dict[str, object]] = []
-    for lang, words in spec["lexicons"].items():
+    lexicons = dict(spec["lexicons"])
+    # LOT 2.3 : lexiques EuroVoc des langues ajoutées, seulement si la langue est
+    # détectée dans le document (aucun effet sur les documents historiques).
+    for lang, words in (eu_lexicons or {}).items():
+        if lang in (languages or ()):
+            lexicons[lang] = words
+    added = set(lexicons) - set(spec["lexicons"])
+    # Document dont la langue principale est une langue ajoutée : toutes les
+    # expressions en mot entier (« iva » ne doit pas compter dans « effektiva »).
+    # Les documents en langues historiques gardent le comptage d'origine.
+    strict = bool(languages) and languages[0] in ADDED_LANGUAGES
+    for lang, words in lexicons.items():
         language_factor = 1.15 if not languages or lang in languages else 0.9
         for word in words:
-            hit = low.count(_fold(word))
+            if strict or lang in added:
+                # Langues ajoutées : mot entier uniquement (pas de sous-chaîne).
+                pattern = r"(?<!\w)" + re.escape(_fold(word)) + r"(?!\w)"
+                hit = len(re.findall(pattern, low))
+            else:
+                hit = low.count(_fold(word))
             if hit:
                 # Multi-word titles are strong evidence; isolated generic flags
                 # are deliberately weak so ``contract`` cannot beat an employer
@@ -447,7 +651,10 @@ def _score(text: str, spec: dict, languages: list[str]) -> tuple[float, list[dic
 
 def classify_document(text: str, languages: list[str] | None = None) -> dict[str, object]:
     languages = list(languages or detect_language(text)[1])
-    scored = {name: _score(text, spec, languages) for name, spec in _TYPE_SPECS.items()}
+    scored = {
+        name: _score(text, spec, languages, EU_TYPE_LEXICONS.get(name))
+        for name, spec in _TYPE_SPECS.items()
+    }
     scores = {name: value[0] for name, value in scored.items()}
     evidence = {name: value[1] for name, value in scored.items()}
     ordered = sorted(scores.items(), key=lambda item: (-item[1], item[0]))

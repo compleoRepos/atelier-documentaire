@@ -22,7 +22,11 @@ python -m app.rag.common_library_cli import-eurovoc --dir ../data/rag-ue/eurovoc
 python -m app.rag.common_library_cli import --name "EUR-Lex définitions de-fr" --languages de,fr \
     --actor alice ../data/rag-ue/eurlex/definitions/eurlex-de-fr.csv
 
-# 3. Cycle de validation (validation par une autre personne)
+# 3. Arabe (Wikidata aligné sur EuroVoc) : 290 lignes ; la liste de revue n'est PAS importée
+python -m app.rag.common_library_cli import --name "Wikidata EuroVoc ar-fr" --languages ar,fr \
+    --actor alice ../data/rag-ue/wikidata/wikidata-ar-fr.csv
+
+# 4. Cycle de validation (validation par une autre personne)
 python -m app.rag.common_library_cli transition --name "EUR-Lex définitions de-fr" --version 1 \
     --action submit --actor alice
 python -m app.rag.common_library_cli transition --name "EUR-Lex définitions de-fr" --version 1 \
@@ -37,6 +41,12 @@ python -m app.rag.common_library_cli status
 
 Un référentiel est créé par paire de langues, car l’API limite à 20 le nombre de langues déclarées par référentiel. Ce plafond est inférieur aux 25 langues désormais acceptées ; il n’a pas été modifié, pour préserver le contrat de l’API.
 
+## Prérequis : la langue du document doit être reconnue
+
+Le RAG ne cherche un terme que dans les langues sources reconnues dans le document. Jusqu’au LOT 2.3, le produit ne reconnaissait que 7 langues (anglais, français, allemand, italien, espagnol, néerlandais, arabe) : un document grec, polonais ou maltais était classé « langue inconnue », et **aucun terme ne pouvait lui être injecté**, quel que soit le contenu de la bibliothèque. Le détecteur reconnaît désormais les 24 langues officielles de l’UE et l’arabe. Les 7 langues historiques gardent exactement la même décision qu’avant : 2 229 paragraphes de contrôle et 646 documents du corpus bancaire donnent un résultat identique à l’ancien détecteur. Une langue ajoutée n’est retenue que sur preuve forte ; à défaut, le bloc reste « inconnu », comme avant.
+
+Mesure sur des articles EUR-Lex jamais utilisés pour la mise au point (4 320 paragraphes dans les 18 langues ajoutées) : 95,1 % de langues justes, 1,4 % de langues fausses, le reste « inconnu ». Les paragraphes longs (200 à 600 caractères) sont reconnus à 100 %, les moyens (60 à 200) à 98,9 %, les fragments courts (20 à 60 : titres, cellules de tableau) à 86,4 % seulement : c’est la principale limite. La langue du document, calculée sur l’ensemble de son texte, relève du cas des paragraphes longs. Le parcours complet (envoi d’un DOCX, analyse, langue, domaine, recherche, injection dans la consigne du moteur privé simulé) est testé pour chacune des 24 langues sources.
+
 ## Ce que ces données apportent, et ce qu’elles n’apportent pas
 
 Les deux types de données n’ont pas la même portée.
@@ -44,6 +54,8 @@ Les deux types de données n’ont pas la même portée.
 **EuroVoc** (domaines `HR`, `PAYROLL`, `BANKING`, `FINANCE`, `TAX`, `INSURANCE`, `LEGAL`, `ADMINISTRATION`, sans juridiction) fournit l’équivalent français institutionnel d’un terme reconnu dans le document source. Ce terme est injecté dans la consigne du moteur pour les documents d’un domaine compatible.
 
 **Les définitions EUR-Lex** (domaine `HR`, juridiction `EU`) fournissent le terme français employé par la version française de la directive. Elles ne sont injectées **que pour un document dont le contexte déclare la juridiction `EU`** : sans déclaration, ou pour une autre juridiction, elles sont écartées. Ce comportement est voulu et testé.
+
+**La paire arabe** (Wikidata, domaines EuroVoc) fonctionne comme EuroVoc. Elle ne couvre que 43 % des descripteurs retenus. 70 descripteurs jugés incorrects par au moins un des deux évaluateurs automatiques sont placés dans `data/rag-ue/wikidata/revue-evaluation-automatique.csv` : ils ne sont pas importables tant qu’une personne n’a pas tranché.
 
 **Les textes intégraux EUR-Lex** (`data/rag-ue/eurlex/eurlex/`) constituent la base de contenu juridique. Ils ne sont **pas** chargés dans le produit : la recherche de passages juridiques (tables `rag_legal_texts` et `rag_legal_passages`, vides) relève du LOT 3, qui n’est pas engagé sans validation explicite.
 
@@ -57,6 +69,7 @@ Avant de valider une version, le relecteur vérifie les points suivants.
 2. **Échantillon de lignes.** Le relecteur contrôle quelques lignes dans chaque domaine utile au tenant : terme source, terme français, provenance (CELEX ou EuroVoc).
 3. **Définitions.** Le terme français doit correspondre à l’usage du tenant. Une définition légale de l’UE n’est pas toujours le terme du droit national applicable.
 4. **Anomalies déclarées.** Le relecteur prend connaissance des anomalies de `data/rag-ue/eurlex/manifest.json` (3 couples acte-langue).
+5. **Évaluation automatique.** Les résultats de l’évaluation par deux modèles (section correspondante de `data/rag-ue/README.md`) orientent la relecture ; ils ne la remplacent pas. Pour l’arabe, le relecteur tranche aussi les 70 descripteurs de la liste de revue.
 
 ## IATE
 

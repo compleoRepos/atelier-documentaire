@@ -1,0 +1,44 @@
+{
+  "source": "Wikidata (libellés arabes) aligné sur EuroVoc 4.24 (termes français)",
+  "licence": "Wikidata : CC0 1.0 ; EuroVoc : CC BY 4.0 (Office des publications de l'UE)",
+  "retrieved_at": "2026-11-03T23:57Z",
+  "sparql_endpoint": "https://query.wikidata.org/sparql",
+  "inputs_sha256": {
+    "labels": "49b6611e0c8f2a2466494db8923a3f32ad6efe495f29b87337a43f0bcc92dceb",
+    "alt_labels": "1f26945b67cf4786bfa7981f94101983359ba0220a5cc540eabf9563f3d9c540"
+  },
+  "modifications": "jointure sur la propriété P5437 ; terme français officiel EuroVoc ; domaine EuroVoc ; synonymes arabes tronqués à 500 caractères ; descripteurs de la liste de revue écartés (évaluation automatique, pas une revue humaine)",
+  "review_list": {
+    "file": "revue-evaluation-automatique.csv",
+    "descriptors": 70,
+    "sha256": "86696a9666c27259f3ed83d6e677cc87cfba6a8b7e38f2665801c08cfce5dd73"
+  },
+  "columns": [
+    "source_language",
+    "source_term",
+    "target_language",
+    "target_term",
+    "synonyms",
+    "definition",
+    "usage_context",
+    "domain",
+    "jurisdiction",
+    "provenance"
+  ],
+  "stats": {
+    "synonymes": 325,
+    "sans_libelle_arabe": 478,
+    "exclus_revue": 70,
+    "plusieurs_elements": 6,
+    "synonyme_rejete": 5,
+    "libelle_rejete": 1,
+    "lignes": 290,
+    "descripteurs_retenus": 839
+  },
+  "files": {
+    "wikidata-ar-fr.csv": {
+      "rows": 290,
+      "sha256": "4ebbff639543deed1fda1632da45823b116e467b7bbc7db78a0914f3a2f5232f"
+    }
+  }
+}

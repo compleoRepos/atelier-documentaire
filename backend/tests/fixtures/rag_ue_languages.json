@@ -1,0 +1,274 @@
+{
+ "note": "Fixture du test de bout en bout des langues (LOT 2.3). Textes officiels EUR-Lex (réutilisation autorisée, décision 2011/833/UE) et une phrase arabe synthétique. Chaque document de test = intitulé d'attestation d'emploi dans la langue + paragraphe.",
+ "entries": [
+  {
+   "language": "bg",
+   "text": "достъп до всички видове и до всички нива на професионална ориентация, професионална квалификация, висше професионално обучение и професионална преквалификация, включително придобиване на практически опит;",
+   "term": "професионална преквалификация",
+   "target": "reconversion professionnelle",
+   "domain": "HR",
+   "source": "EUR-Lex 32000L0043, article 3 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 2904 ; modifié : sélection, paire bg-fr",
+   "title": "Заплащане · Работодател · Наемен работник",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "cs",
+   "text": "3. Na osobu, která je obvykle činná jako zaměstnanec a osoba samostatně výdělečně činná v různých členských státech, se vztahují právní předpisy členského státu, v němž pracuje jako zaměstnanec; jestliže však tuto činnost vykonává ve dvou nebo více členských státech, vztahují se na ni právní předpisy určené podle odstavce 1.",
+   "term": "osoba samostatně výdělečně činná",
+   "target": "profession indépendante",
+   "domain": "HR",
+   "source": "EUR-Lex 32004R0883, article 13 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 3545 ; modifié : sélection, paire cs-fr",
+   "title": "Mzda · Zaměstnavatel · Zaměstnanec",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "da",
+   "text": "a) vilkårene for adgang til lønnet beskæftigelse, udøvelse af selvstændig erhvervsvirksomhed og erhvervsmæssig beskæftigelse, herunder udvælgelseskriterier og ansættelsesvilkår, uanset sektor eller branche og uanset niveau i erhvervshierarkiet, herunder i henseende til forfremmelse",
+   "term": "selvstændig erhvervsvirksomhed",
+   "target": "activité non salariée",
+   "domain": "HR",
+   "source": "EUR-Lex 32000L0043, article 3 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6008 ; modifié : sélection, paire da-fr",
+   "title": "Løn · Arbejdsgiver · Lønmodtager",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "de",
+   "text": "b) der bezahlte Jahresurlaub von drei Wochen außer im Fall der Beendigung des Arbeitsverhältnisses nicht durch eine finanzielle Vergütung ersetzt wird.",
+   "term": "Beendigung des Arbeitsverhältnisses",
+   "target": "cessation d'emploi",
+   "domain": "HR",
+   "source": "EUR-Lex 32003L0088, article 22 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 3522 ; modifié : sélection, paire de-fr",
+   "title": "Arbeitsbescheinigung · Bescheinigung arbeit · Beschäftigungsnachweis",
+   "title_source": "lexique historique du produit"
+  },
+  {
+   "language": "el",
+   "text": "Η παρούσα οδηγία αποσκοπεί στην υλοποίηση της συμφωνίας-πλαισίου για την εργασία μερικής απασχόλησης, η οποία συνήφθη στις 6 Ιουνίου 1997 από τις διεπαγγελματικές οργανώσεις γενικού χαρακτήρα (UNICE, CEEP, CES) και η οποία περιέχεται στο παράρτημα.",
+   "term": "εργασία μερικής απασχόλησης",
+   "target": "travail à temps partiel",
+   "domain": "HR",
+   "source": "EUR-Lex 31997L0081, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 4548 ; modifié : sélection, paire el-fr",
+   "title": "Μισθός · Εργοδότης · Μισθωτός",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "en",
+   "text": "‘-1. This Directive shall ensure the protection of posted workers during their posting in relation to the freedom to provide services, by laying down mandatory provisions regarding working conditions and the protection of workers’ health and safety that must be respected.",
+   "term": "freedom to provide services",
+   "target": "libre prestation de services",
+   "domain": "HR",
+   "source": "EUR-Lex 32018L0957, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 1638 ; modifié : sélection, paire en-fr",
+   "title": "Employment certificate · Certificate of employment · Work certificate",
+   "title_source": "lexique historique du produit"
+  },
+  {
+   "language": "es",
+   "text": "«–1. La presente Directiva garantizará la protección de los trabajadores desplazados durante su desplazamiento, en lo que se refiere a la libre prestación de servicios, estableciendo disposiciones obligatorias sobre las condiciones de trabajo y la protección de la salud y la seguridad de los trabajadores que deben respetarse.",
+   "term": "libre prestación de servicios",
+   "target": "libre prestation de services",
+   "domain": "HR",
+   "source": "EUR-Lex 32018L0957, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 1638 ; modifié : sélection, paire es-fr",
+   "title": "Certificado de trabajo · Certificado laboral · Constancia de empleo",
+   "title_source": "lexique historique du produit"
+  },
+  {
+   "language": "et",
+   "text": "2. Käesolev peatükk ei välista, et enne sotsiaalkindlustusskeemi muutmist füüsilisest isikust ettevõtja kutsealases sotsiaalkindlustusskeemis osalemise kestusest tulenenud õigused ja kohustused jäävad reguleerituks osalemise ajal kehtinud kindlustusskeemi sätetega.",
+   "term": "füüsilisest isikust ettevõtja",
+   "target": "profession indépendante",
+   "domain": "HR",
+   "source": "EUR-Lex 32006L0054, article 10 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 3545 ; modifié : sélection, paire et-fr",
+   "title": "Palk · Tööandja · Palgatöötaja",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "fi",
+   "text": "5. Poiketen siitä, mitä 2 kohdassa säädetään, kun 2 artiklan 1 kohdan c alakohdassa tarkoitettu yhteisönlaajuinen yritysryhmä sisältää yhden tai useampia yrityksiä tai yritysryhmiä, jotka ovat 2 artiklan 1 kohdan a tai c alakohdassa tarkoitettuja yhteisönlaajuisia yrityksiä tai yritysryhmiä, ryhmän tasolle perustetaan eurooppalainen yritysneuvosto, jollei 6 artiklassa tarkoitettujen sopimusten määräyksistä muuta johdu.",
+   "term": "eurooppalainen yritysneuvosto",
+   "target": "comité d'entreprise européen",
+   "domain": "HR",
+   "source": "EUR-Lex 32009L0038, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6084 ; modifié : sélection, paire fi-fr",
+   "title": "Palkka · Työnantaja · Palkansaaja",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "ga",
+   "text": "4. A mhéid is gá chun a ndualgais ionadaíocha a fheidhmiú i dtimpeallacht idirnáisiúnta, soláthrófar oiliúint do chomhaltaí an chomhlachta speisialta caibidlíochta agus do chomhaltaí na Comhairle Oibreacha Eorpacha gan aon chailliúint tuarastal a bheith i gceist.",
+   "term": "Comhairle Oibreacha Eorpacha",
+   "target": "comité d'entreprise européen",
+   "domain": "HR",
+   "source": "EUR-Lex 32025L2450, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6084 ; modifié : sélection, paire ga-fr",
+   "title": "Pá · Fostóir · Saothraí pá",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "hr",
+   "text": "5. Neovisno o stavku 2., kada se skupina poduzeća koja posluju na razini Zajednice u smislu članka 2. stavka 1. točke (c) sastoji od jednog ili više poduzeća ili skupine poduzeća koja posluju na razini Zajednice ili skupine poduzeća koja posluju na razini Zajednice u smislu članka 2. stavka 1. točke (a) ili (c), Europsko radničko vijeće osniva se na razini skupine, osim ako sporazumima iz članka 6. nije propisano drukčije.",
+   "term": "Europsko radničko vijeće",
+   "target": "comité d'entreprise européen",
+   "domain": "HR",
+   "source": "EUR-Lex 32009L0038, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6084 ; modifié : sélection, paire hr-fr",
+   "title": "Plaća · Poslodavac · Radnik koji zarađuje plaću",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "hu",
+   "text": "váltott műszakban végzett munka: folyamatos vagy megszakításokkal működő üzemelés olyan munkaszervezési módszere, amelyben a munkavállalók egymást váltják egy bizonyos időbeosztás szerint ugyanazon a munkahelyen, és amely azzal jár, hogy a munkavállalóknak különböző időben kell munkát végezniük adott napi vagy heti időtartam során;",
+   "term": "váltott műszakban végzett munka",
+   "target": "travail par roulement",
+   "domain": "HR",
+   "source": "EUR-Lex 32003L0088, article 2 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 4553 ; modifié : sélection, paire hu-fr",
+   "title": "Díjazás · Munkaadó · Alkalmazott",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "it",
+   "text": "«lavoratore delle piattaforme digitali»: qualsiasi persona che svolge un lavoro mediante piattaforme digitali e che ha, o si ritiene che abbia, un contratto di lavoro o un rapporto di lavoro quali definiti dal diritto, dai contratti collettivi o dalle prassi in vigore negli Stati membri, tenendo conto della giurisprudenza della Corte di giustizia;",
+   "term": "lavoratore delle piattaforme digitali",
+   "target": "travailleur du numérique",
+   "domain": "HR",
+   "source": "EUR-Lex 32024L2831, article 2 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur c_95b02746 ; modifié : sélection, paire it-fr",
+   "title": "Certificato di lavoro · Certificato di impiego · Attestazione di lavoro",
+   "title_source": "lexique historique du produit"
+  },
+  {
+   "language": "lt",
+   "text": "b) už profesinę ligą arba nelaimingą atsitikimą darbe, kurie įvyko arba kurie buvo patvirtinti vėliau pagal kitos valstybės narės teisės aktus, pagal kuriuos įvyko arba buvo patvirtinti nelaimingas atsitikimas darbe arba profesinė liga, nėra mokėtina jokia kompensacija.",
+   "term": "nelaimingas atsitikimas darbe",
+   "target": "accident du travail",
+   "domain": "HR",
+   "source": "EUR-Lex 32004R0883, article 40 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 825 ; modifié : sélection, paire lt-fr",
+   "title": "Darbo užmokestis · Darbdavys · Pagal darbo sutartį dirbantis darbuotojas",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "lv",
+   "text": "“paternitātes atvaļinājums” ir atvaļinājums bērna piedzimšanas gadījumā šā bērna aprūpes nolūkā, kas paredzēts tēvam vai – ja un ciktāl tas atzīts valsts tiesību aktos – līdzvērtīgam otram vecākam;",
+   "term": "paternitātes atvaļinājums",
+   "target": "congé de paternité",
+   "domain": "HR",
+   "source": "EUR-Lex 32019L1158, article 3 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6924 ; modifié : sélection, paire lv-fr",
+   "title": "Atalgojums · Darba devējs · Algots strādnieks",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "mt",
+   "text": "“–1. Din id-Direttiva għandha tiżgura l-protezzjoni ta’ ħaddiema stazzjonati matul l-istazzjonar tagħhom fir-rigward tal-libertà li jiġu pprovduti servizzi, billi jiġu stipulati dispożizzjonijiet obbligatorji rigward il-kondizzjonijiet tax-xogħol u l-protezzjoni tas-saħħa u s-sikurezza tal-ħaddiema li għandhom jiġu rrispettati.",
+   "term": "libertà li jiġu pprovduti servizzi",
+   "target": "libre prestation de services",
+   "domain": "HR",
+   "source": "EUR-Lex 32018L0957, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 1638 ; modifié : sélection, paire mt-fr",
+   "title": "Paga · Impjegatur · Persuna b'paga",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "nl",
+   "text": "“collectieve arbeidsovereenkomst”: een schriftelijke overeenkomst betreffende bepalingen inzake arbeidsomstandigheden en -voorwaarden die is gesloten door de sociale partners die overeenkomstig nationale wetgeving en praktijk, met inbegrip van collectieve arbeidsovereenkomsten die algemeen verbindend zijn verklaard, de bevoegdheid hebben om namens respectievelijk werknemers en werkgevers te onderhandelen;",
+   "term": "collectieve arbeidsovereenkomst",
+   "target": "convention collective",
+   "domain": "HR",
+   "source": "EUR-Lex 32022L2041, article 3 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 194 ; modifié : sélection, paire nl-fr",
+   "title": "Werkgeversverklaring · Arbeidsverklaring · Verklaring dienstverband",
+   "title_source": "lexique historique du produit"
+  },
+  {
+   "language": "pl",
+   "text": "W trakcie tych negocjacji istniejąca europejska rada zakładowa lub istniejące europejskie rady zakładowe kontynuują wykonywanie swoich uprawnień zgodnie z warunkami dostosowanymi umową między członkami europejskich rad zakładowych a centralnym kierownictwem.",
+   "term": "europejska rada zakładowa",
+   "target": "comité d'entreprise européen",
+   "domain": "HR",
+   "source": "EUR-Lex 32009L0038, article 13 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6084 ; modifié : sélection, paire pl-fr",
+   "title": "Płaca · Pracodawca · Pracownik",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "pt",
+   "text": "As disposições da presente directiva não se aplicam na medida em que outros instrumentos comunitários contenham disposições mais específicas em matéria de organização do tempo de trabalho relativamente a determinadas ocupações ou actividades profissionais.",
+   "term": "organização do tempo de trabalho",
+   "target": "aménagement du temps de travail",
+   "domain": "HR",
+   "source": "EUR-Lex 32003L0088, article 14 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 1503 ; modifié : sélection, paire pt-fr",
+   "title": "Salário · Empregador · Assalariado",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "ro",
+   "text": "Conducerea centrală și comitetul european de întreprindere lucrează într-un spirit de cooperare, cu respectarea drepturilor și obligațiilor lor reciproce.",
+   "term": "Comitetul european de întreprindere",
+   "target": "comité d'entreprise européen",
+   "domain": "HR",
+   "source": "EUR-Lex 32009L0038, article 9 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 6084 ; modifié : sélection, paire ro-fr",
+   "title": "Plată · Patron · Salariat",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "sk",
+   "text": "b) \"činnosť ako samostatne zárobkovo činná osoba\" znamená každú činnosť alebo rovnocennú situácia, ktorá sa za takú považuje na účely právnych predpisov v oblasti sociálneho zabezpečenia členského štátu, v ktorom takáto činnosť alebo rovnocenná situácia existuje;",
+   "term": "samostatne zárobkovo činná osoba",
+   "target": "profession indépendante",
+   "domain": "HR",
+   "source": "EUR-Lex 32004R0883, article 1 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 3545 ; modifié : sélection, paire sk-fr",
+   "title": "Mzda · Zamestnávateľ · Zárobkovo činná osoba",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "sl",
+   "text": "To poglavje se uporablja za delovno aktivno prebivalstvo, vključno s samozaposlenimi osebami, za osebe, katerih delo je prekinjeno zaradi bolezni, materinstva, nesreče ali neprostovoljne brezposelnosti, iskalce zaposlitve ter za upokojene delavce in delavce invalide ter za njihove upravičence v skladu z nacionalno zakonodajo in/ali prakso.",
+   "term": "delovno aktivno prebivalstvo",
+   "target": "population active",
+   "domain": "HR",
+   "source": "EUR-Lex 32006L0054, article 6 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur 2550 ; modifié : sélection, paire sl-fr",
+   "title": "Plača · Delodajalec · Delojemalec",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "sv",
+   "text": "Medlemsstaterna skall i enlighet med nationell lagstiftning, kollektivavtal eller praxis uppmuntra arbetsgivare och dem som ansvarar för tillgång till yrkesutbildning att vidta effektiva åtgärder för att förebygga alla former av könsdiskriminering, särskilt trakasserier och sexuella trakasserier på arbetsplatsen, när det gäller tillträde till anställning, yrkesutbildning och yrkesmässig befordran.",
+   "term": "trakasserier på arbetsplatsen",
+   "target": "harcèlement professionnel",
+   "domain": "HR",
+   "source": "EUR-Lex 32006L0054, article 26 (texte officiel)",
+   "entry_provenance": "EuroVoc 4.24, Office des publications de l'UE, CC BY 4.0 ; descripteur c_e4f135ba ; modifié : sélection, paire sv-fr",
+   "title": "Lön · Arbetsgivare · Arbetstagare",
+   "title_source": "lexique de type de document (EuroVoc 4.24)"
+  },
+  {
+   "language": "ar",
+   "text": "تنص الاتفاقية الجماعية على تحسين ظروف عمل الموظفين وعلى احترام حقهم في الإجازة السنوية المدفوعة الأجر وفقا للقانون.",
+   "term": "ظروف عمل",
+   "target": "condition de travail",
+   "domain": "HR",
+   "source": "phrase synthétique (test)",
+   "entry_provenance": "Wikidata Q2992308 (CC0) pour l'arabe ; EuroVoc 4.24 (CC BY 4.0) pour le français ; descripteur 82",
+   "title": "شهادة عمل · شهادة توظيف · صاحب العمل",
+   "title_source": "lexique historique du produit"
+  }
+ ],
+ "french_control": {
+  "language": "fr",
+  "text": "Les États membres prennent les mesures nécessaires pour que tout travailleur bénéficie d'un congé annuel payé d'au moins quatre semaines, conformément aux conditions d'obtention prévues par les législations nationales.",
+  "source": "EUR-Lex 32003L0088, article 7 (texte officiel, reformulé)"
+ }
+}

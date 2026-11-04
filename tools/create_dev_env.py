@@ -27,6 +27,8 @@ def main() -> int:
         "TRANSLATOR_DATABASE_URL": f"postgresql+psycopg://translator:{postgres_password}@postgres:5432/translator",
         "TRANSLATOR_CELERY_BROKER_URL": f"redis://:{redis_password}@redis:6379/0",
         "TRANSLATOR_ENGINE": "offline",
+        # Jeton du service OCR Surya (réseau interne) : jamais la valeur d'exemple.
+        "OCR_SURYA_TOKEN": secrets.token_urlsafe(32),
     }
     lines = []
     for line in template.splitlines():

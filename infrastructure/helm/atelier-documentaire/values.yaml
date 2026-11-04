@@ -33,6 +33,9 @@ external:
   privateAiAllowedHosts: []
   # LOT 2.3 D-ENG-01 : délai d'un appel moteur (s), < délai souple de tâche (1800 s).
   privateAiTimeoutSeconds: 60
+  # DICE (RAG) : DISABLED par défaut (application identique) ; offline/interim = SHADOW au plus.
+  ragMode: DISABLED
+  ragAdminEnabled: false
   tokenizerClaim: atelier-documentaire-tokenizer
   modelClaim: atelier-documentaire-model
   tokenizerPath: /models/qwen-tokenizer

@@ -1,5 +1,7 @@
 # Atelier documentaire — comprendre, traduire, vérifier
 
+> **Version finale DICE** : contenu, statut et déploiement local dans [`VERSION-FINALE-DICE.md`](VERSION-FINALE-DICE.md). OCR **Surya** par défaut (Tesseract uniquement sur choix explicite, jamais en repli automatique), RAG DICE `DISABLED` par défaut, 24 langues officielles de l’UE et arabe, base RAG UE versionnée dans `data/rag-ue/`. Production : **NO-GO** tant que la licence des poids Surya et la qualification humaine ne sont pas obtenues.
+
 Projet Git autonome `atelier-documentaire-prive`. Le développement et les tests ont été isolés de l’application BTP, qui n’est pas modifiée.
 
 Les commits de ce projet utilisent **Hamza NORDINE** comme auteur et committer, avec l’adresse noreply du compte GitHub authentifié.

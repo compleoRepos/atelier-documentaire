@@ -32,6 +32,8 @@ spec:
             - { name: TRANSLATOR_EXPECTED_DIR, value: {{ .Values.external.expectedDir | quote }} }
             - { name: TRANSLATOR_TOKENIZER_PATH, value: {{ .Values.external.tokenizerPath | quote }} }
             - { name: TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS, value: {{ .Values.external.privateAiTimeoutSeconds | default 60 | quote }} }
+            - { name: TRANSLATOR_RAG_MODE, value: {{ .Values.external.ragMode | default "DISABLED" | quote }} }
+            - { name: TRANSLATOR_RAG_ADMIN_ENABLED, value: {{ .Values.external.ragAdminEnabled | default false | quote }} }
             - { name: TRANSFORMERS_OFFLINE, value: "1" }
             - { name: HF_HUB_OFFLINE, value: "1" }
             - { name: TRANSLATOR_AV_SCAN_ENABLED, value: {{ .Values.external.avScanEnabled | quote }} }
@@ -107,6 +109,8 @@ spec:
             - { name: TRANSLATOR_EXPECTED_DIR, value: {{ .Values.external.expectedDir | quote }} }
             - { name: TRANSLATOR_TOKENIZER_PATH, value: {{ .Values.external.tokenizerPath | quote }} }
             - { name: TRANSLATOR_PRIVATE_AI_TIMEOUT_SECONDS, value: {{ .Values.external.privateAiTimeoutSeconds | default 60 | quote }} }
+            - { name: TRANSLATOR_RAG_MODE, value: {{ .Values.external.ragMode | default "DISABLED" | quote }} }
+            - { name: TRANSLATOR_RAG_ADMIN_ENABLED, value: {{ .Values.external.ragAdminEnabled | default false | quote }} }
             - { name: TRANSFORMERS_OFFLINE, value: "1" }
             - { name: HF_HUB_OFFLINE, value: "1" }
             - { name: TRANSLATOR_AV_SCAN_ENABLED, value: {{ .Values.external.avScanEnabled | quote }} }

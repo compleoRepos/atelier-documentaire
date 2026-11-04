@@ -213,5 +213,6 @@ def test_f53_planner_without_any_rule_is_unchanged(monkeypatch):
 def test_f53_status_mapping_and_version():
     from app.documents.block_status import _RENDER_FAILURES
 
-    assert VERSION.startswith("block-status-6")
+    # version 6 ou ultérieure (7 : LOT 2.3 D-DET-02) : la correction F50/F53 reste incluse
+    assert VERSION.startswith("block-status-") and int(VERSION.rsplit("-", 1)[1]) >= 6
     assert _RENDER_FAILURES["SCAN_TEXT_CROSSES_RULE"] == "render_text_crosses_rule"

@@ -14,6 +14,15 @@ PARALLEL="${OCR_SURYA_PARALLEL:-1}"
 STARTUP_TIMEOUT="${OCR_SURYA_STARTUP_TIMEOUT:-600}"
 LLAMA_PORT=8091
 
+# LOT 2.3 D-OCR-06 : un OMP_THREAD_LIMIT hérité (les anciennes procédures Tesseract imposaient
+# OMP_THREAD_LIMIT=1) bride le moteur en silence : mesuré ×3,27 sur le vrai point d'entrée, toutes
+# les pages en HTTP 200, sans aucun message. Le nombre de fils est fixé par OCR_SURYA_THREADS (-t) ;
+# la variable est retirée, avec un avertissement explicite dans le journal du conteneur.
+if [ -n "${OMP_THREAD_LIMIT+x}" ]; then
+  echo "ocr-surya: OMP_THREAD_LIMIT=${OMP_THREAD_LIMIT} hérité ignoré (fils fixés par OCR_SURYA_THREADS=${THREADS})" >&2
+  unset OMP_THREAD_LIMIT
+fi
+
 # Empreintes officielles (Hugging Face datalab-to/surya-ocr-2.5-gguf, vérifiées LOT 2.2).
 declare -A OFFICIAL=(
   [surya-2.5.gguf]=45fa3e587cf5a475f06e949fbe40e67b759dbcee1830e7effbcb172445d4b6bf

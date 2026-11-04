@@ -1,0 +1,3767 @@
+{
+  "source": "EUR-Lex / CELLAR, Office des publications de l'Union européenne",
+  "licence": "© Union européenne ; réutilisation avec mention de la source (avis juridique EUR-Lex, décision 2011/833/UE) ; seuls les textes du JO font foi",
+  "acts": {
+    "31989L0391": {
+      "title": "Directive 89/391/CEE",
+      "languages": {
+        "bg": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "cc04210b256abe5c955b6a3f813d2a7bc08f1b2d80c19a2b8ecbd62bf3133d38",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "4476e5777bcb2fbee0bec8c70986da639aff54d6e636368d9d6e67cbbed89182",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "85ef2170ba1b6a611cde3e0d371e829a677cbc9aac01ddde1b66e05521811232",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "55eebcc0fcf71100d7d95df39a462665a5380d5b898aace7cca8c8bccf3a5769",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "80d0a77ee0aaf550de3ef2f7744a3241c81a973ca0b996d7ff5e08f192f7a395",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "0f75ed43874cf9a8cbe60aaca220cd11d5f1521733b847afef72abd6853e531e",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "0072de85589d7415ef87d2421b4cd7268d898ada77a701dea25237df5b3c270e",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "109307b787bd60027d503fc3e63adbbb81cc39433d4d340bcbfe18fc2f7cd0a5",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "40410450e084fddff6a3111aeaace3962c450782accc2580fb1f5d899d261f43",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "8362260eb39fdc2ad0b90a18c959ed26041f2517306d4a663960e1ce33a149f7",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "4d03188e592bcd01d7e9473877adf27be17b610fd31d88f26e58a30c8594e94d",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "257d2e710a553c16b6556a379fc41d3224b5890d6b7dc70669e828e306914ef5",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "9881a0838d4a81843240388fc4ea40bde546d5306535b3d317fde7c21f390386",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "e840ed77209398619ad9d12255e8661c40c905c01dca942c4e8473dde43ba4ae",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "fa291cb3f9e4b32831bc3d3b4464d1ca5618f4d65e21a575fde33d2f313b2af2",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "0df1e4e5e9a4f37a392fb4eb0697cabc7df62f9b124de8a76757e6c3d5517f2d",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "ad1a1f5389a46a58918538ac745cce25216a899acfb56bda44dfb8b23287292b",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "3599875312b672d5a43ff75636343779ad0e04aa40e064e6506fa0ec1cb3db3d",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "34b12fd7b1cfdda0dfc29a30ebcfb542cd08fc92042aa05eff30b3b173d24503",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "c422964f210b0a61b7bb499b6aa91d1a901a39e6908fd95e82c9766350fb2542",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "f7eba048be22bffd87b948aa5aca06d3853ba3bdc7cc7bf99686676ce09c91af",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "66f26e43b97fec9e79f62bebb612245e7a48e59230573cc565bb83ab55596bf4",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "c52280880eda792da29a9e984bc299b575604f8947644ddd6d54fde6eeece8d2",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 437,
+      "file_sha256": "3c54be70a92a56b1e2c3c2b09dd403cd2da5d901436210e26c4c15b9d5807666"
+    },
+    "31992L0085": {
+      "title": "Directive 92/85/CEE",
+      "languages": {
+        "bg": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "ba7f8881b46648aeef58829df276c0b016925bc1a509a8bcbff2e1b2b0f0c8b5",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "049eb14c684b7cbd34d1d1577285398bad09d45d10ebdda1589337e31dc3e445",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "7f2e344286f1e7db16a138b5d61bf059a4b8ca788703201a785c9f1277f16d67",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "05139e91fccb2c743a5cfa20c92fc633943c972b7079a816a990170adddede05",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "1d5a87cea6ba9ee5a758ac9eac487b69bd061f6ca73c873800886fbe870efc9a",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "868eb0b9dcdd84f5033488543994ea4bf5984489148096f8050200c15ee2a593",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "408ab19106e986841f25564e81ac4918532a141d278e7e4b457d30be246bdcc8",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "7915fa6f306cba7b4b590555b4feb7f4d5b5679ab1767118490f5efa8f1f89bc",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "674236b58776d6c9e160465c5fda73b1ccbb196ae518e49c1e143cd1d949947e",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "3e9940e369e8222b2331edd9439f2cd6b74e3fa55d0d66bb984f11f0414e8393",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "6e345ac930a199d3ec65ea1eb494949fbdee110c15129b64cddbbeba982275ee",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "951059e666998c92c8df9fc1eb9b51b75cc57b7fb3cd9d5ca441afad8549cae5",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "744f0faff38a1934efa550e62acb39b54b194fef2deffe5d4f9880201b3ae4f7",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "d6f0850505c9d38c11c18ea61ea78acaa5dc92341cda5c8874214528a813a214",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "5a55c2de787c7e8c7aa102faf624a79b33c9f6be89d62cdc574a3de6fb8a28fb",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "c5d39af6f0966e8c9857c6750b9b5cfecacc608d0d1a1352ff2a865f5e2da3b8",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "d005fe3ce24f1fe9ac8d4fa1ab37e043be2c0d1805803ab4571ab7024a2a1278",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "818d969052f0c0cd9b5ebb41df494bc1acc608f47519198a7e01e0a8c54b49a9",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "3eee607180aed1feb093fc6cd9702c1c5ff290679dbed9a139bf6dad8529f59d",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "41b3256da244ea3433748d8f008776d7b18097a28499c03d501041cbc93eda97",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "9a438556cfe5b0ddd3673247057c39e66815accc9c178d3b556a492c10788bf0",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "1df692d5c6e684b20f0310e677b079c02f3959bd3358f5c834d80cb54445205f",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 15,
+          "layout": "legacy",
+          "html_sha256": "edbd81f2b8b406de89d0e70d5d93e87ad6edb86392bedeffdd824a520c176205",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 345,
+      "file_sha256": "ce0891d9bd004ee79a5019fd26b036505f1d16b6d240187ed874ea2ea741d9f4"
+    },
+    "31994L0033": {
+      "title": "Directive 94/33/CE",
+      "languages": {
+        "bg": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "9411236c6260e27fed40caa24bb10886c78a1c9854be8fc97ebb7e5e10c5681f",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "adb97e499bee398b5192b145bc4f1cab13b56bd15d821c2a8078be92df9b61f8",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "31234268567479490da0a81d606965c5e09c79d926459eb2e21ff9704663fd26",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "515aa50acd2651c065a0d0c04557905917582aa3bf9d94d24c1536b968d96190",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "bd0400c34d73456ce636c799019f1929c02327dbe8814a71f02aa4ac53b84862",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "9cf06880c2a3272211ef000d255746ce9903988ff520c5ec225a752632cd2220",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "d185cdd1e4358b20baef2aba666cc2292645d0543da1aba18ddef06c1957b0a0",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "b545b73c17b291b11a2c155494f5887db1c247f272f459ac90c1b71f293a74b2",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "1d7549715be1193d0cc6f7fc515a2657941a906116215ed3c616e85fff9333a6",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "a9b48011c1cc6cafad3b206e2ad8098d23bf327cc1d3e4d79acb9ba471e18660",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "bab412adb70fbbf10e0b4ccafb2a26f62c1a0cd080791fdfe775b1d5c908467e",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "d736a662a1b0acb08929427f76716d79c6147fb536aff72603e53a729934bbb4",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "50e846f8238315b6a1385faf218e3a52af4c1c0a4e5b26bac5d015aa2057ee71",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "c4e7246fe420749b7ec3efdf0b777f7ab2b87d0693a072da79f64b33898448f3",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "573151b617264874f6a18037346800d502ce9ed998fb9c9a1610bd98f56c7b70",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "4015c95e527f7279bcdd22e9a2d290aecf03ae72b11da81b0c518cc92e360dfb",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "bc5847f545bdf3247da16f4f5148b3fe2d3db2a3061cd4ee0a239c52c10b254c",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "be145cb9ed8d1d802b0fdefedcb9f5e63a4ed77f13bb5735b925a67f16d4012c",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "fa9d166521cf59adf59bd991605af8f25b164f1c7ef2cf757d6c9f4172258c10",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "794bc02ef602a7963c052f12a151ee03a37943acf031b48f84e7165907f15877",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "1eba90dae86aa4e0b5df41f96f7843ec24503cd2854743ff5012aad9d8811df4",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "bb6f4317ee600faf305ed9b9994fde35629ab03b09c184d68babb2ecd84901f0",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 18,
+          "layout": "legacy",
+          "html_sha256": "391d22a0a90539d6c7782d5997d612f8dfc27ac94c68eb152cbe754fcea9109b",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 414,
+      "file_sha256": "33c1c3c309c9de83bbf04e5ef1f445fac8b95f32ddc149062181ebfa4ee3aaca"
+    },
+    "31996L0071": {
+      "title": "Directive 96/71/CE",
+      "languages": {
+        "bg": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "b82fffc84b597f94079f5769ec26dda462b4d929782f62259da2c73ff2b1be68",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "015b17043676c181db06c1f61259a730fd56767f6ba3ee863410f2a38dccd93e",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "9052966c6cdf67207b7cb009cff359b70eb66ed6ae08756161cb4b64d41ca7b4",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "647a92649dc3c0c32b44cd5bb1ea2e2065edc929daeb74707ded1d070e09be2e",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "7bd24b79cb701df06948b639b903c527e2b368bc49264f2a15060a8801271f00",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "436c6607cd91470799bd02abe5271f990dadc4c26d8936a5f8caf5e5b8f0f746",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "c6f6f430a425b93986fc8ea6c9044b87bfef0eb000cbbb27f328d7b7848560ad",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "b7e734cb3b2055d10e6f521eb1bec087f5cc049c36278c04b19ce3736cc73e68",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "f3a036d312d155edc4b148230bf507acda5ab26c04df9f2cb72efb66b694cc89",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "10434575e5aec769411a670a6ae2fda9397c0c7f2fc7936829d06d96eeaab130",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "76350491dd35e1bd7aa981dd13c2ca5e85e94551938d79173c830ea25bd32e10",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "6cdca02d3c188d3a158ade29260bef3734e62399d1d6065e9791b80186b3ea54",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "6ee4326eb54716623bc812e7a175af1916d2a80ec77bf792e93bb06de066ce28",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "a0fb012e824fd29a13fee42596fae8a8e4d4811db8083eeb7c0b0ac4540c5e43",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "378a40f7ad01d2042663919bc56f19c648e5b51220d636b28cc41e416397da30",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "229918adcbd4a685737caae57ba43c10b3760612810302ab4f1e17efd134379a",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "9625e0574a8ab1c5a5738759e1efc2c51d4260f36196359f7218ff7edf9eff12",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "d1c9b8732435ac399b65a571ea48a139be5a06061867eac83a208d82f3c01d48",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "6061131384f19b4e4589cadbc990b0836533b0b069a5e6f4711b5646fb29b978",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "89c06c1be226b564103026fff0a3990aed99e4a8225a2ffaf65ff72241056430",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "6021cb6f17e9db9aacd9123eef6fb5fbe0adc21edc463c0bf358ca033b5b5e64",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "1d87404cf7933712baf04630fa4c7ce3889c5faff62532911d34ab3e3ba3df0e",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 9,
+          "layout": "legacy",
+          "html_sha256": "38e168cd1e74bf4cbefaa8641009dbc668f7868ae807b8b26755978aeb57d5b3",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 207,
+      "file_sha256": "62e6d4b6b63a70a7a82384a0aabb61ea87d7d52b6cb92f50cb0eee39d834a46f"
+    },
+    "31997L0081": {
+      "title": "Directive 97/81/CE",
+      "languages": {
+        "bg": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "fc3c0be838d2a75eb31cdcefa85547c976ddd559a62a85724fa9c7d4599ccb88",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "7e31aaf832651da7084b0a22177082e6a6c9cd8a0fef8f6dcb495214f67015af",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "68c2eb7d48d8526dc447ec5a200671fd06b844be2b0b212214293a5ca72255e0",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "fe065b82d6485d60a833354d04abd18ea8769273a547c5e7c75de1edf73648d9",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "8ecc94b663a3f67013f6fcb2b49230f69910ee2191c132d09afa38968a67b1d1",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "882c212b35266b5fda221b226621a716c21479f6147b12ae12ff9ce5370dc008",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "e41b40a791c72f86ca05c40ced5151f4c8a797d3ae43e0ac7b288e4331841da8",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "dda64c5653b3de548d82691a92450d03b4920a7c4083925e21632bbea0cfb868",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "1e798488237213880e4e8f8c64184b6b60dfbdd8770f2afcbffc4d5b31046b2d",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "e099cb112f8617551e0de05020e54e6c3bce3cb6a4dc28993b627389e530242b",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "9093cbb76bc55afec59850a284c970111cf1a159f31928a8dff5e6f296b55847",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "47e7b95e498b888903850fddf190dcedbeef4b43f751e98ecab81a050209326a",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "73ee14b026848aa2865183ec54078d3d6fbf5d6e7ebf5fa6f88bf665739e3b37",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "55ae6d76256deecce27f87c0cfc7914704d77f71abcc29d1395308e82464b9c0",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "1c3684cdc59f889978e1891c46efb9e659cfd58b263682774c56dd9c1ac4772f",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "dcb060ab0adceefea836a58fed70e29bb0391517606b11bad27e5db8880d63d7",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "0cf989b8b538bbd355860ad9502913df75e4c18c63aebaa932266625013baaf7",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "ca89c1fe9eb7176943b6b767ec7d2c1b0a420d3ac2a4fd92430d6a7cabce089b",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "fc83fa3ff8709dcf2a5b2d746fdcacd52e40afb431596585860b3791ee9fb545",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "2e3726642857e243f3c7dfce8ae3cfa1d564711a575a1de2913f6da51d982f72",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "b289b15d059492d593a4e07c7fedc2621e95eaeb249f6c5b8a2ed025e15b7c7d",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "7439e5b33204580cf878215dc98f2799ed72729eb9843a161d084ae05df48069",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "baaa2813404eb3917c1be9ca494da762fb10700e04ceaeca67e95b5eabee671d",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 92,
+      "file_sha256": "5c44c933ea3518563440b64b83c70f5b0df9ef98185e6b32512cb14b4b7c630e"
+    },
+    "31998L0059": {
+      "title": "Directive 98/59/CE",
+      "languages": {
+        "bg": {
+          "articles": 10,
+          "layout": "legacy (rupture après l'article 10 : 2)",
+          "html_sha256": "4e457d701d66c7cc45f802ede7302e00d2b576164d1f04d4abf963f3d7dbc20a",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "6411d706929d5ca0493ff8fbf6dcc3717fcf16930ad7d3b31111c0f7c3870fb7",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "3681a9623854272889c37e9bf74cadcf911e4404d8fd35254492dc3b60fb7e19",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "c346adf38e9e5db18837c58da53ec551995cb01f5e41f3f0d3dedaf9f2c75d5d",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "d85fe895093531b0600d73c38e10aeff219cde5af1e15ed0f808ede96467912a",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "778ac8a8fccc6e270c11d5fef0b0e30c677884e2657c82e172cee7b2146c8c46",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "e85ee805afb4945c6f46efda474146a6eeed6750a2552b57dbb13c67e7319d21",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "1874bac22d4515ea54393451ac6f9dda3f6305e2270ec4bdfaea07275a6981b6",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "56785b39f4b75f299ca7148606d31c6375521c0aa77879b9e080c0f78f38f484",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "84d9595f007b0c4692a3f8635644028d708485ec5d94b04652123d24c80dec76",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 10,
+          "layout": "legacy (rupture après l'article 10 : 2)",
+          "html_sha256": "0e88bcb4fbfa1baeb8d8fda8a18e16db0b6bbd7d6d7057139db0a29800e3c06e",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "738c4e45a812c7796653973d55cff018d880ba8dad3bcd8b2264844c7114a239",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "ac3777ffe6f742285574e83f50245362af05ac491f70f1dd1568f495fc429e43",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "fc06b99c54cf32315e0871f6ba600e936d1af23246e0b5a2abb90d3fdb799a8a",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "a29beb7fa91f99b027f6544467dbe717e84672b2242840c4c02a6737827a5ea6",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "7fc9a17bdb0c974b7ad8b04b7d57fa6afa0d5b7153187e0dcb1eda33c66dcbe8",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "ad85f8b44549e6b250f17f99707ff8326ffdc35417d58f760197f450cfa76dbc",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "8cfff3f844e933e0ce006c662a32c843e82fdae9c061b6d0a8b8dc8c9fc6825d",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "bc8a15190865a5e69aef21712241d44ca0cb3867924a8ad0424509bb2cd968a6",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 10,
+          "layout": "legacy (rupture après l'article 10 : 2)",
+          "html_sha256": "ff239279098e1f34b767d2e0b1b89f7e0619c562015461d3c601380d7277c8ce",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "f21e9709881ff82a80ae6d326eb8f5d0071bf9de2211cad17a63f016bdbb945b",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "233a7c005b72151905851c411891ced388b783048a0952da7de2d3d073c23e4f",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 10,
+          "layout": "legacy",
+          "html_sha256": "63bbd3ad4592f2850d0d7e149dc38db3a5486c6fa5d177813d185e4816236dfe",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 230,
+      "file_sha256": "1e2a1c66fe0e0089a5244f0259658461699d8be2b459da46079caa4c9e0fb4b2"
+    },
+    "31999L0070": {
+      "title": "Directive 1999/70/CE",
+      "languages": {
+        "bg": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "eb7543ea86ce41a5fdbb54007383f3730a42801062c1b4534046af47a1f09859",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "058d3ec62e7591221074d431d9a6bb228496c42a77e11dbb016b83fb8b08bb39",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "6c867ecbe2fb2a9e9fe18bd2b441d7561cd4de72a723b2fe5f6a415d9352cc4a",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "58f5afc73e954e65bac3b2f243b79cffe6f45238df90a89511a633ab44bed2cc",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "9ba9839feb5a9e67cc241edcdd5a5bd21ed4904167095d4c237748665a89933c",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "9756e7d1d551df486f606374a792346b3dd8c5cacce6541823c7d82268069fed",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "0207d04c34e6a9abe53413b54bcb4557250a4df63d23c8be0598d0bfdb073705",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "ebb46e277d56d5c8521f2c506878ffafe7d2b41e52c45e3a5376f1562f3fcc7c",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "f21da8cc9349d6a5c752cc6cdf79dc61ea3a198282bb01ba6fc993177e926c27",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "83ff028f65c5624ff420b562dee38a967a1c7e65967f9747fcd820d830ed501c",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "39f1465c446833baf1b44724735bc128a1b3402dfb36ab90df914962c718ebe1",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "4d3b57f42e2544c82ab1ed56f0afc0842c0325d574bbf6256f97b7acad1c201f",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "e8fb7c61bbb63f6ffe85c536bfb6427aa9dd25f7b075885a46295d613a7c1bcc",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "ecaeccca4d198229adc630b5629b43191d472b391d075561101d31f5fdfeed0e",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "d6b902f9b9efc675205c9b2021f0e3e4292574f6ba7d1e525ebe9522afda6b1c",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "5597617bfbb4f341c646bbd34f46f59a3bc967b7209350fea5d017ae1e14be08",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "eea6d30afbad4a9b7b371292e2b7c861c3763915a944a8ff627e603bc2c98a80",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "25022a175c6fdd96adb4344ff891177ff39b7d94f88feab3a5a45a9ea4977ee1",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "24bf7b84074362c96bb3de3a8bd4ba9b599892e0399d95d1ad2d317df3145920",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "91abe5e7037b080acb2552512d796abae51c4b314abe86288d225d6577156e61",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "fadf6b9097669cf0f9af0a4df55b95471c2b8557c1f50d0f28b2415cdf6e6b4c",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "a020aed96283d668d8486ec9dbc555e4df864d9fa0604face7371d0fa91b3b43",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 4,
+          "layout": "legacy",
+          "html_sha256": "20b7a544ded81e2c7bbcea017052f487e33fd5de5495bc4a9a02ba3ef7c285ac",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 92,
+      "file_sha256": "9279eff6cd6a83f04a0595930dc254113e4458ac09ac2e364fe6879919b17768"
+    },
+    "32000L0043": {
+      "title": "Directive 2000/43/CE",
+      "languages": {
+        "bg": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "83dff443f258e3d3ec307de314254c08f66a8dcc4ee3517be5a9903938fbcbab",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "8f49b67f93af888f7865c1fb80a24835f254f56e306fb11deb08faddbfa146a0",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "33d560d9f2c5ed88e08a00abaa295b29e0d7d847a0639cfaff05cc072a643a22",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "8630f0f7be0d53e0bdd39c228891b78509fb2906ad8fd279122b53e8078a273a",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "5941f14ad96032a7ff5f1fbaaa5315ccb70bc631ffb7ca6376930ae8e00a166d",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "9ecc6e4b28b842385c467fec0882a62919a0af37e8b459453a974881078c67f8",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "746b012614b8b906aff138c927c079512e7a00c2990e134fcc8d0330d4827a74",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "f21a42877018fa32d44ef2dba5766c10fc9ebccf0ece3610584089db39f4ffc7",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "4c69ba524090e43e95deb48685ee9dbf211b9e5ee9aeec37ff38f689de7be436",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "79c27915d44b64eda854b02556b1ca6fae90e02068171aaf1e70d6acc0a6a4ed",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "97e7d83f663069f6d0a83a0777fe8d274dce6dc42cce7af69c3a399e47cfcd25",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "bec508e866f995ad326c71f5415b29a8a9a351614b05a8b75b1a45a108154789",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 15,
+          "layout": "legacy (rupture après l'article 15 : 15)",
+          "html_sha256": "050531ad65eb750eb8b330c4882480b28bb50ad088d0d5edf6ce20949a52ac1a",
+          "same_articles_as_fr": false
+        },
+        "lt": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "137e0e5000cdc21e7b96386a6885e96d6430db9e0f8b503edb441d5b0fc74d4a",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "65adbd9baefd89b9760823fe3c3f3655fa1b69a1f9e21a49cfb229606b8a71df",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "ebfb4f9895979d8c2de8bf63c7a7b263aa875d07cb3ccb11720b154bb34c2f93",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "9bf1e766b5b28f5790fb6a0d8d3de38a53006c9a81adb27840437cc7ab09bf1a",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "27d92498a7a74ca2f5c4b5db5382f6ec6dcd0c59c47a3526aeefa7a3e151e383",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "5a703861f29da5a3e1a8d4cbf1586ff47cad45914ee265ce57cff66c7186d17f",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "af46a0e53f0e0318467a59fe744ff75289cbf0e8cbf2fa6297e9ffb7b65d0238",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "c93c769e09e27a02d65adf41d03679e3867109260ac07ca565359d1de92866a3",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "819c9c1acccae5926c9c9464e40f412f7cd7f66256bc254c8bb6eff21ced37d5",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 19,
+          "layout": "legacy",
+          "html_sha256": "ad7f79f68bad2bd0a41d41414db5e0c3761c462a18e16eb3723f727c27f9ec98",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 433,
+      "file_sha256": "9f255d600db6fe99843b03a7139661d630d18885d85a70c67638a20571b03661"
+    },
+    "32000L0078": {
+      "title": "Directive 2000/78/CE",
+      "languages": {
+        "bg": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "ef1b79c4ef01b48c82214fc8ece6d9f0f6e690b8a9b07a14f1be4eb310595712",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "0bf7e42e81495f5c32c2ece576b28ebf6ce0397905e715007cefca8947edb70f",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "8b27510875fc47f25b30d899e98dfd04754d6c346b526628d77a78873c689b2e",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "caf0e2f203ace2b98f59817a0c533c5d3932297b00cc34a13bc205cd829288fe",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "0347ad225d8274ca351426ea25ac71d57f6cf893f42ad2946687a2eecbc7c46d",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "da9be09e516c85e14a0373ae60a8e9d697beac18e42a16a6f36d3f454d5000b9",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 15,
+          "layout": "legacy (rupture après l'article 15 : 15)",
+          "html_sha256": "b0bc825e9f6dfed5d60d1877c6c7104fad37616b321e9bbc34190c9ca07c0104",
+          "same_articles_as_fr": false
+        },
+        "et": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "ece85f129f965dd9eedc7465fe88d09ec21a99c3e141c39cefa949f16c122217",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "deeef3646320d202f259722432973f18c7605adffd5edbda5c0f4ff0fed079ae",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "cccd8bfafac481cba99d193c5aa776d6812103571dcd13d0573dbda08b5eb754",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "d6c5b2bac64e390b7e284e558831699076e8a93eeae92cb34afa5821db4b307a",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "b4984c99723eb6a48e82c307556433b9325ccf8aa2a65dbe0b4ac2ad15259dfc",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "ae2052ce78cde6a9b42221cb5437235acd5e49f65e41f44651329e5f0b847aa8",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "5860b5f1786c9f06f19b761fd273db153dfdbe0f6f988df98fd80368f33a6fdd",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "257310e430adb398a8fca9ac48d61063ec11064a5ac2143c4707239a0143b5b8",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "071b045a58459dba4b111e89ff79197ee5fbc9c3b7f2f752d18fa679bb8c50bd",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "ce53279981aab3f084104b98f566f9d35546c267af0e57740541fecd3105909e",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "98d451ee05a03f1cd784d7c9e87f676dbf59c8dcfbb3c62791b914bba62f482d",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "496efa6b3b0b3a471566a2dc5049842390c0d4dfae092971a12bb1f4c18c66aa",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "8b47832897ee11f92e5045cf0234f4ab15ccea82e8459d129daa49eaf6a75b71",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "132ad8c8523a9238b0d94e641fee45ad15dd5cfe5260f2e4e24e78122cac5acf",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "3eb978e43d1708ab44c80b26de16fe89f6ae05831efcd7ff5165c89b3ab3b6d2",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 21,
+          "layout": "legacy",
+          "html_sha256": "6778f607396e7fcd432eae0c51460a783f3528b565f1d091e76d2d340c0402c1",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 477,
+      "file_sha256": "2c243f80de41124b78eefce9f4aee714f09c6a90103bd63d2e76b64ae9b3ec0d"
+    },
+    "32001L0023": {
+      "title": "Directive 2001/23/CE",
+      "languages": {
+        "bg": {
+          "articles": 14,
+          "layout": "legacy (rupture après l'article 14 : 1)",
+          "html_sha256": "e531702b8cd1f61f153a4284c2793c5936315836b055e6436f90a60e4d9af3b0",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "cb5aedbeff2c755ec1cc9558f4403a6481599aef7ac7d58a04dc2c6df42ab2bb",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "d37a3d3b9df8b9e753d89708d373cd078b60e4cb4acbfb088b060ce6bfba67f4",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "3ec3fe3a878d74a6fa72befa340a2128650bcf868ff47359e7ed66f4414065cf",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "5b9137532a731f97e7ae0e7961851d4f2827ee23b83d90cdad848b4d2ec9eb97",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "1b5850fb704548f113b2778d2845a3e334ef47bdc952caf67c0ff2fef97b9a50",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "255f78c9c6bdffd4061380d7e67c82c5888c3637a467ab6d8a1068d0f0854783",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "9a95235920ad4992770db9be4b6224d394ea1ae78132bdb8f036630639e02c7b",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "d47ceab91c8b8a37779b895fd97d157ecb1f578df1f410b386ba7f1b620f2bf2",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "f227e20d22a85dc3d5e3dea57664bb4a38390a50ded31213612c5f34a1bb10a5",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 14,
+          "layout": "legacy (rupture après l'article 14 : 1)",
+          "html_sha256": "ace8c528d9b3d59753df589d11d18496528f6beae6fa62c630e535af913d7154",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "ddeb5fb0d0fc8210998bf0084c772827d6042009640d4c196fee1d211f6003fe",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "3859c9d0f21d3918198b6bdbe7367220fbbb756e3764e27361651ac181f0f2fb",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "ddf3952b3f474772e4a425c3a5466077b0f691cee7690d55e39873ed3caaf488",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "5636c92b6590c151d68a95c4425641e067f8c2300f3871469043d5c062fd4e29",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "c84d0945a971ddcab7bcb1ab49dcb559aa8b4628658d027660c6bebd85f949b1",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "ec4ddc98555cd5020378bb2cfcd49fd307fab274883917de2a8f427a91208154",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "7cfe92c2efcf2de3f46a9d4223a2f187c7ec0175ac2c192ee85c27f9a2637aba",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "83ad12f5ebd1e750a4a45c8648b483a15c8362934760ebca32ee1339ff19a84d",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 14,
+          "layout": "legacy (rupture après l'article 14 : 1)",
+          "html_sha256": "06c7fbd2997cf18ce6c9cedb7ec43752589bbf6f4cdf367544d7625191daea75",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "414acf3ccf29665198b6e2d74cdb6a06c70f0f8f1203956c78f9d099184c6744",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "75b305e4cc6b3a2f5ce0ace6bab5faade0fc007245c4b3e582866a05cf9d5eea",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "48244040f6c2edfeba675fc19acedabd48c9893c8002e2c5b2e1521089619199",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 322,
+      "file_sha256": "71493abaf7afd28c5a3c674721c229fee1a3e13e47fb639679533714ebfe457d"
+    },
+    "32002L0014": {
+      "title": "Directive 2002/14/CE",
+      "languages": {
+        "bg": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "aad946047bdce602aa0d2a7b49179bf9c8135083b25ad27df296ecc95aafd2d2",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "e522062019c86658b4416440ee89621a27e80a60bcf5e662e5f0af7251ce8a84",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "8c9765e584854966bd11efe45510c4ab5c21261aa2b99c9869711b562ddc406c",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "53ee36c8592cc96830805e9c330c439f166c4c314b7e9eaf836852b70750d524",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "bc928e857de407292a2943f508c9dfd3a0517393fccfdb584d554e1d41fe90ea",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "17f356df1c950afa0bf1218f4cf7e0524e613c6cde72bae40d339fec522c8ab3",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "3591f2f6ec1bc4061c49fbe6b0d0cab0d137cc05f67118f272d9b5c561eb3c25",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "7e3cb5d32d4e537ade17a72b96217840c3810637bd42693e8a8e8107dc14dfeb",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "5fdfdb22ab44e7efedafdef15f6cdfa5c3330f9eb2d2f04a33d7c08a351a319b",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "c747df1ef743a7112c0cd03505eb7840190cb3c1713f2f0288f8f1098da25e08",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "678656ea88cfe9bdc730d764edb572573e77c07b970da92881862138f8d7e239",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "54b2fb24dc127b60f3761900a8b09e19aac4d32f8594673cf2c0ce46f244c84b",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "cbcfd93eae7e9b9d69147b089bb4a46b55fb7cd3ed7f923278886b9bab12907f",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "ec575ccae26788cb2f5e6eba0f894f9d828feff30700b7e3813426d511fb4e52",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "0d3b9a169b4d0fa0f529141f2d524fc222fb0a9bbb983133c92467c98594f01b",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "95711313103ed9058cf0cc62563514d9d375fa272341adaa64187575552a036d",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "ae7b7b73478597ae1e5da44a2bcb69affabaa13cf5d056181051c3c82f06a242",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "84ebd4898fd2b8a926200a9fc064fc9c11097be92c297fd410fb1f0f67bd67bb",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "56ac8822fbb9e8f52e1aa562529fc5be25259f740f7dd423feaeec1408c0c42c",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 13,
+          "layout": "legacy (rupture après l'article 13 : 13)",
+          "html_sha256": "ae6c5737a7b14a466a48a08461e09d281842f8bd3e3276b1fa2c7699bd05eb97",
+          "same_articles_as_fr": false
+        },
+        "sk": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "64572717f418dfb37fa09f4ce4a77df4baef55c1644a67464b312ea1d3492354",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "f77a28d5f5b0e7774b69bae58571e9fe13433ac936da6e054c6b7af683821e24",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "2962c50704d715a639ffe7b26b15bfc1e87643dacfa6e88e9b5d149777a4c936",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 321,
+      "file_sha256": "cab27b11ca724ea5c0dfab420a6f417b01fbec5ff77120f247dfb2e725f1e9c0"
+    },
+    "32003L0088": {
+      "title": "Directive 2003/88/CE",
+      "languages": {
+        "bg": {
+          "articles": 29,
+          "layout": "legacy (rupture après l'article 29 : 7)",
+          "html_sha256": "a3529b22fd6f9f2a174dc803645c5ad4a7ed966f5ab374a7b96535c2bf09c87c",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "c9b6156e68045e3a98c3dc820f155744a6d88b19bebfa846ab6ad3361e7dd960",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "2ab348e9835b0f2d26e8bf70fed385635cb2eaec60f8a87d084105c4061efa65",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "fe927d5b5ec7ee08cc25202e691df73a4c38d7db3f6a39d5fb0e59e3e80c9ef5",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "dbe4de33d37c4377d9d7ac1224dcc6a8c83268861e6058066cd5e8ca933af389",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "0d23ad4953be900de8a614fea4022aa46086e0bdc2fdfd6d0fde0cd84429e4b6",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "58cc977ca76443b6b3352e240680fed1fa1da1167b19be3ec3f3db3a56caf20b",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "2674e085399fae60a52c26a8d57e672390b856ec77c78fa1449319e1f67627e1",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "d9d095e02222f90b9a4824f7157c5269bebee881b3eb17c657960c9a49dbfa33",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "a2f3928f9a3709d32338cba8aecc93c7ee8d1a53c3ff12677caf456956b4be69",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 29,
+          "layout": "legacy (rupture après l'article 29 : 7)",
+          "html_sha256": "ee54a91c9491988a036530ab80c3f11947aedd97c9c16beb12eab08fdd63ba64",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 29,
+          "layout": "legacy (rupture après l'article 29 : 7)",
+          "html_sha256": "bb28305bcbdb9341db37e1ad7424c93150a2fbcecfbf6d96330e2e7b905f20f1",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "bc6e25de2ef130cd6c9666d20046c0f566c6fa233b1716cf33c5daacece19a98",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "9462091705b4b2a34cf2532636d5d3b69b5a86a4f82de6553736793a5ba106a0",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "9be71acdb9a718753f2a39367b0b943bee4eccc489bc8b7630bc4f15f036f577",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "fb243a4b63a66df98642b5d4123c66822f85d0655c17bd554a8b4fb8f49a41c9",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "90253351c2ad80b5d0f8287a4112e4909554861064142407839bf13c11dd5be1",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "c4be01cbf63d01669f75257a1d4f482cf7e8333476e3655c25d50269c41806d6",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "2e152808e8ecf5a07f655c5e89a7c339fcdbcf14f177f0b1315b97fffaafacac",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 29,
+          "layout": "legacy (rupture après l'article 29 : 7)",
+          "html_sha256": "e60f659a8d84b0570d0d8c58f00876a2742f26984b40806fdd74e8ac7f303a45",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "6680515fea8591bc133e91c88821264a64239cdbe41aeb720b7a9e1010559eeb",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "2cbc1752ed7cecea2bd7100c9afaa41f5ff7ec26763b326ec6c34d07df02ecec",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 29,
+          "layout": "legacy",
+          "html_sha256": "4805b7160f59739c6475239728673e7bfa8129f0a21167d81b720688cca9ae6a",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 667,
+      "file_sha256": "a193ac85a461a38720660e71cc1da59f00d002f20160bae4801112bde096c6b5"
+    },
+    "32004R0883": {
+      "title": "Règlement (CE) n° 883/2004",
+      "languages": {
+        "bg": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "e6173d8711464958819bb40b5c0c25c9bcd422a64f886a3bf79579cad8791e9d",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "08585656c6afa9abc287714cbf51fce1b7facb43b0ba13821340681027efda36",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 91,
+          "layout": "eli",
+          "html_sha256": "b115ffe0320586b1d33aad0d8412c953ec95021d5c14a4b3e1ff0c0844fb9f14",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 91,
+          "layout": "eli",
+          "html_sha256": "b248c811dc70165feca98be747b470d7c5d7d6cfce456e66c0429f6597940b02",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "f88514fbb43252d9b8fbef16adad1081789cfb9b282f0c4eab36608218713311",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "691b9ac044f612cf654b5672e3f6daf9ffef9d6f35c5cee183f0f3d5320691fc",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "79d79bc5ea0fb2a24b181fa5e489d9fd630c3c2ba512361cc373d2bf4009296b",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "43bfccee1e084d6b9c68e971a159194284548f496eefeb8ba008026064feffba",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "3e46ea527e9191f9d5b58379f69eb7a3019d8d4e306494ff2fc7c66510dfd9e6",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "46f7c0fde600a386ee7f8e916efcb5b72c7ef3470100e15dae53754b4b20ba96",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "5d396f4629760b0384a04654f84219f5a31e69b1358bc0b7e56f0a87850fb334",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 91,
+          "layout": "legacy",
+          "html_sha256": "00ebefce25bdc8671291b379a8b9de11d6fb95e3e88b09c295c5d72ee66af75a",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 1092,
+      "file_sha256": "735e078a0cf40798125a9d221b35ead39179f088e6511cbf9440202da2b0f37f"
+    },
+    "32006L0054": {
+      "title": "Directive 2006/54/CE",
+      "languages": {
+        "bg": {
+          "articles": 36,
+          "layout": "legacy (rupture après l'article 36 : 1)",
+          "html_sha256": "283de5b2c769cfb63bdfdb139822e29727ccf8bedb02dae342b3b346adc23d2c",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "a7175a426c1e88cfecd997b215cd5d3fddac5512380a5552ba4786e636e2e463",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "e045affeb5b39573e9973062e776ef3cffc1199544993a3f3c2847ec83d6e157",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "b16c7b47e304b04935eb158ac3611ef85906a08542164212502f5f9c20a298b4",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "1350e285d531a030a0ff45ec497de1f4a983930dfab8cd726007af01dcd4ad87",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "88fb161fff44624e0fd287dd2a13ebde47a87bfe2ac5cba1b9acba007bc352fe",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "91e60573096563c9d55e67852e84428fa3800e0bc8a26c15f0d86110e06875fe",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "244f530bbe2e8648fba4b1b2cd0fca1bfe2a350d84ccf78f3672f2fd2ea6b318",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "b9ef40205465d612dc3da5c23344f8506783728b7c6331e0b820a08850746c2d",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "257e421b116a0af993fc0a47d84fe52766b670e9887aa44ca538db694dbf8bdd",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 36,
+          "layout": "legacy (rupture après l'article 36 : 1)",
+          "html_sha256": "e334bffaeb322968589d3d7e04d22b0d80d733f6adbd5d6365872edb235e0dc6",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "3739677649bfe1b5282339c9ae1342faf7962972f7ae0f7eac6dc1ec76f6e675",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "5b5ed643a066daa62b6085a7c5c0e78318356f2046687dccf8c9cee9cb4ff50d",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "5268c8b9876256cd250ef940cf5ca1ad010b5ce5faf3c4a75bbebb0399c42457",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "168393ca14292ad94e7897c8eed4660f16803997e3c378a97c4afbbd9505f71e",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "e600139d723f8f6e8b552ff932cb81aafa6cb1538d6bcb4bef8b61b53e72f183",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "22deeeacf8df24bea9ab64537df121cea785de6b1374b9cca8e93b0169a2b886",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "491aa03244c43e506aa6c68025435e6598e89f4c731c7d230369ea6afb13f792",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "44ea36f91dccf1c92cc813452a1bbf34f68b0f715d6e948be8940fa8758a9787",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 36,
+          "layout": "legacy (rupture après l'article 36 : 1)",
+          "html_sha256": "365610f2f199fa6922069aeaf23bde1ce798be3b1fab0fa01a312b3e2a468f7c",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "d3581bbcf47e16c90e57ecbb2f2b72607e6ed65f104d22f57a5626b7fc56c163",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "c4aa12e6bbb27bb14ddd421aecbf260f76bdbe33643c4aad2bdad980e18f253a",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 36,
+          "layout": "eli",
+          "html_sha256": "1ed54544f9fa9a424e6a7d1e1129f201c0e30f56a271e5bdc23bfbe797e1769c",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 828,
+      "file_sha256": "e74486df4b5ad1bd04d1bc5715a10f1e42c292165448d1d7165b8375771d3f78"
+    },
+    "32008L0094": {
+      "title": "Directive 2008/94/CE",
+      "languages": {
+        "bg": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "3fe81bff7880d3541cebeace7d15242ff2fe6147e2167909ed9c87272dd939ee",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "d658f608585952cdb7e6bb723a2d7216cb13f64a8467f43da5caf6ec57047eb0",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "fcb7e428eb5ca04b7a22254cc7944e2f0e09b55e438ba0c91e86d6a390def5e7",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "317d1ec6bfdb6294b103b1b00911d2b49c1ab45c397b0dcc9b368a5aa6c4fc9c",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "bc567b753e9b7ba247da559bf1fe742e2bee7137aa3020e74726be60f04f44dc",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "e614629bcd20d134ce26685da355e06be2a3d65dba25e4959a36ab42e202b7d2",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "5b42526f5cf03114072dfec2c9d9f25b93f9d03c45c61f012aaf8fbd50afa241",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "b09823f6d2ab9e48c4bcfa3bd19a68fa6a0fc373a66958ec5d653c4a1b125edf",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "a8927603bbb2633d3ea3b1e038165c004f0d6bfcb1a8f0247ed818240536f19f",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "11dbd03d819d0fc8ea68b02d5d85b7278551a106139389c235155c2eef8db5bf",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 18,
+          "layout": "legacy (rupture après l'article 18 : 1)",
+          "html_sha256": "d676d4d42a1515ac3a99d6eb29e92ad70443a68057f8f612b8eda6977ed46edd",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "1e98a6311c6a5e460c1823799c0593c59fb8d9e63417fc3974ab86355337e2de",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "34ac2801ad9e74e51a1f82fa25340bc457b3945d46a5143adc07ce911a9b1a6a",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "c2452014d2eca894886adad6ea9f83556b9f81e305ab39235fae7fded3a99d81",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "804d0d51d0d7763bf11bc8267f8416cd938f4fafd6ccc03367715cf741f26a5c",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "62928ecf054108e867df00c045ad037b7ba6e0c26572853df1e05865bb8cc96d",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "d1d3569d706a2710571693ebea4a90583fb57b0f6f6c1e0e16352a494c437b4d",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "34742f51e82e8d1de9c63e250c5ad966cf153b7fca6be18897edaca463037fb9",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "41a1fb64faa0efdfb2dbd2daad5cf84dcfda4dd17bf369cc578403e150799bf3",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "061b4f966b78e685a49a499e2a55a26aa37a3abd66cce19b630c0d3b1f1d417f",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "2b12f5b392e8fdbb38cf30c9d13cf1a1c1a9502d21d2c00c5f07204921c6e0f3",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "772225463aecff2c78c319b2257407589a0170aed84ee28f1acd26edd9425c86",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 18,
+          "layout": "eli",
+          "html_sha256": "228d4af3fb832a1335868396fd57d8ee290a6ee9e6ed5d9af8eff1fdf1851476",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 414,
+      "file_sha256": "0de1273910299d550c8e106c16515d016eb5864f873fb49104635a1c6fbce0b3"
+    },
+    "32008L0104": {
+      "title": "Directive 2008/104/CE",
+      "languages": {
+        "bg": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "1d2f17ee3c3070f6609f8430a03a99466a60aba45879fc4d944943a2b0fa9980",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "ef49aac8b2450cf2640914d12d7bcece7efe89dc7a9ab73af89e58a3a2c27ed6",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "9e563d67075cb2bf5a460bb3dbc5619de4c5e1b2842fd3fe13f3ffd6f0ea8585",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "62b80c5677bed8155b416e9c07be50886188b1d8961d430c6c82db5e9fdc468f",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "1a2afc6c3bc02453e3a1d0adcdb81855a6353f9d448205c60b0d2a984dec994e",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "096feca0c9f0ebc3e18b9382234691bea1619b6a7da1bce0bcc5ad1fcce62425",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "90ae1932aa1b55557059709a6e03141700d00410f15f215305d324eac58c3d45",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "5d35bb4e3fc71e043c96621e9fd5ea563bfc802124a6baee932136388fb1a8d5",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "a9005d0c5a9e1d70801ce13f9acf3d3e1293de787b9beca4489939a446207c37",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "f7835e63934c160c00e4f98a9a7af5e80e5907933a478d1febac4c476a904d28",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 14,
+          "layout": "legacy",
+          "html_sha256": "2061cbff14cfe9f0bb898ea096f3d9867ca0462ae56ac8872e2ede67da018652",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "b882494db4f186260a62b11bd49ff921b64a2adf311d213478caa8a331b8d676",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "4a091c6dc4817fe0f73d79bcdcbf1973daa877146dacc2eef39cde3c2ea7148c",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "aec584ae9647e602b59a014847f528a3f899149a3ebea1a753548852f276e470",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "0bfd57a6a3a8d827e1a8c13f14b09e0b0e1b59d12f1a72319417ee5cc051438c",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "71cfaa29ec7d44353d6307392569697b2dee84e5418febcd50b2bb9ecca8471d",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "ebba647d12bbafa6e9c79678b168510eed17136cd534df125e07b43e658e8cc2",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "ca80f22496970762d82ce70034380281773b103c05ba4e3077df67396e68be7a",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "374f43a9d9aef2d201543db26ac2bcc8161cc9b702436cd67fa85a0b190d4e37",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "ded3bc7902d0169a46a6546148e1c52f9996000631ec77c13600f4727307fe8d",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "afc887589fd990f64f21cb33f287bc1ceeccaca2aea1c4d0c198c784d4af9e59",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "d2c25a879f2c4dacdef25c681dc1c110116b56d1ba19db34d590e566dc2cca36",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 14,
+          "layout": "eli",
+          "html_sha256": "acb0f83e209f0b70d17718007b38489f7fa9783a2796157f3687dccead4d4aea",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 322,
+      "file_sha256": "62a9790b2fc562422235c9f1ce255b01fdbb40fd3290523a20c8e4097b2c2183"
+    },
+    "32009L0038": {
+      "title": "Directive 2009/38/CE",
+      "languages": {
+        "bg": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "8d54efca8fa5d510968a389196b7622a60c677bebf0dbed250c7f8afb0ad39b9",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "d269c6fe953a229be363ef873c092c57099191b825f45c876e3f8a9973f8ff0f",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "3e03135fca8891c5facc0a25669c64a2fca613d4adb2b9a3b52375003c556437",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "264cb0d334d18ac98cbc42de4cb6f6e9dff407682f70470ef84dcb579ae2d32c",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "026fbaa7b47630e5db5f96f893332a4890fc5e92b0101f92fc43945425330ea8",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "cc49bb6f7a0017479dd30698cb591625be62a437872b1fbbe6241c369f007cda",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "170296859f821d24cbc0a483c4a1c44dc0afa951bf77e9f2204b722f2c8a4579",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "397b9c5f33231361462ee0a58cad27039931657e134ad12406c807b29acd9935",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "6a2dce46c837380065d170956aafd957dd1b2550a00231b2e333655963ade6c7",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "cc14a7f99fb473d5efa1b96401a9e378c0b10437202390758b7d0b6501a6d615",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 19,
+          "layout": "legacy (rupture après l'article 19 : 3)",
+          "html_sha256": "92de10aa5621eb0b5442e01a7a5a08f5d981034660013077f08f4bd307d1076f",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "12ed1d7dc3a7b29a66bdefb31834065500b127eccb4e0658915a8255123c10c0",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "7faef0ce30f588d8bfb255d013330a18e8684f3d6a642d85d1e564b59862805c",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "a87573b19d6a90ca6e95ba19e1fa20ae4e6f25cd95f250cdd51898fc7fc85d6d",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "45883924398988804e66daef7e68ef18c9f7ad47e40f1a72c35b4c5ae54fa99c",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "a4cb280352f38c2a5428dff54c7796e2f0301f34fd479f98f7a4b9c56e700e27",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "5bfa57034f04ef322ad9216f3a8d74dce179130686567f82be8324c1c1e1d9ce",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "6fc0e66412d1b29717414f0939890c858694ab210f519203923734aa19f34224",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "c2dfc5fa2a9df6edce9b2a8036993f01455a75cf06d8b69f0d0382db5461fbc3",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "a59daae78ed97526948187b0f7a5e54ba192fe6f3baabde7d382f5cbeab50841",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "7c1091d016788da2bf57dcc8b47b892d248566753a0f307908afa9a062f017d6",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "a957803f9c65d97ff5bbdfa43d6dd7f391cd0d69492bd20a1082c186957f6ae3",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "ad8471faeb6dbe517a95e88e0b751b3d4b10512d50d7f52fdc91da057e110804",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 437,
+      "file_sha256": "e52d1cbc4021ca575108074fdaf492251fc762ae8b51b6ef8a0f98fd374844af"
+    },
+    "32014L0067": {
+      "title": "Directive 2014/67/UE",
+      "languages": {
+        "bg": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "368836ec3b5fa151d39078695aad52134c427bed68b1bcdd6781f89379e80fe1",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "ece22c4949e212639d9ca8323612a3550d4a4e6352eaee00bf20f28e5b22458f",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "0c525399222953993bb69e8399964e43a35fd6144fdc3f78673ecb0899d793c3",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "8def75b3668a407876266d495b8d5884ea49a8020fe02cdcff6700918109f2f6",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "b97795533b158cd6f43259c532388d6560563d7369d1272314d5f8ef1486ad0a",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "5a3f9aa8e414bb26db365442c8b7b7ca7e044a25abb46f1708651888c577ad16",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "934f41c2680b00d110ebf1c837863cd4e52f95f1dc48f0672eb3f75be79a51e2",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "314ddf2c7f73cbf5b9e09a17d6d1912c967ffb0ca2ca464ca3225ebc9144bebc",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "3ca751d10886a5e7d19b01640d0af57ba09d5eaf691272f0c9a029b38bbcb913",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "308c6b62a6047a2cd3d059676cf36884028a93de228faab1137a8162d437156d",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "9c0eb44075ae98885684d8fa0ee520573f47d288fe6adfae7762b43f292ac56a",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "d89d567985d3929c89d600e82a66a2c4fd3f144fd39b8667495316988ed4be86",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "3fc401ff4c6ababc4faa03be9331636f903735452e082e7dfc4c17f1e35086e3",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "233e90811b94bf3c5e85f2db081be26992615c0add870b728a3e9cbbac538aa6",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "b47edd79696faf67b63abda85690af236594a12a523dd1567fcda60e52c42dd5",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "62c12ad20455d9672c64110e8e0aed2be2930c0d4dfa2d6f114d6dc0f0fe6e5b",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "a9dea19b1aa3b06d6339d234f0234322d66742ce582fd5d4bd0aaab37dc32d0b",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "efbf7666a97085c1de53f440fabdd91583252045f9b7ca8de7d134fb59c96347",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "72379fe928611fc9aee7af79723d75147183abb7e3b749dbfa156c4f9a12d26f",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "59e5854a4c0f2d1b2cfcc802e393743bbdef55dc79509da747531d2697a0f182",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "68e196e9de3d7dbee6c99e3ff4b797fd6f61bc51b677eff7dd1f9486fefbf950",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "a3a4df0afe6668727de7d84c3ee30895a9037f3df5ac7546470d6fdecb4054b8",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "b9c2718eee36861fb16c56b4722c91a39ab99af45fe20fc8f3e97f85a59b6b14",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 598,
+      "file_sha256": "49e06c24b9563bffd2f91146b4f8e069e0744d9ae31942f9de6a1b329601b913"
+    },
+    "32018L0957": {
+      "title": "Directive (UE) 2018/957",
+      "languages": {
+        "bg": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "65de6b6318cd85eefd106e39c9dcff0bd9bd43a58112c345fdf383ce91e4e1d8",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "7f409e2f430709e3c9ce1bc2066cdeed293b9c857c2a322ec102021c00613b1f",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "628e9b66b88de011baf9e84f78aecde00a191470169edd79ccdd1cf0b843c508",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "b00faf6dcaa4457c3c4ef8e6a8549c302c3286746da8aa6c60868397143fcf14",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "1d1d4b0f5019fe3ae32521b7293bc59014508f7e9d30491baa78ab8c134684d2",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "675714e0178b66a10ede24149acd7d5deebffe18b21635d72439a0e54e3cf5d0",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "b73c55db4fa2e30fb15d980dca9701de5843cb52c8abfa72fa5d7cd1d6e74038",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "62930aa819667a2507362d22f5a20b58810ba5a11e82985d189293f36c79da69",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "b015b2ce5699bb12e9b76e1eeed712253bc307f73b81719e722ce50c83ebdeca",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "5986861294919b445f72e7fbcffc7d9fe1a8ba0b54c15f0de80afac71bb79087",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "4b5841995ab87180c0207aeab73eaebe0bea1ea6b514ef8be8d0296a2ce2ef20",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "c2d461604578caf70e725f2cf18da2810223ed398a9b34496630c58691522f98",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "1316a21651e9d587c418451916a2e544697cd8f458ae28bc9353cf0b7611a858",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "a2f0cfc14d8532c117a20a34ec4a3d75d706d7a67cff6754a06bd8dad9f90861",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "b41e6aa5023ea3a65b43d475a966b5acf6722f4840dcfb7e1d5eaa92fa4e90a8",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "0c5e1957f58778c87dc0bc2017ca174c10f5e4dfc9822619dc80569fae40ab37",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "73a28fb1f23b0b9cd698b90a333f133c4df86dad7c9ef6fd2620bbcf20513d55",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "9afd9a31be7d86d1ea8b56eba7ee8416b35b989a57ae2ddbbadb46a7c5de8d50",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "74060525ce77bc7d455140180dd600b3d088514ecd3452261fdad47c59b9753d",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "1278edca8a60b2bf2d5cf367a3e4b5cac7bf14bba1d76216bf12057d6b28dcf6",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "e184dc3abdc09009dd7d6a2f06284d207262e4f36c809a7098bd2e3939174aba",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "74dc0133c7400d0c9d5847fcea4243c69e084adedd09e6c49e5ea5b793637842",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "5a165220d01741255d5d9197ba369684199a9f6f84d2ba722b34d4d081ca1c8b",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 5,
+          "layout": "eli",
+          "html_sha256": "49f39f24081a8fa445a79bce8433efda4dc79610d6dcca8cd748e6f7d4185c8f",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 120,
+      "file_sha256": "ec0d9eb4c2341333d4d03513f7575573dd6ef48a2543dd43ad606d2c30cfff84"
+    },
+    "32019L1152": {
+      "title": "Directive (UE) 2019/1152",
+      "languages": {
+        "bg": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "46130e17512b3d87d78cbf292fd9629a376c5800c7c28c97b71a4eab96b4d8b8",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "bc8b41cb16e29265439bf4d2c1354b6c4c16d4bd7b5471ecce0b020167e7919c",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "51772fee439b217dc639bb238558842059e336d8abc86daee266b8a671272900",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "fe84dfc5eedd3366cbe98abaaaa668ad975eda4b2d1954633a9d2e100331fe02",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "e98822b643d5fa22042c9d68cfa2511e638bc2a055df5edce671ea4024c66f6c",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "0171763090878960e374c720487c9d38a7480cbc255eeddfdc9e7cf5bb4fb67c",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "df945b9ae38ed9854445807b2b555828c2ec32ebb218b304a315ee07e1e46def",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "e6db934127788e84aea15f75d0f49598611f6218790d3140179574140216ad12",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "a9ff04bb6b6d5fcfd3c373a34301abbe010d1c8507b21e490747937061cb6b0d",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "1ebdc72d4e0f66ab5a3cd36d15966c03dcf73d2d2269fced4150d1c74b354389",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "275b5baa2a57e8995a786a9fbe18aeabb0c59b28674999afc92d83e13b0dc1fb",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "62766bf94e2354059f85cb07dc116343ede5766891adee392aecc942ec474a8d",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "459102a10d3bf7d7a1a08fb12fb9aa39fe48392f495bd7ebaabaa44049138c55",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "0cdeb4c68d02d8eab54a62e83cae11edd1f6dad703905448294c99b88f494ded",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "28879f8fd0e3dd7d0d1ff2b11688fc5902223aa82c83427cba3108bb65a92a26",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "51aebdf8bf3e80ace242a64afe04352f62725c54f0c53086fc2e459e6c731e78",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "7839157d453a822990069166abb346f2e7d8a660d138362956cb2381ce9a6344",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "4556ab5a7e4d4a974c608c7a3060d3ef838083d426d35aaca87e9804f4ec20ca",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "f2ee8a13b57b5187499377fc64a5594d8a1e44e46faa8e23ae08954b5a2cef8d",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "f29aaeed671b868778c76d563e35f9cda5e219c6129b5bb55ace62f0c4b4a609",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "99d32805ad4271b727197ffd3ba405cba41ff768ea8beeaa317f1be20baab943",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "0d90755e47f070a4e49687d30e6b9891cf93515648953da4c23e716bff1da43d",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "83e5b28a0d47034a19167f2dd21ce34dc3e5a94e36ce3cfbb3d1e547377809b5",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 26,
+          "layout": "eli",
+          "html_sha256": "b3a474c331e07b3fb523904120dd8c0edac07820cda0f6e45982543a1f2fd250",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 624,
+      "file_sha256": "c673d1a3a68f29cd560bbb08d53b236fbac897ac9ae1bd7a591007aba2059160"
+    },
+    "32019L1158": {
+      "title": "Directive (UE) 2019/1158",
+      "languages": {
+        "bg": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "27f09ed64ecd4e6f66e003234222e117cc7246498b811ea87419b740930e0d77",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "aca57a2eb217814cddc67d6fda884186c5cfcf70419881e40a372bc13b64e3b0",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "27ea79fa23d1ba845f1e5f8c9bb57b1b9c668849a5f6a8ae73541e3e4f2feb48",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "1ff30ba0e90ede5210ae2050d4b3c1e42f6ad0feb99f83fffef9297c006b44b8",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "49929153024705152be0764b5f774e32418817bf75f29d5bf3d01a11a734ec73",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "48c9372083187870bb89e22781bba8527d756de495f5b902a91e9e15b34ff7c6",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "ace2cd024d4e27e13c889dd8be00706ace329a10c80671e0b996349d73ea32a9",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "7978c4389735f72494ba971feb8bb826e84b1820fe89bdd6904f1eaced25c70e",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "6af33ebf03bc074a3231a7ed9c9af614d3f142a0fcbaa1895443e0ea1140a947",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "447d5d14ac24426ab5d3f46685eb7d8f2fecf490a757fb91edb9d06744fa7fde",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "85bdc3c931bec0ecbef2432e204e0dbbb94354284654452a12e0776d625cf359",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "a6a544fc3eb1c4b7f77191588d41cdf3af63231ded381c54aaddc927547f8178",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "4be2a1df7007d9ce02fd3469fb57cfa22889ca06364af48ee6ea416db528adc1",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "ba3a2b7723f8d96ac94431e840dfe89d7d6dfb9cecf7a329ca89eb51bf21e16a",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "fed4fdde6b87a03a89c313a532775a0c2f31c5ebc2ad12acd13fd013a919f3ea",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "0ed4a9753f3a0305c998a3b5cc50acd136e7b4931a246dea179095818183f396",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "5b7d74e9552e4ef142b796460b1aaa317539bd9166c3108e11ec83d59b317618",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "4618cc2768ff229ceee42cb6bedc5757ead7934270225e1370e88449c608e3d4",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "c00af58ccaf1cfe6c73e01ef09768cac14220c19f95b887bc9822fac4b657dcd",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "86cd6491b4d3ac6035e3e2eac61757715e8eeb7045239e7cc03a37e2759f71fb",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "04afbdfe79eb74fe5bf9521ac5b207abd6ec4c1eba0e66a2402df2b11f5c9676",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "0ac6a19e81d1bc33bad4ae0ab195723c79958ec7cc17d73a69236149f93d07db",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "b827898693af42f6c6007847c163ed578571b776d382a2c71dbe13241c1201c3",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 22,
+          "layout": "eli",
+          "html_sha256": "1c695eafdce0a84cfc9aad438eec3da32e4096c2ceaff3652a26c87bb9968fa2",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 528,
+      "file_sha256": "aaa088e6f3944d462082d87f5cc58a8a40fcc216e8e1b49e7419e398902b5346"
+    },
+    "32022L2041": {
+      "title": "Directive (UE) 2022/2041",
+      "languages": {
+        "bg": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "521127617e05a85b5a42e34bc4216db2c2d60e097774fe6ef55e6a6feb006df0",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "2ce26edba82e493aad01f86085feda662a2175fe0d1c668f0abc721ba27f0cf4",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "891472ac34d2593fe874b9c87735850bb9379d11c34be33202e8ba1ad0c8b965",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "567b65ee5ba0234ecb85697d6dd822dbde73c83bcc222308b1bc93d34f053d5e",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "1ddc2f1cac1391ddf91dc415c002d213defcb759c9fc3da84ab7c41e8c5520d0",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "98753837a060e4d25f20612d90284d2cfe0ae0ef64ed18f3ef6142042dbe454f",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "717d7029d8e103109d172d027b6255acf202a50ff76814920562c1284911c49e",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "21e6456c5f7918d29501738194f68cd722e4b313c704ea2e01c1b3a13ef98f8f",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "9aff956683f8974027b38d8d04e7e2d9e4c8fb1a394bcb9d767cad68158d66e4",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "d3c8e9f320b939ee6143c01dfd4f4c5c2418f85ed2b927f5dbe853861066733a",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "2c375738e762cae9c37d23f09070547a5443618550a015ef62973e5cec67d0b0",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "99d9488a8dc2dc8ec7d5396cfeb60248bd26080f0a4e73a00842a80515f224f6",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "faadf8ed9c504c95f5ba002700122dee69a5021868de9e5ac85cf99bcaf942f9",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "338d496b4e38d1541e1607227a18e7db059576bf17d88ef74d8ec69f419c6ea2",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "70b1a70dfbc40ed93f0e822b8b1ed49bd0a5c668da2a55f9fa5b3039b7a12500",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "221e136aab8937a66573d55b7285875f35a599eca9fe4533f61b2742f1ce322b",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "b941dbe61102b43de51ccaa2144e7c1314d376b8a5efeae24dfb3b11a38149a0",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "04c48a184266a913a043d986216fb18b3312f42821acc080ced220ae1b7ac82d",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "2b24db55297a3f6a0769a6e56e8d1926702c8bd430a6e0f27eff4c44c7d3b3ba",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "2a34235ec77f8515a0f0d5781301e3d306be347366658dd5bbad162e3e6ed75f",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "27f22b676ccc8f4dd81001825b76a10cc5a3464d757355787b68d56ddeb69d90",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "f8d44819357988c0da542e05fcafb20ec5dbb2b9956b7c2cc217d4e64ed6b3a1",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "accc1a1043f988bd842238b18d975e28aeee76872003b7fe54e6ae9b891aad36",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 19,
+          "layout": "eli",
+          "html_sha256": "9a5e6c4990852c5df48ce89a3da753c67e63c1176883acdcf1448520b8c1782d",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 456,
+      "file_sha256": "1dff89ae0ec119c106bd04218ffa6aad6d8f029ae3f3678010ffd8e5e6718e8f"
+    },
+    "32023L0970": {
+      "title": "Directive (UE) 2023/970",
+      "languages": {
+        "bg": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "be7b738cf451842a69d4c1582334792b7e4d0af18fb1b3771bcdf1abad96102c",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "c885088ca27c36609bf889dd6d7ec190907c14870e2b55c37997d5112c4e6997",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "3acc9201d4c67e97c55ea7d1e0eb49b5e6de32307b440d6abb857d90621429bf",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "0e2aee8424904c9b1001c3375ecacb983346f7503cc0aa1077ef65ce41191dd0",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "01914d22e8dcdee55a09e8572ad0a16f2252f98a0b342c10fd828d253d794d1a",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "2039ed09dc2e30ecb990d1514c928e64ec7beb2a8c15283a8bee176422d5756f",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "e63ed8eb6627aabbc1dd0f31850abe1757b0ef2c9fe38c17ce89f9affad2fa93",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "d39b96590f75416e43db6581aa3ba87e453ccde932208345a05db7e1aeb0d6e7",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "522384b72d2196a1aeda863b4c4e361aa82fd2aa325c7870e0adc1f8c35c4a2f",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "ae116ffeed3a3a016a1a97c402d17d56fad342341de0f5b756f416fe94afe741",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "d53a6ce4258601d9ab144caf61e7eec6453cbc24862ca3b005bea394f1ceaee3",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "59df6044e9ee1bc0b35ea42efb449be6289aa558fb52f5188edfc80f9832da85",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "b87f13a9ceb35e579580a5740aac8260f8ea2a83f656abe963527ea638430979",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "60e6acd54f7dd0ac5cf4217f2724ed528d757a88e5a20cf99abb63cec399bf0c",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "fa4e92c6fd3c22e9963dbbd25d92d2aa14ef5bd9657e4d430b8fbfe3e050ab3f",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "877bd402677dbdfbb220791a735c5a204c2068e1aecf3d697a1062833134aa46",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "44f3ec0839e4d1e948ec2b71c3fdd16706ffa4aa59b374b8438629236c820447",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "1654d967aafd55bcf01821700695b93322f076274d865824b4b87d0b007cdc8e",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "ec53a9be413293e0d6d98d34ea2ab22173a47b60888c789c47271f3bf45558de",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "3ab4c51785d80c8a33544d7ceedbce826057f919e26e9d3e4bd3f0276d002918",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "564eaea1f2d2b7cd330f14351dd3511f66dcf838d9cf95284d315c4aeebaf215",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "25047223f4c7858af9670946e1e0c748414c4124ac460f4fb7c137c208f6dad3",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "e5695fb88257dcea55e6773ca3011892797f8be89e80a383f83259ca7ef01cdb",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 37,
+          "layout": "eli",
+          "html_sha256": "ead17ea83a8c4d7c90beaa5ab79f35e49e0343b97dbfa7f50de6438bbe348e55",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 888,
+      "file_sha256": "decedd2d7e5da3a7377b172997693e4dbd89f6a8eb5956ac9c731acd81ecdf51"
+    },
+    "32024L2831": {
+      "title": "Directive (UE) 2024/2831",
+      "languages": {
+        "bg": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "e13cffe091a1d252d40111439aa60f87c7243b386b74cd31a0f2d7a42f200491",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "db1599eb1cd68ef944b747ce8ddafcc0b4931cda39fd17ad670cf0102e19f318",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "33690b5b471d559604edc45c3a0fcc074b30710c6017dc0cba9c4212235ec4dc",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "cb8910a9a69e35b88a097fbe91ae6cbaa2ba4266c09818de022b4c7ea39fa758",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "a6a46d031da31998eb055e488645a0f926fa81471b052e79b5907bb54448df1d",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "5f8f31b0bb1a9d994b80b88c89e71caf93f84eccf45d34ba279b7d1ad9aad11e",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "ab2f7e4636145bd8f881e3fbf74d7216ecabf34ad3b0733968b9207019fe4777",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "2e01d2c455463440cabc1aadecff11add0d194e85761b79510cf65640b90d8ef",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "52e3d57ae4d87e60f70b9a7ac3683ff4758b33e2fe53cceb062f111df4ed7289",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "05efa6bef8b04a713fc00e4d93377507b78f1e956ac9a066d35f29ce3d362bf1",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "97040dc6515adc1f025d7894dc66e39d2b3e8c7fdda7420e62ba34b0da3d382f",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "e585efb6a4166799b13cb3cd7cc547a5baef0e7cdd54777b7b12d67afb13201b",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "666ed2207dcd8db9297a943a80fba317999838e4f44b671ded3ede2d93b08fca",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "cc000e94eecbadbcc75843b669b422239d4381e809abf8fb13d1409438651b45",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "d01c9efd2397803f9f504ad6b4107c900969fcba6832e355cdff153ac365bcb2",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "af53da5a053213dfab41986147798b7f042b45875a39c2322e2fe746eedd46a4",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "de7057a4d4c6fcd6c12b4401a1632617bb903f01579e847961519fae6a96a030",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "ddf5cc220bbaa9ee6087bacb981852ab4b82572d9f66281e12e7dee0f24df8cc",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "02fa2ad2191bcf37ab1d6e069683d14a449d17a9c463d539df08cc33e8fe7340",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "0351945d91e226e95a04efc4fcf96f8c8696efd261f29f2d1541cbdb71b31ca4",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "07a6a5b74c3ebbe81bc8e68111e2714946497a76d6f63c29d6db62f4b77e5d04",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "ac9169991f4d170ba11599e4458193ae336e16b7f6f5a16b204ecb7153547a93",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "131dc17a16023fa4f164b929c480dab8c156934b6cf6c3ed095ceb7905fc009e",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 32,
+          "layout": "eli",
+          "html_sha256": "2ac9699f480c4ecb2f9334ad44b1cd2fb61de3e210384655e6598efbb7dd8c41",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 768,
+      "file_sha256": "9ff259739795fac0bc4a11a15d9addcc25816ebd0160f1499dcc7a1ca0d8a899"
+    },
+    "32025L2450": {
+      "title": "Directive (UE) 2025/2450",
+      "languages": {
+        "bg": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "fa6b93c3dd8f6b3bd54dc061fbac3db10cf5a3ae4ef555950d5c9cf4e3d9ea84",
+          "same_articles_as_fr": true
+        },
+        "cs": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "853a59604241558509c1ab22a7b14e3c8f34161490f34663372204b156a9b92b",
+          "same_articles_as_fr": true
+        },
+        "da": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "99debd53ef910779ad107278ef97ebcc266021a2fca4d32a1fb7ca2f6082ae20",
+          "same_articles_as_fr": true
+        },
+        "de": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "4c549e3bd95cd44ab1030158927ca41229e684d7ab956e882bffc0fe7024cc84",
+          "same_articles_as_fr": true
+        },
+        "el": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "7d8cc696d846d775ccb0e5a470dfd1dff397c2a6820a8ad29587e0a966c60917",
+          "same_articles_as_fr": true
+        },
+        "en": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "9e66ffd9a2e0fcd9d87edf97754816defeff11d7acc3dcca0c606d0123dbd935",
+          "same_articles_as_fr": true
+        },
+        "es": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "39139c9bf7dea9fdaea0b36df96bcfd8d63f636e4040eacc88cc3a2d94f1ffc3",
+          "same_articles_as_fr": true
+        },
+        "et": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "010ff7ee767532cce774acd21f24fe95beaf37e9ed26385d5e90e438a2d09ffb",
+          "same_articles_as_fr": true
+        },
+        "fi": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "ffaee8919af8d3cbeaadc8a715248d024f2966e3673c127ae1246499059d03ed",
+          "same_articles_as_fr": true
+        },
+        "fr": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "c0de3379134c548e7ed93e4ddf8a5af7bc86e0d993da6d77dd8d7a95fd8c40a7",
+          "same_articles_as_fr": true
+        },
+        "ga": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "f7d075a7da9442fb769431ce81c679b8affbab4a03a070a8bba3b397b03d6cde",
+          "same_articles_as_fr": true
+        },
+        "hr": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "06d3bd94211529ff01bd84ef1621d0bb7de50a1411a20b5d1054d324f498867d",
+          "same_articles_as_fr": true
+        },
+        "hu": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "aaac489dc29e514116f1f4675e11cccbac2b61706e399d1c10c0615880fa0c70",
+          "same_articles_as_fr": true
+        },
+        "it": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "bd35da8f71c0775c16feda0b0fce2a78fd656cfbb42dfc90557f66db8970409f",
+          "same_articles_as_fr": true
+        },
+        "lt": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "aea527fefcd0624d9ff33ba542a56e79a56c4ad4f31acb207d641afdfb3d10df",
+          "same_articles_as_fr": true
+        },
+        "lv": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "19cb48013596d36642fbdbad4be16ab8edaf135695d81a4f3856513b781b2bf5",
+          "same_articles_as_fr": true
+        },
+        "mt": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "88e5aaedfcfc13fd0f092b38ed733e98d711945808edf7cae5f9edc65eae78b2",
+          "same_articles_as_fr": true
+        },
+        "nl": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "a83adc246715a70fdae5feca34ea430facce0f43ca543d92db1f5b5058d3f602",
+          "same_articles_as_fr": true
+        },
+        "pl": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "125ebd4b3428887da08172434be8d8e20a0db7b9dead6196a8345b9e853487b8",
+          "same_articles_as_fr": true
+        },
+        "pt": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "83d904ee6364a1534fbb19b458c8638eb1d1030a4ceb0ab7dd58564959a38eb2",
+          "same_articles_as_fr": true
+        },
+        "ro": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "0e30b1dce74fceeb7e16bb616602a4a9ae93ab22aff6d15bcba1fd0ccc4d48fe",
+          "same_articles_as_fr": true
+        },
+        "sk": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "6692c4298e68f15ee477ccf2ed93aff408ea88f811e4b20067d0cb195c0c2863",
+          "same_articles_as_fr": true
+        },
+        "sl": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "1a8dc4f5cacb1ab16492f4a426dff90b6503c17990bb8d70fc207f8d1f40f858",
+          "same_articles_as_fr": true
+        },
+        "sv": {
+          "articles": 4,
+          "layout": "eli",
+          "html_sha256": "7fb13552fc676f0dc5e88fdedf230054f9545d44cad2ff991578a39fafc6ff62",
+          "same_articles_as_fr": true
+        }
+      },
+      "records": 96,
+      "file_sha256": "fdda970358a7e461c86569a9632d8654873937e9f1f9b822e6fe352cec746d4c"
+    }
+  },
+  "definitions": {
+    "bg": {
+      "aligned": 89,
+      "rejected_articles": 1,
+      "file": "eurlex-bg-fr.csv",
+      "rows": 89,
+      "sha256": "bb71cf4602c186c3dd742cd55443aac369731ef6884040a30e2cb1587f68b7f9"
+    },
+    "cs": {
+      "aligned": 89,
+      "rejected_articles": 1,
+      "file": "eurlex-cs-fr.csv",
+      "rows": 89,
+      "sha256": "5d60868e3eb04355f8e5e8fa73d5e8c1f0d0ac7beefc0e153ef185a5b4f80b69"
+    },
+    "da": {
+      "aligned": 89,
+      "rejected_articles": 1,
+      "file": "eurlex-da-fr.csv",
+      "rows": 89,
+      "sha256": "c748483b780375ef44a9132a90cf5ea12aa6936f10afe93eea01f45ef0cf5379"
+    },
+    "de": {
+      "aligned": 80,
+      "rejected_articles": 2,
+      "file": "eurlex-de-fr.csv",
+      "rows": 80,
+      "sha256": "202b62e7673db3e9854b689d889248572a1716c889458cf396a5851515e7ef01"
+    },
+    "el": {
+      "aligned": 79,
+      "rejected_articles": 1,
+      "file": "eurlex-el-fr.csv",
+      "rows": 79,
+      "sha256": "91923dd4b57529834e12a1634460a3e4db6ef91a9a2e6d61a4573d87a62ed7e7"
+    },
+    "en": {
+      "aligned": 86,
+      "rejected_articles": 1,
+      "file": "eurlex-en-fr.csv",
+      "rows": 86,
+      "sha256": "be1913c1bd8011a6d23c6f875dcbd009130aa263a586400d47efb14c29d62c5e"
+    },
+    "es": {
+      "aligned": 80,
+      "rejected_articles": 2,
+      "file": "eurlex-es-fr.csv",
+      "rows": 80,
+      "sha256": "aa82d6a30001a933fdc215d9aa3f5969ddb30ba3d3f07083841dbebb6314e37e"
+    },
+    "et": {
+      "aligned": 51,
+      "rejected_articles": 1,
+      "file": "eurlex-et-fr.csv",
+      "rows": 51,
+      "sha256": "57f72bfbdf2a69d9d22b43b7a8f9eb61d36895a55559654067e8ac9b7e6e99b5"
+    },
+    "fi": {
+      "aligned": 47,
+      "rejected_articles": 1,
+      "file": "eurlex-fi-fr.csv",
+      "rows": 47,
+      "sha256": "077592057029bb77794b949730800078a866f5e857e0494e534db6334ed736a0"
+    },
+    "hr": {
+      "aligned": 89,
+      "rejected_articles": 1,
+      "file": "eurlex-hr-fr.csv",
+      "rows": 89,
+      "sha256": "39b9a5cf49674fa308ee3c69f7c208ee7529df5d14abf6c22fb004d0b87a0e43"
+    },
+    "hu": {
+      "aligned": 73,
+      "rejected_articles": 3,
+      "file": "eurlex-hu-fr.csv",
+      "rows": 73,
+      "sha256": "58b507bc8ecec3b8f4f78f6c877ce127d936b112d6f42684f1972748424b969a"
+    },
+    "it": {
+      "aligned": 76,
+      "rejected_articles": 2,
+      "file": "eurlex-it-fr.csv",
+      "rows": 76,
+      "sha256": "7754137ef16b764c44475213a262a33e0546b5a9f46c85b799ff928dc4719f81"
+    },
+    "lt": {
+      "aligned": 29,
+      "rejected_articles": 0,
+      "file": "eurlex-lt-fr.csv",
+      "rows": 29,
+      "sha256": "bfc244e3d5809c284befb66531a203f02d3a17090d0cc61b7da9e76ae8d9e159"
+    },
+    "lv": {
+      "aligned": 86,
+      "rejected_articles": 1,
+      "file": "eurlex-lv-fr.csv",
+      "rows": 86,
+      "sha256": "4bb0d6f25e486d34b4fde07e4ec0e515ff097dc2d4290cb8f37a5445a9bd11c1"
+    },
+    "mt": {
+      "aligned": 57,
+      "rejected_articles": 6,
+      "file": "eurlex-mt-fr.csv",
+      "rows": 57,
+      "sha256": "68c57e081ea16f416bccd65553aa430b52f4781dd37657ec4b45fe182af73333"
+    },
+    "nl": {
+      "aligned": 76,
+      "rejected_articles": 2,
+      "file": "eurlex-nl-fr.csv",
+      "rows": 76,
+      "sha256": "a8c99271dc644665d7a4a93614dd1c6fd820cb3ac2a7af4a3b9f8f0552aa31f6"
+    },
+    "pl": {
+      "aligned": 86,
+      "rejected_articles": 1,
+      "file": "eurlex-pl-fr.csv",
+      "rows": 86,
+      "sha256": "7e062cf499a7717ee0f02450ae87ee2259db26b03c40fe5bfd0413bc58d0b04a"
+    },
+    "pt": {
+      "aligned": 80,
+      "rejected_articles": 2,
+      "file": "eurlex-pt-fr.csv",
+      "rows": 80,
+      "sha256": "c3ae80dce9d7813a7ad4a4e05b1843e91579fd1f123964d876f2867e616898ac"
+    },
+    "ro": {
+      "aligned": 64,
+      "rejected_articles": 1,
+      "file": "eurlex-ro-fr.csv",
+      "rows": 64,
+      "sha256": "c7ed42c08f29ca2132948c313fa3c04203d1a1075701ee60ff839c39600d16f0"
+    },
+    "sk": {
+      "aligned": 86,
+      "rejected_articles": 1,
+      "file": "eurlex-sk-fr.csv",
+      "rows": 86,
+      "sha256": "1b4178f5b86177fb4ddb3d4cdaf6c22c5618ae41ef64f0a411c08fea66fef705"
+    },
+    "sl": {
+      "aligned": 82,
+      "rejected_articles": 1,
+      "file": "eurlex-sl-fr.csv",
+      "rows": 82,
+      "sha256": "7cd75f0a74f9b9ced5d2d4b6f791cdf7d3cbaeccc674b680e7678a37b3133a37"
+    },
+    "sv": {
+      "aligned": 80,
+      "rejected_articles": 2,
+      "file": "eurlex-sv-fr.csv",
+      "rows": 80,
+      "sha256": "6ec3c352b08c77d4d51294ffd6835d1bcf432a561f18165e1eef281c95cf2c33"
+    },
+    "ga": {
+      "aligned": 0,
+      "rejected_articles": 0
+    }
+  }
+}

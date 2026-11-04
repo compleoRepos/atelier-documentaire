@@ -401,7 +401,8 @@ def test_f50_block_status_reports_the_refusal_explicitly():
     from app.documents.block_status import _RENDER_FAILURES, VERSION
 
     assert _RENDER_FAILURES["SCAN_COVER_CUTS_SOURCE_GLYPHS"] == "render_source_glyphs_cut"
-    assert VERSION.startswith("block-status-6")
+    # version 6 ou ultérieure (7 : LOT 2.3 D-DET-02) : la correction F50/F53 reste incluse
+    assert VERSION.startswith("block-status-") and int(VERSION.rsplit("-", 1)[1]) >= 6
 
 
 # ---------------------------------------------------------------- F50c -----

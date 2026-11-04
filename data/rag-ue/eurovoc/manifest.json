@@ -1,0 +1,236 @@
+{
+  "source": "EuroVoc, Office des publications de l'Union européenne",
+  "version": "4.24",
+  "licence": "CC BY 4.0 (dcterms:license, eurovoc_metadata.ttl)",
+  "archive_sha256": "0be8b675940fc6b2fce9e46cc9e5b7fd231488bb9977304dbbb5ae7d8ff55f4e",
+  "microthesauri": {
+    "4426": "HR",
+    "4421": "PAYROLL",
+    "4416": "HR",
+    "4406": "HR",
+    "4411": "HR",
+    "2836": "HR",
+    "2416": "BANKING",
+    "2426": "FINANCE",
+    "2421": "FINANCE",
+    "2411": "FINANCE",
+    "2406": "FINANCE",
+    "2451": "FINANCE",
+    "4026": "FINANCE",
+    "2446": "TAX",
+    "2431": "INSURANCE",
+    "1211": "LEGAL",
+    "4016": "LEGAL",
+    "2811": "ADMINISTRATION"
+  },
+  "modifications": "sélection de microthésaurus ; paires langue->fr ; domaines du produit ; synonymes tronqués à 500 caractères",
+  "files": {
+    "eurovoc-bg-fr.csv": {
+      "rows": 892,
+      "bytes": 249216,
+      "sha256": "f9130d048bdcb4ee54f3d006acb463f48c5b2d0b4b40be5583426b2c08a1e58e",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-cs-fr.csv": {
+      "rows": 892,
+      "bytes": 254120,
+      "sha256": "712f4e1709156f0df54d6d1cba49dee51523992bf5e506f2919fc11085102956",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-da-fr.csv": {
+      "rows": 894,
+      "bytes": 239861,
+      "sha256": "df1f20577556132cc2327a7e016e403ad9114e04deece19f31d9a49c326c621c",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-de-fr.csv": {
+      "rows": 894,
+      "bytes": 248705,
+      "sha256": "11571d2c69ecc3cff261e9ad577b0069f1f24d85868255fedfe9823db13cdf02",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-el-fr.csv": {
+      "rows": 894,
+      "bytes": 282597,
+      "sha256": "976a3ca70f0272db5ee2afeb11035fd15461657d46c9e70d60a46515a343f1e8",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 1
+    },
+    "eurovoc-en-fr.csv": {
+      "rows": 894,
+      "bytes": 240432,
+      "sha256": "5d87b8282a91de7773220c9c4835793a68f7df7b5ddc87e35f5b8e9ada9f67ae",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-es-fr.csv": {
+      "rows": 894,
+      "bytes": 249657,
+      "sha256": "32301ce9ba7011857e52e7d05d972f77d3e0f010497d7d3a8fdc94c17d18581b",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-et-fr.csv": {
+      "rows": 891,
+      "bytes": 236234,
+      "sha256": "f6d32bfba9ebe11f959952369c3eace60a5b148e902cf849ef48398c2ba387d5",
+      "selected": 894,
+      "missing_label": 3,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-fi-fr.csv": {
+      "rows": 894,
+      "bytes": 239471,
+      "sha256": "d8752f3d89e6638d7fabcc79de7217e93bbcba23deb8be4aeb99a3ae6bc513cc",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-ga-fr.csv": {
+      "rows": 894,
+      "bytes": 226154,
+      "sha256": "aede93ffa5d01f912d17d7b2d4863ed62a39ca3e330195960716cc3ade5d6955",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-hr-fr.csv": {
+      "rows": 892,
+      "bytes": 239132,
+      "sha256": "07f11bfdcee262efc81e6979305cdbd69c8fea3221642f2b71c3d28e02beb79d",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-hu-fr.csv": {
+      "rows": 892,
+      "bytes": 251067,
+      "sha256": "1494ad5c5194735c014484af3bcee48cc21353ea936536c6a7327c911e6df073",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-it-fr.csv": {
+      "rows": 894,
+      "bytes": 256633,
+      "sha256": "811d5565a9fdf8f2a1ab2175d0ba9d726d5f582ec85b23056867acc479f5d37d",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-lt-fr.csv": {
+      "rows": 892,
+      "bytes": 250159,
+      "sha256": "a05a17209cb1ee57a9637813b73e45ce691aa368234be74dbd42244f297666f7",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-lv-fr.csv": {
+      "rows": 892,
+      "bytes": 247051,
+      "sha256": "cb9199fd64938a3a7178e9f67e89558680962f27150daff57ce795b2b277bdf0",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-mt-fr.csv": {
+      "rows": 892,
+      "bytes": 229674,
+      "sha256": "9a097f19f0cd515a947142216dabc0663fd4f84a157b5fa857b5b8ac53de7089",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-nl-fr.csv": {
+      "rows": 894,
+      "bytes": 243366,
+      "sha256": "304f5f1bb8ca44b24cab7a8f52702390f2c91ccd88580f2d0615bd28e2008fd4",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-pl-fr.csv": {
+      "rows": 892,
+      "bytes": 227986,
+      "sha256": "74543eb30f09775b7e59312b793a9eb2ae46fec9826c21178cab33d97d60a3f4",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-pt-fr.csv": {
+      "rows": 894,
+      "bytes": 247126,
+      "sha256": "b775645ceca210536c057fbbf318f9522b30fb656d6fc04a93e3422651453c7c",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-ro-fr.csv": {
+      "rows": 892,
+      "bytes": 242124,
+      "sha256": "51b6fc4e369bc8c1b8041f710f65163f4fc8a6df137c810a2c1972d714bf30a8",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-sk-fr.csv": {
+      "rows": 892,
+      "bytes": 243183,
+      "sha256": "4b15e79ea4a35a7cb7554e318c15d2665cd673d94131b74ecfebed68f1dddeb0",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-sl-fr.csv": {
+      "rows": 892,
+      "bytes": 226751,
+      "sha256": "947139ac887532f677afe2098fcf3561c06f32ec808be913323bf6ccb1884193",
+      "selected": 894,
+      "missing_label": 2,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    },
+    "eurovoc-sv-fr.csv": {
+      "rows": 894,
+      "bytes": 238534,
+      "sha256": "1cd11fd3535c357b33c264e8651727374bc93d5567dcae7efad84508bab36b3d",
+      "selected": 894,
+      "missing_label": 0,
+      "unsafe": 0,
+      "synonyms_dropped": 0
+    }
+  }
+}

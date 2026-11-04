@@ -27,7 +27,7 @@ import re
 from collections import Counter
 from typing import Any
 
-VERSION = "block-status-6"  # RUN29 F53 render_text_crosses_rule  # RUN29 F50 render_source_glyphs_cut  # RUN28 F35 reference_line + OFFICE_* render failures  # F26 RENDER_TARGET_NOT_VERIFIED, F28 rewritten identifiers
+VERSION = "block-status-7"  # LOT 2.3 D-DET-02 french_label_unverified  # RUN29 F53 render_text_crosses_rule  # RUN29 F50 render_source_glyphs_cut  # RUN28 F35 reference_line + OFFICE_* render failures  # F26 RENDER_TARGET_NOT_VERIFIED, F28 rewritten identifiers
 STATUSES = (
     "TRANSLATED",
     "PRESERVED_INTENTIONALLY",
@@ -174,14 +174,15 @@ def _classify(
         return "PRESERVED_INTENTIONALLY", "protected_visual_element"
     changed = target.strip() != source.strip() and not typo_eq(source, target)
     if _is_french(language):
-        return (
-            ("TRANSLATED", "french_source_rewritten")
-            if changed
-            else (
-                "PRESERVED_INTENTIONALLY",
-                "already_french",
-            )
-        )
+        if changed:
+            return "TRANSLATED", "french_source_rewritten"
+        # LOT 2.3 D-DET-02: a French label is checked before the block is called
+        # "already French"; a probable foreign block is kept for human review.
+        from app.documents.language_evidence import french_label_unverified
+
+        if requires(source) and french_label_unverified(source, [language, *languages]):
+            return "UNCERTAIN", "french_label_unverified"
+        return "PRESERVED_INTENTIONALLY", "already_french"
     if (
         block.get("identifier_only") or not requires(source) or _NUMERIC.fullmatch(source.strip())
     ) and not changed:

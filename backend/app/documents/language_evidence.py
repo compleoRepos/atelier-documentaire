@@ -49,6 +49,18 @@ _ISO = {
     "pol": "pl",
     "ron": "ro",
     "tur": "tr",
+    # LOT 2.3 : autres langues de l'UE détectées, quand wordfreq a un lexique
+    # (pas d'estonien, d'irlandais ni de maltais). Table utilisée seulement pour
+    # les langues du document : sans effet sur les documents existants.
+    "bul": "bg",
+    "ces": "cs",
+    "ell": "el",
+    "hrv": "sh",
+    "hun": "hu",
+    "lav": "lv",
+    "lit": "lt",
+    "slk": "sk",
+    "slv": "sl",
 }
 
 
@@ -255,6 +267,52 @@ def foreign_word_evidence(text: str, languages: list[Any] | None = None) -> bool
         if best >= COMMON_ZIPF and best >= _zipf(word, "fr") + FOREIGN_MARGIN:
             return True
     return False
+
+
+# --- LOT 2.3 D-DET-02: a block labelled French is checked, never trusted blindly ---
+#
+# The engines keep a French-labelled block verbatim and the job used to remove the
+# "untranslated" alert of every French-labelled block. A foreign block mislabelled
+# French was therefore neither translated nor signalled (silent loss, measured on
+# the real path: 13 English blocks out of 23 on one document). This check never
+# changes the language, the text or what is sent to a model: the callers only turn
+# the block into a reviewable signal. It is deliberately conservative so that real
+# French text (including English loanwords) raises no new alert.
+
+FRENCH_LABEL_CHECK_VERSION = "french-label-check-1"
+
+
+def _non_latin_letters(text: str) -> int:
+    return sum(
+        1
+        for char in text
+        if char.isalpha() and not ("a" <= char.lower() <= "z" or "\u00c0" <= char <= "\u024f")
+    )
+
+
+def french_label_unverified(text: str, languages: list[Any] | None = None) -> bool:
+    """True when a block labelled French is probably not French.
+
+    * most letters are not Latin (Arabic, Greek, Cyrillic...): a French label is
+      impossible, with or without the offline lexicon;
+    * otherwise, with the offline lexicon only: the French coverage of the Latin
+      words is below ``MIN_COVERAGE`` **and** at least one word is clearly more
+      common in a document language than in French (:func:`foreign_word_evidence`).
+
+    Without the lexicon the lexical rule is not evaluated (False, as before).
+    """
+    value = text or ""
+    letters = sum(char.isalpha() for char in value)
+    if letters < 2:
+        return False
+    if _non_latin_letters(value) >= 0.5 * letters:
+        return True
+    if not available():
+        return False
+    words = _latin_words(value)
+    if not words or coverage(words, "fr") >= MIN_COVERAGE:
+        return False
+    return foreign_word_evidence(value, languages)
 
 
 # --- RUN28 F35: reference lines (addresses, legal identifiers, names) -------

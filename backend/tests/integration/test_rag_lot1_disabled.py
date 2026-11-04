@@ -17,10 +17,42 @@ import textwrap
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+# Règle v5 : irlandais et maltais courts (LOT 2.3). Un fichier change et un fichier est
+# ajouté (31 + 5) :
+# - classification.py : preuve par marqueurs distinctifs (au moins deux marqueurs et 5 %
+#   des mots, ou un seul dans un fragment de 12 mots au plus) ; gardes de la voie
+#   statistique (un seul mot, ou mots tous courants d'une langue historique selon wordfreq) ;
+# - eu_lang_markers.py (ajouté) : marqueurs générés depuis les textes EUR-Lex de mise au
+#   point (tools/rag_ue/lang_markers_build.py), mots attestés dans wordfreq exclus.
+# Mesuré : corpus bancaire 646/646 documents à texte avec langue et classement identiques ;
+# paragraphes officiels en langues historiques (DEV, TEST, TEST2 : 2229) : langue
+# principale et liste de langues identiques au détecteur d'origine (les écarts de la v4
+# disparaissent).
+RULER_REFERENCE = "d141744e65948764"
+# Règle v4 : 24 langues de l'UE (LOT 2.3). Deux fichiers changent et un fichier est ajouté
+# (30 + 5) :
+# - classification.py : détection étendue aux 18 autres langues de l'UE (langdetect >= 0,90
+#   confirmé en minuscules, irlandais/maltais par densité d'indices) et lexiques de type de
+#   document de ces langues, actifs seulement si la langue est détectée ;
+# - language_evidence.py : lexique hors ligne des langues ajoutées ;
+# - eu_type_lexicons.py (ajouté) : lexiques générés depuis EuroVoc 4.24 (CC BY 4.0).
+# Mesuré : corpus bancaire 646/646 documents à texte avec langue et classement identiques ;
+# paragraphes officiels en langues historiques : 2/743 (DEV, erreur -> autre erreur) et
+# 1/743 (TEST, « inconnu » -> erreur sur une ligne anglaise de 4 mots) changent.
+RULER_REFERENCE_V4 = "13fb843ac56930b4"
+# Règle v3 : corrections LOT 2.3 Phase B. Quatre fichiers de la fermeture changent, aucun
+# fichier ajouté ni retiré (29 + 5) :
+# - block_status.py et language_evidence.py (D-DET-02) : un bloc étiqueté français sans
+#   preuve lexicale est « incertain » au lieu de « déjà français » ; les comptes de statuts de
+#   blocs et de signalements « non traduit » mesurés sous v2 ne sont PAS comparables ;
+# - builder.py (F-L2-03) : terme de glossaire collé à une ponctuation reconnu ; les mesures
+#   de conformité au glossaire sous v2 ne sont PAS comparables ;
+# - service.py (D-PERF-TOK) : cache du tokenizer par processus, sorties inchangées (neutre).
+RULER_REFERENCE_V3 = "6c50972530ecc214"
 # Règle v2 : bascule OCR Surya. Seuls pipeline.py (sélection du moteur, une lecture par
 # page, lecteur de double lecture) et line_verification.py (option recovery, défaut
 # historique) changent ; aucun fichier ajouté ni retiré de la fermeture (29 + 5).
-RULER_REFERENCE = "d5c31e6d701c1c9d"
+RULER_REFERENCE_V2 = "d5c31e6d701c1c9d"
 # Règle v1 (Phase 0, d8bb59a) : les scores RUN26/27/29 ont été mesurés sous cette règle ;
 # ils ne sont PAS comparables à des scores Surya sans nouvelle base de référence.
 RULER_REFERENCE_HISTORICAL = "b0b0261eaabecda8"
@@ -142,8 +174,16 @@ def test_ruler_fingerprint_is_unchanged_and_excludes_rag():
     finally:
         sys.path.pop(0)
     result = ruler_fingerprint.fingerprint()
-    assert RULER_REFERENCE != RULER_REFERENCE_HISTORICAL  # changement de règle assumé
+    # changements de règle assumés et documentés ci-dessus
+    references = {
+        RULER_REFERENCE,
+        RULER_REFERENCE_V4,
+        RULER_REFERENCE_V3,
+        RULER_REFERENCE_V2,
+        RULER_REFERENCE_HISTORICAL,
+    }
+    assert len(references) == 5
     assert result["ruler_sha256"][:16] == RULER_REFERENCE
-    assert (result["product_files"], result["tool_files"]) == (29, 5)
+    assert (result["product_files"], result["tool_files"]) == (31, 5)
     paths = [entry["path"] for entry in result["files"]]
     assert not any("/rag" in path or "rag_bridge" in path for path in paths)

@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     private_ai_model: str | None = None
     private_ai_api_key: str | None = None
     private_ai_model_version: str | None = None
+    # LOT 2.3 D-ENG-01 : délai d'un appel au moteur, auparavant fixé à 60 s dans le code et
+    # non réglable. Défaut inchangé (60 s) ; doit rester inférieur au délai souple de la tâche.
+    private_ai_timeout_seconds: float = Field(default=60.0, gt=0, le=3600)
     tokenizer_path: str | None = None
     max_context: int = Field(default=32768, ge=1, le=32768)
     target_input: int = Field(default=22000, ge=1)
@@ -172,6 +175,8 @@ class Settings(BaseSettings):
             raise ValueError("Périmètre Interim propriétaire : fichier d'autorisation serveur requis")
         if self.job_hard_timeout_seconds <= self.job_soft_timeout_seconds:
             raise ValueError("Le timeout dur doit dépasser le timeout souple")
+        if self.private_ai_timeout_seconds >= self.job_soft_timeout_seconds:
+            raise ValueError("Le délai moteur doit rester inférieur au timeout souple de la tâche")
         if self.ocr_backend == "surya" and self.surya_ocr_url:
             self._surya_contract()
         if self.environment.lower() in {"prod", "production"}:

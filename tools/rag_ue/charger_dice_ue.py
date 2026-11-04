@@ -6,12 +6,15 @@ sans le modifier :
 1. le contrôle d'intégrité de chaque fichier (SHA-256 des manifestes ``data/rag-ue/*/manifest.json``) ;
 2. l'import en brouillon : EuroVoc (23 paires vers le français), définitions EUR-Lex du droit du
    travail (22 paires), paire arabe-français alignée sur EuroVoc (la liste de revue n'est jamais
-   importée) ;
+   importée), et les textes du droit du travail de l'UE article par article (25 actes, toutes
+   langues disponibles ; référentiel ``regulatory``, empreinte de chaque fichier vérifiée) ;
 3. le circuit à quatre yeux : soumission par l'auteur, validation par une **autre** personne,
    publication, puis activation.
 
 Il est idempotent : un référentiel déjà présent n'est pas réimporté, une version déjà publiée
 n'est pas retouchée. Il n'affiche que des comptes et des codes, jamais de contenu terminologique.
+Les textes juridiques sont consultables (lecture seule) par ``common_library_cli legal-search`` ;
+ils ne sont jamais injectés dans la traduction. ``--sans-textes-juridiques`` les exclut.
 Chaque étape est une transaction : en cas d'erreur, l'étape en cours n'écrit rien et le script
 s'arrête (code de retour 1).
 
@@ -33,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT / "backend") not in sys.path:
     sys.path.insert(0, str(ROOT / "backend"))
 
-from app.rag.common_library_cli import run  # noqa: E402
+from app.rag.common_library_cli import LEGAL_CHECKSUMS, LEGAL_NAME, run  # noqa: E402
 
 WIKIDATA_NAME = "Wikidata EuroVoc ar-fr"
 
@@ -80,12 +83,24 @@ def plan(data_dir: Path) -> dict:
     arabic_meta = wikidata["files"]["wikidata-ar-fr.csv"]
     arabic = wikidata_dir / "wikidata-ar-fr.csv"
     _check(arabic, arabic_meta["sha256"])
+    legal = json.loads((eurlex_dir / LEGAL_CHECKSUMS).read_text(encoding="utf-8"))
+    for name, meta in sorted(legal["files"].items()):
+        _check(eurlex_dir / "eurlex" / name, meta["sha256"])
     return {
         "eurovoc_dir": eurovoc_dir,
         "eurovoc_names": eurovoc_names,
         "definitions": definitions,
         "arabic": (WIKIDATA_NAME, "ar,fr", arabic),
+        "legal": (LEGAL_NAME, eurlex_dir),
     }
+
+
+def expected_names(todo: dict, *, legal: bool = True) -> list[str]:
+    names = [*todo["eurovoc_names"], *(name for name, _, _ in todo["definitions"])]
+    names.append(todo["arabic"][0])
+    if legal:
+        names.append(todo["legal"][0])
+    return names
 
 
 def _call(argv: list[str], *, settings=None) -> dict:
@@ -103,6 +118,7 @@ def _status(settings=None) -> dict[str, dict]:
 def summary(expected: list[str], settings=None) -> dict:
     current = _status(settings)
     published = active = entries = 0
+    legal = {"legal_texts": 0, "legal_passages": 0, "legal_acts": 0, "legal_languages": 0}
     missing = []
     for name in expected:
         item = current.get(name)
@@ -113,6 +129,8 @@ def summary(expected: list[str], settings=None) -> dict:
         if latest and latest["status"] == "published":
             published += 1
             entries += int(latest["entries"] or 0)
+            for key in legal:
+                legal[key] += int(latest.get(key) or 0)
         active += int(bool(item["active"]))
     return {
         "expected": len(expected),
@@ -120,17 +138,16 @@ def summary(expected: list[str], settings=None) -> dict:
         "published": published,
         "active": active,
         "published_entries": entries,
+        "published_legal": legal,
         "missing": missing,
     }
 
 
-def load(data_dir: Path, author: str, validator: str, *, settings=None) -> dict:
+def load(data_dir: Path, author: str, validator: str, *, settings=None, legal: bool = True) -> dict:
     if author.strip().lower() == validator.strip().lower():
         raise LoadError("FOUR_EYES_REQUIRED", detail="--author et --validator doivent différer")
     todo = plan(data_dir)
-    expected = list(todo["eurovoc_names"])
-    expected += [name for name, _, _ in todo["definitions"]]
-    expected.append(todo["arabic"][0])
+    expected = expected_names(todo, legal=legal)
 
     imported = 0
     current = _status(settings)
@@ -150,6 +167,13 @@ def load(data_dir: Path, author: str, validator: str, *, settings=None) -> dict:
             continue
         _call(
             ["import", "--name", name, "--languages", languages, "--actor", author, str(path)],
+            settings=settings,
+        )
+        imported += 1
+    legal_name, legal_dir = todo["legal"]
+    if legal and legal_name not in current:
+        _call(
+            ["import-legal", "--dir", str(legal_dir), "--name", legal_name, "--actor", author],
             settings=settings,
         )
         imported += 1
@@ -187,17 +211,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--author", help="utilisateur actif qui importe, soumet et publie")
     parser.add_argument("--validator", help="autre utilisateur actif qui valide (quatre yeux)")
     parser.add_argument("--status", action="store_true", help="afficher l'état sans rien écrire")
+    parser.add_argument(
+        "--sans-textes-juridiques",
+        action="store_true",
+        help="ne pas charger les textes EUR-Lex article par article (référentiel regulatory)",
+    )
     args = parser.parse_args(argv)
+    legal = not args.sans_textes_juridiques
     try:
         if args.status:
-            todo = plan(args.data_dir)
-            expected = [*todo["eurovoc_names"], *(n for n, _, _ in todo["definitions"]),
-                        todo["arabic"][0]]  # fmt: skip
-            result = {"ok": True, **summary(expected)}
+            result = {"ok": True, **summary(expected_names(plan(args.data_dir), legal=legal))}
         else:
             if not args.author or not args.validator:
                 parser.error("--author et --validator sont requis (sauf avec --status)")
-            result = load(args.data_dir, args.author, args.validator)
+            result = load(args.data_dir, args.author, args.validator, legal=legal)
     except LoadError as exc:
         print(json.dumps(exc.payload, ensure_ascii=False, indent=2, default=str))
         return 1

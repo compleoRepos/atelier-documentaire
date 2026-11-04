@@ -1,0 +1,134 @@
+{
+  "act_language_pairs": 571,
+  "acts": 25,
+  "articles_language": 11208,
+  "description": "Empreintes des textes EUR-Lex article par article (un fichier par acte)",
+  "files": {
+    "31989L0391.jsonl.gz": {
+      "languages": 23,
+      "rows": 437,
+      "sha256": "3c54be70a92a56b1e2c3c2b09dd403cd2da5d901436210e26c4c15b9d5807666"
+    },
+    "31992L0085.jsonl.gz": {
+      "languages": 23,
+      "rows": 345,
+      "sha256": "ce0891d9bd004ee79a5019fd26b036505f1d16b6d240187ed874ea2ea741d9f4"
+    },
+    "31994L0033.jsonl.gz": {
+      "languages": 23,
+      "rows": 414,
+      "sha256": "33c1c3c309c9de83bbf04e5ef1f445fac8b95f32ddc149062181ebfa4ee3aaca"
+    },
+    "31996L0071.jsonl.gz": {
+      "languages": 23,
+      "rows": 207,
+      "sha256": "62e6d4b6b63a70a7a82384a0aabb61ea87d7d52b6cb92f50cb0eee39d834a46f"
+    },
+    "31997L0081.jsonl.gz": {
+      "languages": 23,
+      "rows": 92,
+      "sha256": "5c44c933ea3518563440b64b83c70f5b0df9ef98185e6b32512cb14b4b7c630e"
+    },
+    "31998L0059.jsonl.gz": {
+      "languages": 23,
+      "rows": 230,
+      "sha256": "1e2a1c66fe0e0089a5244f0259658461699d8be2b459da46079caa4c9e0fb4b2"
+    },
+    "31999L0070.jsonl.gz": {
+      "languages": 23,
+      "rows": 92,
+      "sha256": "9279eff6cd6a83f04a0595930dc254113e4458ac09ac2e364fe6879919b17768"
+    },
+    "32000L0043.jsonl.gz": {
+      "languages": 23,
+      "rows": 433,
+      "sha256": "9f255d600db6fe99843b03a7139661d630d18885d85a70c67638a20571b03661"
+    },
+    "32000L0078.jsonl.gz": {
+      "languages": 23,
+      "rows": 477,
+      "sha256": "2c243f80de41124b78eefce9f4aee714f09c6a90103bd63d2e76b64ae9b3ec0d"
+    },
+    "32001L0023.jsonl.gz": {
+      "languages": 23,
+      "rows": 322,
+      "sha256": "71493abaf7afd28c5a3c674721c229fee1a3e13e47fb639679533714ebfe457d"
+    },
+    "32002L0014.jsonl.gz": {
+      "languages": 23,
+      "rows": 321,
+      "sha256": "cab27b11ca724ea5c0dfab420a6f417b01fbec5ff77120f247dfb2e725f1e9c0"
+    },
+    "32003L0088.jsonl.gz": {
+      "languages": 23,
+      "rows": 667,
+      "sha256": "a193ac85a461a38720660e71cc1da59f00d002f20160bae4801112bde096c6b5"
+    },
+    "32004R0883.jsonl.gz": {
+      "languages": 12,
+      "rows": 1092,
+      "sha256": "735e078a0cf40798125a9d221b35ead39179f088e6511cbf9440202da2b0f37f"
+    },
+    "32006L0054.jsonl.gz": {
+      "languages": 23,
+      "rows": 828,
+      "sha256": "e74486df4b5ad1bd04d1bc5715a10f1e42c292165448d1d7165b8375771d3f78"
+    },
+    "32008L0094.jsonl.gz": {
+      "languages": 23,
+      "rows": 414,
+      "sha256": "0de1273910299d550c8e106c16515d016eb5864f873fb49104635a1c6fbce0b3"
+    },
+    "32008L0104.jsonl.gz": {
+      "languages": 23,
+      "rows": 322,
+      "sha256": "62a9790b2fc562422235c9f1ce255b01fdbb40fd3290523a20c8e4097b2c2183"
+    },
+    "32009L0038.jsonl.gz": {
+      "languages": 23,
+      "rows": 437,
+      "sha256": "e52d1cbc4021ca575108074fdaf492251fc762ae8b51b6ef8a0f98fd374844af"
+    },
+    "32014L0067.jsonl.gz": {
+      "languages": 23,
+      "rows": 598,
+      "sha256": "49e06c24b9563bffd2f91146b4f8e069e0744d9ae31942f9de6a1b329601b913"
+    },
+    "32018L0957.jsonl.gz": {
+      "languages": 24,
+      "rows": 120,
+      "sha256": "ec0d9eb4c2341333d4d03513f7575573dd6ef48a2543dd43ad606d2c30cfff84"
+    },
+    "32019L1152.jsonl.gz": {
+      "languages": 24,
+      "rows": 624,
+      "sha256": "c673d1a3a68f29cd560bbb08d53b236fbac897ac9ae1bd7a591007aba2059160"
+    },
+    "32019L1158.jsonl.gz": {
+      "languages": 24,
+      "rows": 528,
+      "sha256": "aaa088e6f3944d462082d87f5cc58a8a40fcc216e8e1b49e7419e398902b5346"
+    },
+    "32022L2041.jsonl.gz": {
+      "languages": 24,
+      "rows": 456,
+      "sha256": "1dff89ae0ec119c106bd04218ffa6aad6d8f029ae3f3678010ffd8e5e6718e8f"
+    },
+    "32023L0970.jsonl.gz": {
+      "languages": 24,
+      "rows": 888,
+      "sha256": "decedd2d7e5da3a7377b172997693e4dbd89f6a8eb5956ac9c731acd81ecdf51"
+    },
+    "32024L2831.jsonl.gz": {
+      "languages": 24,
+      "rows": 768,
+      "sha256": "9ff259739795fac0bc4a11a15d9addcc25816ebd0160f1499dcc7a1ca0d8a899"
+    },
+    "32025L2450.jsonl.gz": {
+      "languages": 24,
+      "rows": 96,
+      "sha256": "fdda970358a7e461c86569a9632d8654873937e9f1f9b822e6fe352cec746d4c"
+    }
+  },
+  "format": 1
+}

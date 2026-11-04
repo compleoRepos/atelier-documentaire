@@ -91,7 +91,7 @@
 - **Longueur des articles.** Rapport de longueur au français : médiane 0,918, 90 % entre 0,747 et 1,07, 20 articles sur 10 129 hors de [0,6 ; 1,6], aucun texte vide.
 - **Définitions.** Rapport de longueur : médiane 0,907, aucun terme cible tronqué. Importeur : 1 474 lignes acceptées, 180 doublons (même terme défini par plusieurs actes), 0 erreur.
 - **Arabe.** Importeur : 0 erreur sur les 290 lignes.
-- **Collecte.** 624 couples demandés, 571 obtenus avec langue vérifiée. Les 53 absents sont : la Charte des droits fondamentaux (identifiant refusé par la source, 24 couples) ; l’irlandais pour les 17 actes antérieurs à 2014, qui n’existent pas dans cette langue ; et 12 langues du règlement 883/2004, absentes de la source.
+- **Collecte.** 624 couples demandés, 571 obtenus avec langue vérifiée. Les 53 absents sont : la Charte des droits fondamentaux (identifiant refusé par la source, 24 couples) ; l’irlandais pour les 17 directives de 1989 à 2014, absentes de la source dans cette langue ; et 12 langues du règlement 883/2004, absentes de la source.
 - **Exactitude.** Évaluation automatique par deux modèles : voir §10.
 
 Ces contrôles sont automatiques. **Aucune ligne n’a été relue par un humain** : c’est l’objet de la validation à quatre yeux.

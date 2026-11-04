@@ -1,17 +1,17 @@
 # Données RAG UE : terminologie et droit du travail de l’Union européenne
 
-Ce répertoire contient la base de contenu du RAG constituée à partir de sources officielles de l’Union européenne, complétée d’une paire arabe → français. Toutes les lignes sont importées à l’état de **brouillon** : rien n’est utilisé par une traduction tant qu’une version n’a pas été soumise, validée par une autre personne, publiée puis activée (voir `docs/rag/RAG-UE.md`). Le mode RAG par défaut du produit reste `DISABLED`.
+Ce répertoire contient la base de contenu du RAG constituée à partir de sources officielles de l’Union européenne, complétée d’une paire arabe → français. Toutes les lignes et tous les textes sont importés à l’état de **brouillon** : rien n’est utilisé ni consultable tant qu’une version n’a pas été soumise, validée par une autre personne, publiée puis activée (voir `docs/rag/RAG-UE.md`). Le mode RAG par défaut du produit reste `DISABLED`.
 
 ## Contenu
 
 | Répertoire | Contenu | Volume | Usage dans le produit |
 |---|---|---|---|
 | `eurovoc/` | Thésaurus EuroVoc 4.24 : 894 concepts de 18 microthésaurus (emploi et travail, rémunération, protection sociale, banque, finance, comptabilité, fiscalité, assurance, droit civil, sociétés, migration), en 23 paires `xx → fr` | 20 537 lignes, 23 fichiers CSV | Référentiels terminologiques importables (bibliothèque commune) |
-| `eurlex/eurlex/` | Textes du droit du travail de l’UE, article par article : 24 directives et le règlement (CE) n° 883/2004, dans toutes les langues disponibles | 25 actes, 571 couples acte-langue, 11 208 articles-langues | Base de contenu ; **non chargée** dans le produit (recherche juridique = LOT 3) |
+| `eurlex/eurlex/` | Textes du droit du travail de l’UE, article par article : 24 directives et le règlement (CE) n° 883/2004, dans toutes les langues disponibles | 25 actes, 571 couples acte-langue, 11 208 articles-langues, 24 langues | Référentiel réglementaire de la bibliothèque commune (« EUR-Lex droit du travail UE textes ») : un texte par couple acte-langue, un passage par article (intitulé de l’article puis son texte, tels qu’extraits, sans réécriture). Consultation en lecture seule (`legal-search`, recherche lexicale par mots entiers). **Jamais injecté dans une traduction** |
 | `eurlex/definitions/` | Définitions légales de ces actes, alignées point par point vers le français | 1 654 lignes, 22 fichiers CSV | Référentiels terminologiques importables, juridiction `EU` |
 | `wikidata/` | Libellés arabes Wikidata des concepts EuroVoc retenus, alignés sur le terme français officiel EuroVoc | 290 lignes, 325 synonymes ; 70 descripteurs en liste de revue | Référentiel terminologique importable `ar → fr` |
 
-Le français est la langue cible de toutes les paires. Les langues sources couvertes sont les 24 langues officielles de l’UE, plus l’arabe. L’irlandais (`ga`) est présent dans EuroVoc, mais absent des définitions : les actes antérieurs à 2014 n’existent pas en irlandais, et aucune définition irlandaise alignable n’a été trouvée dans les actes récents. L’arabe ne couvre que 361 des 839 descripteurs EuroVoc retenus (43 %) : Wikidata ne fournit pas de libellé arabe pour les autres.
+Le français est la langue cible de toutes les paires. Les langues sources couvertes sont les 24 langues officielles de l’UE, plus l’arabe. L’irlandais (`ga`) est présent dans EuroVoc, mais absent des définitions : la source ne sert pas en irlandais les actes de 1989 à 2014, et aucune définition irlandaise alignable n’a été trouvée dans les actes récents. L’arabe ne couvre que 361 des 839 descripteurs EuroVoc retenus (43 %) : Wikidata ne fournit pas de libellé arabe pour les autres.
 
 ## Sources, licences et mentions
 
@@ -37,7 +37,7 @@ Pour l’arabe, les modifications sont les suivantes : jointure sur la propriét
 
 ## Anomalies connues des textes officiels
 
-Sur 571 couples, 568 ont exactement les mêmes numéros d’articles que la version française. Les 3 autres présentent une anomalie dans le texte officiel lui-même. Les versions italienne de la directive 2000/43/CE et espagnole de la directive 2000/78/CE numérotent deux fois un article « 15 », puis passent directement au « 17 ». La version roumaine de la directive 2002/14/CE ne compte que 13 articles. Dans ces trois cas, l’extraction s’arrête à la rupture : la suite est écartée plutôt qu’attribuée à un mauvais article, et l’anomalie est inscrite dans `eurlex/manifest.json`. Le règlement 883/2004 n’est disponible que dans 12 langues sur la source utilisée. La Charte des droits fondamentaux n’a pas pu être récupérée : l’identifiant interrogé a été refusé par la source.
+Sur 571 couples, 568 ont exactement les mêmes numéros d’articles que la version française. Les 3 autres présentent une anomalie dans le texte officiel lui-même. Les versions italienne de la directive 2000/43/CE et espagnole de la directive 2000/78/CE numérotent deux fois un article « 15 », puis passent directement au « 17 ». La version roumaine de la directive 2002/14/CE ne compte que 13 articles. Dans ces trois cas, l’extraction s’arrête à la rupture : la suite est écartée plutôt qu’attribuée à un mauvais article, et l’anomalie est inscrite dans `eurlex/manifest.json`. Le règlement 883/2004 n’est disponible que dans 12 langues sur la source utilisée (bg, cs, en, fr, hr, hu, lt, lv, mt, ro, sk, sl ; réponse 404 pour les 12 autres). L’irlandais n’est servi que pour les 7 actes de 2018 et après : la source répond 404 pour les 17 directives de 1989 à 2014 et pour le règlement 883/2004. Couverture qui en résulte : 25 actes en bg, cs, en, fr, hr, hu, lt, lv, mt, ro, sk et sl ; 24 actes dans les 11 autres langues hors irlandais ; 7 actes en irlandais. La Charte des droits fondamentaux n’a pas pu être récupérée : l’identifiant interrogé a été refusé par la source.
 
 ## Contrôles mesurés
 
@@ -63,7 +63,7 @@ Ces contrôles sont automatiques. **Ils ne remplacent pas la relecture humaine**
 
 ## Intégrité
 
-Chaque manifeste (`eurovoc/manifest.json`, `eurlex/manifest.json`, `wikidata/manifest.json`) donne l’empreinte SHA-256 et le nombre de lignes de chaque fichier. Les tests `backend/tests/integration/test_lot24_rag_ue_*.py` vérifient ces empreintes, les comptes, les anomalies déclarées, la séparation entre fichier importable et liste de revue, et le passage dans l’importeur.
+Chaque manifeste (`eurovoc/manifest.json`, `eurlex/manifest.json`, `wikidata/manifest.json`) donne l’empreinte SHA-256 et le nombre de lignes de chaque fichier. Pour les textes d’articles, `eurlex/textes-sha256.json` donne l’empreinte de chacun des 25 fichiers `eurlex/eurlex/*.jsonl.gz` et le nombre d’articles par langue ; l’import (`import-legal` et chargeur DICE) contrôle ces empreintes, puis recoupe chaque couple acte-langue avec `eurlex/manifest.json` (nombre d’articles et empreinte du HTML source), avant toute écriture. Le test `backend/tests/integration/test_dice_textes_juridiques.py` vérifie que les 11 208 articles publiés sont identiques, caractère pour caractère, aux fichiers. Les tests `backend/tests/integration/test_lot24_rag_ue_*.py` vérifient ces empreintes, les comptes, les anomalies déclarées, la séparation entre fichier importable et liste de revue, et le passage dans l’importeur.
 
 ## Régénération
 
@@ -77,6 +77,8 @@ python tools/rag_ue/eurlex_extract.py --html <répertoires> --acts tools/rag_ue/
 python tools/rag_ue/wikidata_ar_to_csv.py --labels libelles.json --alt alias.json \
     --retrieved-at 2026-11-03T23:57Z --eurovoc data/rag-ue/eurovoc --out data/rag-ue/wikidata \
     --review data/rag-ue/wikidata/revue-evaluation-automatique.csv
+# Empreintes des textes d'articles (après régénération EUR-Lex ; --check pour vérifier sans écrire)
+python tools/rag_ue/eurlex_textes_sha256.py --dir data/rag-ue/eurlex
 # Marqueurs irlandais et maltais du détecteur de langue (textes EUR-Lex de mise au point)
 python tools/rag_ue/lang_markers_build.py --eurlex <textes EUR-Lex> --out backend/app/domain/eu_lang_markers.py
 # IATE : export TBX obtenu par l'exploitant avec son compte

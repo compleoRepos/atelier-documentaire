@@ -35,9 +35,22 @@ python -m app.rag.common_library_cli transition --name "EUR-Lex définitions de-
     --action publish --actor alice
 python -m app.rag.common_library_cli activate --name "EUR-Lex définitions de-fr" --actor alice
 
-# État de la bibliothèque commune
+# 5. Textes du droit du travail article par article (25 actes, 571 couples acte-langue, 11 208 articles) :
+#    un seul référentiel réglementaire, même cycle (soumission, validation par une autre personne,
+#    publication, activation)
+python -m app.rag.common_library_cli import-legal --dir ../data/rag-ue/eurlex --actor alice
+python -m app.rag.common_library_cli transition --name "EUR-Lex droit du travail UE textes" --version 1 \
+    --action submit --actor alice    # puis validate (bob), publish (alice), activate (alice)
+
+# Consultation des articles publiés et actifs (lecture seule, mots entiers, sans effet sur la traduction)
+python -m app.rag.common_library_cli legal-search --query "durée maximale hebdomadaire de travail" \
+    --language fr --reference 2003/88
+
+# État de la bibliothèque commune (comptes de textes, d'articles, d'actes et de langues inclus)
 python -m app.rag.common_library_cli status
 ```
+
+Le chargeur `tools/rag_ue/charger_dice_ue.py` enchaîne toutes ces étapes ; l’option `--sans-textes-juridiques` exclut les textes.
 
 Un référentiel est créé par paire de langues, car l’API limite à 20 le nombre de langues déclarées par référentiel. Ce plafond est inférieur aux 25 langues désormais acceptées ; il n’a pas été modifié, pour préserver le contrat de l’API.
 
@@ -57,7 +70,7 @@ Les deux types de données n’ont pas la même portée.
 
 **La paire arabe** (Wikidata, domaines EuroVoc) fonctionne comme EuroVoc. Elle ne couvre que 43 % des descripteurs retenus. 70 descripteurs jugés incorrects par au moins un des deux évaluateurs automatiques sont placés dans `data/rag-ue/wikidata/revue-evaluation-automatique.csv` : ils ne sont pas importables tant qu’une personne n’a pas tranché.
 
-**Les textes intégraux EUR-Lex** (`data/rag-ue/eurlex/eurlex/`) constituent la base de contenu juridique. Ils ne sont **pas** chargés dans le produit : la recherche de passages juridiques (tables `rag_legal_texts` et `rag_legal_passages`, vides) relève du LOT 3, qui n’est pas engagé sans validation explicite.
+**Les textes intégraux EUR-Lex** (`data/rag-ue/eurlex/eurlex/`) sont chargés dans la bibliothèque commune comme référentiel réglementaire : tables `rag_legal_texts` (un texte par couple acte-langue) et `rag_legal_passages` (un passage par article). Ils sont consultables en lecture seule par `legal-search`, uniquement une fois publiés et actifs. La recherche porte sur des mots entiers (un mot composé n’est trouvé que sous sa forme complète). Le Journal officiel écrit parfois l’allemand sans tréma (« Hoechstarbeitszeit » dans la directive 2003/88/CE) : une requête essaie donc aussi l’autre graphie, que la réponse signale dans `spelling_variants`, sans que le texte officiel soit modifié. Ils ne sont **jamais injectés dans une traduction** : le moteur DICE ne lit que les référentiels terminologiques, et aucun index BM25 ni entrée terminologique n’est créé pour eux. Il s’agit du texte initial publié au Journal officiel, **non consolidé** : les modifications ultérieures d’un acte n’y figurent pas. L’utilisation de ces passages dans la traduction (citation de l’article applicable, par exemple) relève du LOT 3, qui n’est pas engagé sans validation explicite.
 
 Ces données n’apportent aucun vectoriel ni aucune recherche sémantique (ni Qdrant ni BGE-M3). L’appariement reste lexical : forme exacte, synonymes, clés d’alias par langue (dont l’article défini attaché en maltais). Le gain attendu concerne la **cohérence terminologique**. Il n’a pas encore été mesuré sur des traductions réelles ; une telle mesure suppose le moteur cible et une relecture humaine.
 

@@ -66,11 +66,19 @@ def test_full_load_four_eyes_idempotent_and_search_in_every_source_language(app_
     referentials, rows = _manifest_rows()
     first = loader.load(DATA, "admin-a", "admin-b", settings=settings)
     assert first["ok"] and first["missing"] == []
-    assert first["imported_referentials"] == referentials == 46
-    assert first["transitions"] == 3 * referentials
-    assert first["activations"] == referentials
-    assert first["published"] == first["active"] == referentials
+    # 46 référentiels terminologiques + 1 référentiel juridique (textes EUR-Lex article par article).
+    assert referentials == 46
+    assert first["imported_referentials"] == referentials + 1
+    assert first["transitions"] == 3 * (referentials + 1)
+    assert first["activations"] == referentials + 1
+    assert first["published"] == first["active"] == referentials + 1
     assert first["published_entries"] == rows
+    assert first["published_legal"] == {
+        "legal_texts": 571,
+        "legal_passages": 11208,
+        "legal_acts": 25,
+        "legal_languages": 24,
+    }
 
     second = loader.load(DATA, "admin-a", "admin-b", settings=settings)
     assert (second["imported_referentials"], second["transitions"], second["activations"]) == (
@@ -131,9 +139,7 @@ def test_altered_file_stops_before_any_write(app_env, monkeypatch, tmp_path):
     copy = tmp_path / "rag-ue"
     shutil.copytree(DATA / "eurovoc", copy / "eurovoc")
     shutil.copytree(DATA / "wikidata", copy / "wikidata")
-    (copy / "eurlex").mkdir()
-    shutil.copy2(DATA / "eurlex" / "manifest.json", copy / "eurlex" / "manifest.json")
-    shutil.copytree(DATA / "eurlex" / "definitions", copy / "eurlex" / "definitions")
+    shutil.copytree(DATA / "eurlex", copy / "eurlex")
     target = copy / "wikidata" / "wikidata-ar-fr.csv"
     target.write_bytes(target.read_bytes() + b"\n")
 

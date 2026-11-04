@@ -35,6 +35,7 @@ from ..terminology.importer import (
     validate_rows,
 )
 from ..terminology.normalizer import normalize_language
+from . import legal_library
 from .repository import REFERENTIAL_KINDS, RagAccessError, versions_of
 from .versioning import (
     _event,
@@ -218,8 +219,16 @@ def apply_transition(
     if referential.tenant_id is not None:
         raise CommonLibraryError("NOT_COMMON")
     version = version_by_number(db, referential, number)
+    # Version juridique (textes EUR-Lex) : même circuit à quatre yeux, empreinte calculée
+    # sur les textes et passages. Les versions sans texte juridique gardent le chemin d'origine.
+    move = (
+        legal_library.transition
+        if referential.kind == legal_library.LEGAL_KIND
+        and legal_library.has_legal_content(db, version)
+        else transition
+    )
     try:
-        return transition(
+        return move(
             db,
             referential,
             version,

@@ -18,7 +18,7 @@
 | Application | API FastAPI, worker Celery, frontend Angular, PostgreSQL, Redis, MinIO | `docs/deploiement.md` |
 | OCR | Surya OCR 2.5 (Q8_0) **par défaut**, service local isolé, fail-closed, sans repli automatique. Tesseract n’est utilisable que sur choix explicite | `docs/ocr/SURYA.md` |
 | **DICE** (RAG terminologique) | Moteur lexical sans base vectorielle (ni Qdrant ni BGE-M3), cycle de validation à quatre yeux, mode **`DISABLED` par défaut** | `docs/rag/` |
-| Base de contenu DICE | **46 référentiels, 22 301 entrées** : EuroVoc 4.24 (23 paires vers le français, 20 537 lignes), 1 654 définitions légales du droit du travail de l’UE alignées vers le français (25 actes, 22 langues ; 1 474 entrées publiées après fusion des termes définis dans plusieurs directives), paire arabe → français (290 lignes, Wikidata CC0) | `data/rag-ue/README.md` |
+| Base de contenu DICE | **47 référentiels**. 46 terminologiques, **22 301 entrées** : EuroVoc 4.24 (23 paires vers le français, 20 537 lignes), 1 654 définitions légales du droit du travail de l’UE alignées vers le français (25 actes, 22 langues ; 1 474 entrées publiées après fusion des termes définis dans plusieurs directives), paire arabe → français (290 lignes, Wikidata CC0). 1 réglementaire : les **textes du droit du travail de l’UE article par article** (25 actes, 571 couples acte-langue, **11 208 articles**, 24 langues ; texte initial du Journal officiel, non consolidé), consultables en lecture seule et jamais injectés dans une traduction | `data/rag-ue/README.md` |
 | Langues | Détection et classement des **24 langues officielles de l’UE et de l’arabe**. Les 7 langues historiques gardent exactement la même décision | rapport Phase B §9 |
 | Corrections de l’audit | D-DET-02, D-ENG-01, D-OPS-01, F-L2-03, D-OCR-06, D-PERF-TOK | rapport Phase B §2 |
 | Sécurité des dépendances | Pillow 13.0.0, Angular 21.2.29, vitest 4.1.12 (maintenance des audits fusionnée) | `reports/maintenance-audits-20261030/` |
@@ -91,13 +91,13 @@ docker compose --env-file .env run --rm --no-deps --entrypoint python \
 
 Ce que fait le chargeur, dans l’ordre :
 
-1. Il vérifie l’empreinte SHA-256 de **chaque** fichier par rapport aux manifestes. Au moindre écart, il s’arrête avant toute écriture (`MANIFEST_MISMATCH`).
+1. Il vérifie l’empreinte SHA-256 de **chaque** fichier par rapport aux manifestes (`textes-sha256.json` pour les 25 fichiers de textes, recoupé acte par acte et langue par langue avec `eurlex/manifest.json`). Au moindre écart, il s’arrête avant toute écriture (`MANIFEST_MISMATCH`).
 2. Il refuse que l’auteur et le valideur soient la même personne (`FOUR_EYES_REQUIRED`).
-3. Il importe chaque fichier en brouillon dans la bibliothèque commune avec l’importeur du produit, soumet la version (auteur), la valide (relecteur), la publie (auteur) puis l’active.
+3. Il importe chaque fichier en brouillon dans la bibliothèque commune avec l’importeur du produit, soumet la version (auteur), la valide (relecteur), la publie (auteur) puis l’active. Les textes juridiques forment un seul référentiel réglementaire (« EUR-Lex droit du travail UE textes ») qui suit le même cycle ; l’empreinte de leur contenu est figée à la soumission, et toute altération ultérieure bloque la publication (`RAG_CONTENT_CHANGED`). L’option `--sans-textes-juridiques` les exclut.
 
 Un second passage ne modifie rien (0 import, 0 transition). Pour consulter l’état sans rien écrire, remplacez les deux options d’acteur par `--status`.
 
-**Mesuré** (SQLite, chemin natif, base vide) : 46 référentiels importés, 138 transitions, 46 activations, **22 301 entrées publiées**, en 22,5 s. L’écart avec les 22 481 lignes des fichiers est attendu : un même terme défini dans plusieurs directives n’est publié qu’une fois (180 doublons signalés `DUPLICATE_IN_FILE`). Le même enchaînement est couvert par `backend/tests/integration/test_dice_charger_ue.py`.
+**Mesuré** (SQLite, chemin natif, base vide) : 47 référentiels importés (46 terminologiques et celui des textes), 141 transitions, 47 activations, **22 301 entrées terminologiques** et **11 208 articles** publiés (571 textes, 25 actes, 24 langues), en 44,4 s. Un second passage ne change rien. L’écart entre les 22 481 lignes terminologiques des fichiers et les 22 301 entrées publiées est attendu : un même terme défini dans plusieurs directives n’est publié qu’une fois (180 doublons signalés `DUPLICATE_IN_FILE`). Le même enchaînement est couvert par `backend/tests/integration/test_dice_charger_ue.py` et, pour les textes, par `backend/tests/integration/test_dice_textes_juridiques.py` (SQLite) et `test_dice_textes_juridiques_postgres.py` (PostgreSQL 16).
 
 ## 5. Modes DICE et vérifications
 
@@ -126,9 +126,18 @@ Ces appels sont **[non rejoués]** avec curl. Les mêmes routes et les mêmes co
 **Vérifications après installation :**
 
 1. `curl -fsS http://127.0.0.1:8080/api/health` doit renvoyer `"database":true,"storage":true,"queue":true`.
-2. Le chargeur, lancé avec `--status`, doit donner 46 référentiels publiés et actifs.
+2. Le chargeur, lancé avec `--status`, doit donner 47 référentiels publiés et actifs, dont le référentiel juridique (571 textes, 11 208 articles, 25 actes, 24 langues).
 3. Pour la recherche terminologique (dernière commande ci-dessus), précisez `source_language`, `target_language` et **`domain`**. Exemple : `{"text": "Mindestlohn", "source_language": "de", "target_language": "fr", "domain": "PAYROLL"}` renvoie « salaire minimal ». Sans domaine, une entrée spécialisée n’est jamais proposée (`DOMAIN_UNKNOWN`) : c’est une règle de prudence du produit. **Mesuré** : le terme attendu est trouvé dans les 24 langues sources sur 24.
-4. Pour l’OCR, analysez un scan **synthétique** : les blocs doivent porter la provenance `ocr:surya` (`docs/ocr/SURYA.md` §11).
+4. Pour les textes du droit du travail, la consultation se fait en lecture seule (mots entiers ; filtres facultatifs de langue et de référence officielle) **[non rejoué]** dans un conteneur :
+
+   ```bash
+   docker compose --env-file .env run --rm --no-deps --entrypoint python api \
+     -m app.rag.common_library_cli legal-search \
+     --query "durée maximale hebdomadaire de travail" --language fr --reference 2003/88
+   ```
+
+   **Mesuré** en natif sur la base complète (SQLite, 20 répétitions) : 4 articles trouvés, l’article 6 de la directive 2003/88/CE (« Durée maximale hebdomadaire de travail ») en tête. La recherche dure 50 ms en médiane (95e centile : 54 ms) ; la commande complète, démarrage de Python compris, 0,97 s en médiane. Sur six requêtes types (français, allemand, finnois, toutes langues), la médiane va de 49 à 87 ms. La recherche porte sur des mots entiers : un mot composé (allemand, finnois…) n’est trouvé que sous sa forme complète. Le Journal officiel écrit parfois l’allemand sans tréma (« Hoechstarbeitszeit » dans la directive 2003/88/CE) : la recherche essaie alors aussi l’autre graphie, l’indique dans `spelling_variants` et ne modifie pas le texte officiel. « Höchstarbeitszeit » et « Hoechstarbeitszeit » trouvent toutes deux l’article 6.
+5. Pour l’OCR, analysez un scan **synthétique** : les blocs doivent porter la provenance `ocr:surya` (`docs/ocr/SURYA.md` §11).
 
 ## 6. Retour arrière
 
@@ -142,18 +151,19 @@ Mesures du 4 novembre 2026, avec les mêmes commandes qu’en Phase A et en Phas
 | Contrôle | Résultat mesuré |
 |---|---|
 | Ruff (périmètre de la CI) | OK |
-| Suite backend (unitaires, intégration, bout en bout) | **1 213 réussis, 2 ignorés, 0 échec** (615 s). Phase B : 1 207, aucun test disparu |
-| Golden (8 cas, arbre exporté de la branche) | **8/8** (1 189 s) |
-| Tests PostgreSQL 16 (base jetable, supprimée ensuite) | **3/3** |
+| Suite backend (unitaires, intégration, bout en bout) | **1 215 réussis, 3 ignorés, 0 échec** (634 s). Les 3 tests ignorés exigent PostgreSQL : ils sont exécutés à part (ligne PostgreSQL). Aucun test disparu ni changé de statut depuis la Phase B (1 207) |
+| Golden (8 cas, arbre exporté de la branche) | **8/8** (1 185 s) |
+| Tests PostgreSQL 16 (base jetable, supprimée ensuite) | **4/4** : migration, bibliothèque commune, textes du droit du travail |
 | Autotest du service Surya | OK |
 | `pip-audit` du backend (Pillow 13.0.0) | aucune vulnérabilité connue |
 | Compose : `config`, grâce d’arrêt du worker, profil `rag` | OK. `rag-worker` absent par défaut, présent avec `--profile rag` |
 | Helm : `lint` et `template` | OK, 11 objets, grâce d’arrêt présente |
-| Chargeur DICE sur la base complète | 46 référentiels, 22 301 entrées publiées, 22,5 s. Un second passage ne change rien |
+| Chargeur DICE sur la base complète | 47 référentiels (46 terminologiques, 1 de textes), 141 transitions, 22 301 entrées terminologiques et 11 208 articles publiés, 44,4 s. Un second passage ne change rien |
+| Textes du droit du travail (25 actes, 11 208 articles) | Articles publiés identiques au fichier source, caractère pour caractère ; quatre yeux exigés ; fichier ou manifeste altéré refusé avant toute écriture ; recherche réussie dans les 24 langues, graphies allemandes comprises ; aucune entrée terminologique ni index BM25 créé (tests SQLite et PostgreSQL 16). Recherche : 49 à 87 ms en médiane selon la requête |
 | Recherche par l’API | Terme attendu trouvé dans les 24 langues sources ; exemple du §5 vérifié par test |
 | Frontend | Identique à la branche de maintenance sécurité (Angular 21.2.29, vitest 4.1.12). Tests Angular et `npm audit` : exécutés par la CI |
 
-Précision de traçabilité : la suite a été lancée sur le commit précédant ce document. L’empreinte du code produit est identique, et le seul test modifié depuis (une assertion ajoutée pour l’exemple du §5) a été exécuté séparément : 2/2. La CI GitHub (« Private document translator ») est lancée manuellement sur cette branche, car elle ne se déclenche que sur une PR ou à la demande. Son résultat figure dans l’onglet Actions.
+Précision de traçabilité : ces contrôles ont été lancés sur le commit précédant ce document, qui contient les textes du droit du travail et le correctif de la recherche allemande. Depuis, seuls des documents ont changé : les empreintes du code produit et des tests sont identiques au début et à la fin de la vérification. Le chargement complet (44,4 s) a été mesuré sur le commit des textes, avant ce correctif, qui ne modifie que la fonction de recherche ; la durée de la recherche a été mesurée avec le correctif. La CI GitHub (« Private document translator ») est lancée manuellement sur cette branche, car elle ne se déclenche que sur une PR ou à la demande. Son résultat figure dans l’onglet Actions.
 
 ## 8. Limites et statut (NO-GO production)
 
@@ -161,4 +171,5 @@ Précision de traçabilité : la suite a été lancée sur le commit précédant
 - **Aucune qualification humaine** : aucune ligne de la base DICE n’a été relue par un humain. L’exactitude est estimée par deux évaluateurs automatiques sur échantillon (indice de confiance : plus faible borne basse à 95 % de **93,3 %**, rapport Phase B §10). Ce n’est pas une revue humaine. Les traductions restent soumises à relecture humaine, quel que soit le score.
 - **Moteur cible non testé** : le gain de DICE sur la traduction n’est pas mesuré, faute du moteur privé cible.
 - **Défauts ouverts** : 12 défauts de l’audit restent ouverts, dont 2 critiques (D-REC-02, D-OPS-02), listés au rapport Phase B §3. IATE n’est pas inclus (compte EU Login requis ; convertisseur fourni).
+- **Textes du droit du travail** : texte initial publié au Journal officiel, **non consolidé** (les modifications ultérieures d’un acte n’y figurent pas). Couverture limitée par la source officielle : le règlement 883/2004 n’y est servi que dans 12 langues, l’irlandais n’est servi que pour les 7 actes de 2018 et après, et la Charte des droits fondamentaux n’a pas pu être récupérée. Ces textes sont consultables mais **ne sont pas utilisés par la traduction** (LOT 3 non engagé).
 - **Données** : uniquement des sources publiques sous licence ouverte vérifiée, avec mentions dans `data/rag-ue/README.md`. Aucune donnée client.

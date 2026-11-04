@@ -8,8 +8,8 @@
 > **rendue et validée** (`docker compose config`, `helm lint/template`, mêmes commandes que la CI). Les
 > images sont **construites par la CI**. Les commandes `docker compose build/up/run` des §3–4 n’ont pas
 > été rejouées de bout en bout dans l’environnement de préparation (espace disque insuffisant) : elles
-> reprennent la procédure du guide de déploiement (`docs/deploiement.md` §5, vérifiée le 16/10/2026),
-> complétée pour DICE. Les options propres à ce guide qui n’ont pas été exécutées portent la mention **[non rejoué]**.
+> reprennent la procédure du guide de déploiement (`docs/deploiement.md` §5, exécutée de bout en bout le
+> 16/10/2026 sur une version antérieure), complétée pour DICE. Les options propres à ce guide qui n’ont pas été exécutées portent la mention **[non rejoué]**.
 
 ## 1. Ce que contient la branche
 
@@ -18,7 +18,7 @@
 | Application | API FastAPI, worker Celery, frontend Angular, PostgreSQL, Redis, MinIO | `docs/deploiement.md` |
 | OCR | Surya OCR 2.5 (Q8_0) **par défaut**, service local isolé, fail-closed, sans repli automatique. Tesseract n’est utilisable que sur choix explicite | `docs/ocr/SURYA.md` |
 | **DICE** (RAG terminologique) | Moteur lexical sans base vectorielle (ni Qdrant ni BGE-M3), cycle de validation à quatre yeux, mode **`DISABLED` par défaut** | `docs/rag/` |
-| Base de contenu DICE | **46 référentiels, 22 301 entrées** : EuroVoc 4.24 (23 paires vers le français, 20 537 lignes), 1 474 définitions légales du droit du travail de l’UE (25 actes, 22 langues), paire arabe → français (290 lignes, Wikidata CC0) | `data/rag-ue/README.md` |
+| Base de contenu DICE | **46 référentiels, 22 301 entrées** : EuroVoc 4.24 (23 paires vers le français, 20 537 lignes), 1 654 définitions légales du droit du travail de l’UE alignées vers le français (25 actes, 22 langues ; 1 474 entrées publiées après fusion des termes définis dans plusieurs directives), paire arabe → français (290 lignes, Wikidata CC0) | `data/rag-ue/README.md` |
 | Langues | Détection et classement des **24 langues officielles de l’UE et de l’arabe**. Les 7 langues historiques gardent exactement la même décision | rapport Phase B §9 |
 | Corrections de l’audit | D-DET-02, D-ENG-01, D-OPS-01, F-L2-03, D-OCR-06, D-PERF-TOK | rapport Phase B §2 |
 | Sécurité des dépendances | Pillow 13.0.0, Angular 21.2.29, vitest 4.1.12 (maintenance des audits fusionnée) | `reports/maintenance-audits-20261030/` |
@@ -105,15 +105,29 @@ Un second passage ne modifie rien (0 import, 0 transition). Pour consulter l’�
 |---|---|
 | `DISABLED` (défaut) | Application identique à la version sans DICE. Aucune lecture du RAG |
 | `SHADOW` | Recherches en tâche de fond (worker `rag-worker`), journalisées sans texte. La traduction n’est pas modifiée |
-| `ACTIVE` | Termes validés injectés dans le prompt du **moteur privé** (`TRANSLATOR_ENGINE=private`). Avec le moteur `offline`, le mode effectif est plafonné à `SHADOW` |
+| `ASSISTED`, `ACTIVE` | Termes validés injectés dans le prompt du **moteur privé** (`TRANSLATOR_ENGINE=private`). Avec un autre moteur (`offline` par exemple), le mode effectif est plafonné à `SHADOW` |
 
-Chaque tenant a en plus un plafond (`POST /api/rag-admin/tenant`, `{"max_mode": "SHADOW"}`), fixé par un administrateur RAG. Les procédures de rôles et d’activation progressive sont décrites dans `docs/rag/INSTALLATION-ADMINISTRATION.md` et `docs/rag/RAG-UE.md`.
+Le mode appliqué est le plus bas entre le mode global et le **plafond du tenant**. Ce plafond vaut `DISABLED` tant qu’un administrateur ne l’a pas fixé. **Sans cette étape, DICE ne fait rien**, même avec `SHADOW` au niveau global :
+
+```bash
+read -rsp "Mot de passe de admin : " PW; echo; export PW
+TOKEN=$(curl -fsS -X POST http://127.0.0.1:8080/api/auth/login -H 'Content-Type: application/json' \
+  -d "$(python3 -c 'import json,os; print(json.dumps({"username": "admin", "password": os.environ["PW"]}))')" \
+  | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])'); unset PW
+curl -fsS -X POST http://127.0.0.1:8080/api/rag-admin/tenant -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' -d '{"max_mode": "SHADOW"}'
+curl -fsS -X POST http://127.0.0.1:8080/api/rag/search -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "Mindestlohn", "source_language": "de", "target_language": "fr", "domain": "PAYROLL"}'
+```
+
+Ces appels sont **[non rejoués]** avec curl. Les mêmes routes et les mêmes corps de requête ont été exécutés par le script de validation de bout en bout et par les tests : connexion, plafond fixé par l’administrateur, modification du plafond refusée au relecteur, recherche. Les procédures de rôles et d’activation progressive sont décrites dans `docs/rag/INSTALLATION-ADMINISTRATION.md` et `docs/rag/RAG-UE.md`.
 
 **Vérifications après installation :**
 
 1. `curl -fsS http://127.0.0.1:8080/api/health` doit renvoyer `"database":true,"storage":true,"queue":true`.
 2. Le chargeur, lancé avec `--status`, doit donner 46 référentiels publiés et actifs.
-3. Pour la recherche terminologique (`POST /api/rag/search` avec un jeton obtenu par `POST /api/auth/login`), précisez `source_language`, `target_language` et **`domain`**. Exemple : `{"text": "Mindestlohn", "source_language": "de", "target_language": "fr", "domain": "PAYROLL"}` renvoie « salaire minimal ». Sans domaine, une entrée spécialisée n’est jamais proposée (`DOMAIN_UNKNOWN`) : c’est une règle de prudence du produit. **Mesuré** : le terme attendu est trouvé dans les 24 langues sources sur 24.
+3. Pour la recherche terminologique (dernière commande ci-dessus), précisez `source_language`, `target_language` et **`domain`**. Exemple : `{"text": "Mindestlohn", "source_language": "de", "target_language": "fr", "domain": "PAYROLL"}` renvoie « salaire minimal ». Sans domaine, une entrée spécialisée n’est jamais proposée (`DOMAIN_UNKNOWN`) : c’est une règle de prudence du produit. **Mesuré** : le terme attendu est trouvé dans les 24 langues sources sur 24.
 4. Pour l’OCR, analysez un scan **synthétique** : les blocs doivent porter la provenance `ocr:surya` (`docs/ocr/SURYA.md` §11).
 
 ## 6. Retour arrière
